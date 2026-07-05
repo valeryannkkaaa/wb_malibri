@@ -1,0 +1,40 @@
+# Пилот MVP — фаза 0–2 (заполнено по результатам wb_advert_probe, 03.07.2026)
+
+optimizer_mode: suggest-only   # suggest-only 3–5 дней → auto (см. MVP §5)
+pilot_sku_count: 10
+campaign_type: 9               # подтверждено: все 155 РК type 9
+
+# WB API (read-only токен — фаза 0 sync + дашборд)
+token_type: base_readonly
+token_scopes_confirmed:
+  - promotion    # fullstats, normquery/stats, get-bids
+  - analytics    # sales-funnel v3
+  - marketplace  # orders/new
+
+# Не работает с текущим токеном
+token_gaps:
+  - stocks_report   # нужен персональный / базовый с секретом
+  - bid_write       # фаза 2: write-токен без бита read-only
+
+sync:
+  interval_minutes: 15
+  normquery_stats_per_day: 4
+  rate_limit_pause_sec: 1.2
+
+parser:
+  region: Rostov              # TODO: подтвердить с менеджером
+  interval_min: 5
+
+alerts:
+  telegram_chat_id: null      # TODO: фаза 2
+
+# Прогресс пилота (Phase 0 complete 05.07.2026)
+pilot_progress:
+  nm_ids_resolved: 10
+  campaigns_with_keywords: 10
+  total_keywords_synced: 401
+  phase_0_status: complete
+  phase_1_status: dashboard_ready
+  phase_2_status: optimizer_suggest_only
+  manager_fill_required:
+    - unit_economics.csv      # cost_price_rub, retail_price_rub, margin_pct

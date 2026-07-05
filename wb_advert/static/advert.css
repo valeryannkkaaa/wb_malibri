@@ -1,0 +1,91 @@
+:root {
+  --bg: #f6f7f9;
+  --card: #fff;
+  --text: #1a1a1a;
+  --muted: #666;
+  --link: #2563eb;
+  --warn: #b45309;
+  --border: #e5e7eb;
+}
+
+* { box-sizing: border-box; }
+body {
+  font-family: system-ui, -apple-system, Segoe UI, sans-serif;
+  margin: 0;
+  padding: 1.5rem;
+  background: var(--bg);
+  color: var(--text);
+  line-height: 1.5;
+}
+.header h1 { margin: 0.25rem 0; font-size: 1.5rem; }
+.muted { color: var(--muted); font-size: 0.9rem; }
+.warn { color: var(--warn); }
+a { color: var(--link); text-decoration: none; }
+a:hover { text-decoration: underline; }
+
+.cards {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.75rem;
+  margin: 1rem 0 1.5rem;
+}
+.card {
+  background: var(--card);
+  border: 1px solid var(--border);
+  border-radius: 8px;
+  padding: 0.75rem 1rem;
+  min-width: 120px;
+}
+.card .label {
+  display: block;
+  font-size: 0.75rem;
+  color: var(--muted);
+  text-transform: uppercase;
+  letter-spacing: 0.03em;
+}
+.card .value {
+  font-size: 1.5rem;
+  font-weight: 600;
+}
+.card .value.small { font-size: 1rem; font-weight: 500; }
+
+.table {
+  width: 100%;
+  border-collapse: collapse;
+  background: var(--card);
+  border: 1px solid var(--border);
+  border-radius: 8px;
+  overflow: hidden;
+  font-size: 0.9rem;
+}
+.table th, .table td {
+  padding: 0.6rem 0.75rem;
+  text-align: left;
+  border-bottom: 1px solid var(--border);
+}
+.table th {
+  background: #f9fafb;
+  font-weight: 600;
+  font-size: 0.8rem;
+}
+.table tr:last-child td { border-bottom: none; }
+code {
+  background: #eef2ff;
+  padding: 0.1rem 0.35rem;
+  border-radius: 4px;
+  font-size: 0.85rem;
+}
+.alerts { margin: 0 0 1rem; padding-left: 1.2rem; }
+.action {
+  display: inline-block;
+  padding: 0.15rem 0.45rem;
+  border-radius: 4px;
+  font-size: 0.75rem;
+  font-weight: 600;
+  text-transform: uppercase;
+}
+.action-keep { background: #dcfce7; color: #166534; }
+.action-raise_bid { background: #dbeafe; color: #1e40af; }
+.action-lower_bid { background: #fef3c7; color: #92400e; }
+.action-exclude_keyword { background: #fee2e2; color: #991b1b; }
+.action-promote_managed { background: #e0e7ff; color: #3730a3; }

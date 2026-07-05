@@ -1,0 +1,137 @@
+{
+  "synced_at": "2026-07-05T18:14:00.856067+00:00",
+  "campaigns": [
+    {
+      "wb_campaign_id": 31275686,
+      "nm_id": 624468743,
+      "keywords": 52,
+      "errors": [],
+      "top_keyword": "перчатки для уборки",
+      "top_stats": {
+        "shows": 9546,
+        "ctr": 14.68,
+        "orders": 527
+      }
+    },
+    {
+      "wb_campaign_id": 31314341,
+      "nm_id": 629004626,
+      "keywords": 77,
+      "errors": [],
+      "top_keyword": "тряпка для стекол без разводов",
+      "top_stats": {
+        "shows": 4493,
+        "ctr": 10.44,
+        "orders": 97
+      }
+    },
+    {
+      "wb_campaign_id": 33206165,
+      "nm_id": 754427875,
+      "keywords": 50,
+      "errors": [],
+      "top_keyword": "перчатки для уборки",
+      "top_stats": {
+        "shows": 5099,
+        "ctr": 6.69,
+        "orders": 135
+      }
+    },
+    {
+      "wb_campaign_id": 33206346,
+      "nm_id": 754549033,
+      "keywords": 64,
+      "errors": [],
+      "top_keyword": "перчатки для уборки",
+      "top_stats": {
+        "shows": 8061,
+        "ctr": 9.07,
+        "orders": 105
+      }
+    },
+    {
+      "wb_campaign_id": 35098216,
+      "nm_id": 754606396,
+      "keywords": 59,
+      "errors": [],
+      "top_keyword": "мочалка варежка для тела",
+      "top_stats": {
+        "shows": 483,
+        "ctr": 10.35,
+        "orders": 12
+      }
+    },
+    {
+      "wb_campaign_id": 35110541,
+      "nm_id": 866360474,
+      "keywords": 60,
+      "errors": [],
+      "top_keyword": "пенящиеся салфетки для уборки",
+      "top_stats": {
+        "shows": 1544,
+        "ctr": 12.63,
+        "orders": 25
+      }
+    },
+    {
+      "wb_campaign_id": 35704170,
+      "nm_id": 929900180,
+      "keywords": 6,
+      "errors": [],
+      "top_keyword": "спонж для умывания",
+      "top_stats": {
+        "shows": 1105,
+        "ctr": 5.88,
+        "orders": 10
+      }
+    },
+    {
+      "wb_campaign_id": 36713559,
+      "nm_id": 869367544,
+      "keywords": 11,
+      "errors": [],
+      "top_keyword": "салфетки из микрофибры 30х30",
+      "top_stats": {
+        "shows": 166,
+        "ctr": 10.84,
+        "orders": 29
+      }
+    },
+    {
+      "wb_campaign_id": 37328842,
+      "nm_id": 1001645746,
+      "keywords": 14,
+      "errors": [],
+      "top_keyword": "губка для уборки",
+      "top_stats": {
+        "shows": 588,
+        "ctr": 6.12,
+        "orders": 6
+      }
+    },
+    {
+      "wb_campaign_id": 37636194,
+      "nm_id": 1085061548,
+      "keywords": 8,
+      "errors": [],
+      "top_keyword": "салфетки для кухни",
+      "top_stats": {
+        "shows": 580,
+        "ctr": 4.48,
+        "orders": 7
+      }
+    }
+  ],
+  "primary_keywords": {
+    "754549033": "перчатки для уборки",
+    "866360474": "пенящиеся салфетки для уборки",
+    "929900180": "спонж для умывания",
+    "869367544": "салфетки из микрофибры 30х30",
+    "1001645746": "губка для уборки",
+    "624468743": "перчатки для уборки",
+    "754427875": "перчатки для уборки",
+    "629004626": "тряпка для стекол без разводов",
+    "754606396": "мочалка варежка для тела",
+    "1085061548": "салфетки для кухни"
+  }
+}

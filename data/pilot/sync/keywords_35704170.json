@@ -1,0 +1,73 @@
+{
+  "wb_campaign_id": 35704170,
+  "nm_id": 929900180,
+  "synced_at": "2026-07-05T19:25:16.043039+00:00",
+  "keywords": [
+    {
+      "keyword": "спонж для умывания",
+      "shows": 1134,
+      "clicks": 66,
+      "spend_kopecks": 62106,
+      "orders": 10,
+      "ctr_calculated": 5.82,
+      "cpc_calculated_kopecks": 941,
+      "current_bid_kopecks": 340,
+      "status": "managed"
+    },
+    {
+      "keyword": "спонж для умывания лица",
+      "shows": 308,
+      "clicks": 39,
+      "spend_kopecks": 17667,
+      "orders": 5,
+      "ctr_calculated": 12.66,
+      "cpc_calculated_kopecks": 453,
+      "current_bid_kopecks": 500,
+      "status": "managed"
+    },
+    {
+      "keyword": "конжак",
+      "shows": 169,
+      "clicks": 3,
+      "spend_kopecks": 5745,
+      "orders": 0,
+      "ctr_calculated": 1.78,
+      "cpc_calculated_kopecks": 1915,
+      "current_bid_kopecks": null,
+      "status": "managed"
+    },
+    {
+      "keyword": "спонж конняку",
+      "shows": 103,
+      "clicks": 27,
+      "spend_kopecks": 3510,
+      "orders": 2,
+      "ctr_calculated": 26.21,
+      "cpc_calculated_kopecks": 130,
+      "current_bid_kopecks": null,
+      "status": "managed"
+    },
+    {
+      "keyword": "спонж для умывания конняку",
+      "shows": 59,
+      "clicks": 8,
+      "spend_kopecks": 2008,
+      "orders": 4,
+      "ctr_calculated": 13.56,
+      "cpc_calculated_kopecks": 251,
+      "current_bid_kopecks": null,
+      "status": "pending_100_shows"
+    },
+    {
+      "keyword": "спонж для умывания конжаковый",
+      "shows": 44,
+      "clicks": 6,
+      "spend_kopecks": 1494,
+      "orders": 1,
+      "ctr_calculated": 13.64,
+      "cpc_calculated_kopecks": 249,
+      "current_bid_kopecks": 340,
+      "status": "pending_100_shows"
+    }
+  ]
+}

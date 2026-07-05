@@ -1,0 +1,56 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>WB Advert — пилот</title>
+  <link rel="stylesheet" href="/static/advert.css">
+</head>
+<body>
+  <header class="header">
+    <h1>WB Advert — пилот</h1>
+    <p class="muted">Phase 1 read-only · режим: <strong>{{ dash.optimizer_mode }}</strong></p>
+  </header>
+
+  <section class="cards">
+    <div class="card"><span class="label">SKU</span><span class="value">{{ dash.product_count }}</span></div>
+    <div class="card"><span class="label">Keywords</span><span class="value">{{ dash.total_keywords }}</span></div>
+    <div class="card"><span class="label">Orders 7d</span><span class="value">{{ dash.total_orders_7d }}</span></div>
+    <div class="card"><span class="label">Keywords saved</span><span class="value">{{ dash.keywords_saved }}/{{ dash.product_count }}</span></div>
+    <div class="card"><span class="label">Unit economics</span><span class="value">{{ dash.with_economics }}/{{ dash.product_count }}</span></div>
+  </section>
+
+  {% if dash.synced_at %}
+  <p class="muted">Последний sync: {{ dash.synced_at }}</p>
+  {% endif %}
+
+  <table class="table">
+    <thead>
+      <tr>
+        <th>Кампания</th>
+        <th>nm_id</th>
+        <th>Primary keyword</th>
+        <th>Keywords</th>
+        <th>Orders 7d</th>
+        <th>CTR %</th>
+        <th>Юнитка</th>
+      </tr>
+    </thead>
+    <tbody>
+      {% for p in dash.products %}
+      <tr>
+        <td><a href="/advert/products/{{ p.advert_id }}">{{ p.advert_id }}</a></td>
+        <td>{{ p.nm_id }}</td>
+        <td>{{ p.primary_keyword or '—' }}</td>
+        <td>{{ p.keyword_count }}{% if not p.keywords_saved %}*{% endif %}</td>
+        <td>{{ p.top_stats.orders if p.top_stats else '—' }}</td>
+        <td>{{ p.top_stats.ctr if p.top_stats else '—' }}</td>
+        <td>{% if p.has_economics %}OK{% else %}<span class="warn">fill CSV</span>{% endif %}</td>
+      </tr>
+      {% endfor %}
+    </tbody>
+  </table>
+  <p class="muted">* count из отчёта; детальный список — после backfill keywords JSON</p>
+  <p class="muted">Optimizer: <code>python -m scripts.run_optimizer</code> · API <code>POST /api/advert/optimize-all</code></p>
+</body>
+</html>

@@ -1,0 +1,88 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Кампания {{ p.advert_id }} — WB Advert</title>
+  <link rel="stylesheet" href="/static/advert.css">
+</head>
+<body>
+  <header class="header">
+    <p><a href="/">&larr; Дашборд</a></p>
+    <h1>Кампания {{ p.advert_id }}</h1>
+    <p class="muted">nm_id {{ p.nm_id }} · {{ p.schedule }} · target {{ p.target_grade }}</p>
+  </header>
+
+  <section class="cards">
+    <div class="card"><span class="label">Primary</span><span class="value small">{{ p.primary_keyword or '—' }}</span></div>
+    <div class="card"><span class="label">Keywords</span><span class="value">{{ p.keyword_count }}</span></div>
+    {% if p.top_stats %}
+    <div class="card"><span class="label">Shows 7d</span><span class="value">{{ p.top_stats.shows }}</span></div>
+    <div class="card"><span class="label">Orders 7d</span><span class="value">{{ p.top_stats.orders }}</span></div>
+    <div class="card"><span class="label">CTR %</span><span class="value">{{ p.top_stats.ctr }}</span></div>
+    {% endif %}
+  </section>
+
+  {% if opt.alerts %}
+  <ul class="alerts">
+    {% for a in opt.alerts %}<li class="warn">{{ a }}</li>{% endfor %}
+  </ul>
+  {% endif %}
+
+  {% if opt.suggestions %}
+  <h2>Рекомендации optimizer ({{ opt.mode }}) — {{ opt.suggestions|length }}</h2>
+  <table class="table">
+    <thead>
+      <tr>
+        <th>Keyword</th>
+        <th>Action</th>
+        <th>Reason</th>
+      </tr>
+    </thead>
+    <tbody>
+      {% for s in opt.suggestions %}
+      <tr>
+        <td>{{ s.keyword }}</td>
+        <td><span class="action action-{{ s.action }}">{{ s.action }}</span></td>
+        <td>{{ s.reason_text }}</td>
+      </tr>
+      {% endfor %}
+    </tbody>
+  </table>
+  {% elif p.keywords %}
+  <p class="muted">Optimizer: все ключи в норме или нет срабатываний правил.</p>
+  {% endif %}
+
+  {% if p.keywords %}
+  <h2>Ключевые слова ({{ p.keywords|length }})</h2>
+  <table class="table">
+    <thead>
+      <tr>
+        <th>Keyword</th>
+        <th>Shows</th>
+        <th>Clicks</th>
+        <th>CTR %</th>
+        <th>CPC ₽</th>
+        <th>Orders</th>
+        <th>Status</th>
+      </tr>
+    </thead>
+    <tbody>
+      {% for k in p.keywords %}
+      <tr>
+        <td>{{ k.keyword }}</td>
+        <td>{{ k.shows }}</td>
+        <td>{{ k.clicks }}</td>
+        <td>{{ k.ctr_calculated or '—' }}</td>
+        <td>{% if k.cpc_calculated_kopecks %}{{ (k.cpc_calculated_kopecks / 100)|round(2) }}{% else %}—{% endif %}</td>
+        <td>{{ k.orders }}</td>
+        <td>{{ k.status }}</td>
+      </tr>
+      {% endfor %}
+    </tbody>
+  </table>
+  {% else %}
+  <p class="warn">Детальный список ключей не сохранён. Запустите: <code>python -m scripts.backfill_keywords --advert-id {{ p.advert_id }}</code></p>
+  {% endif %}
+</body>
+</html>
