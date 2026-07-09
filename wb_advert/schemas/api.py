@@ -35,3 +35,7 @@ class ProductDetailResponse(ProductSummary):
     keywords: list[dict] = Field(default_factory=list)
     keywords_synced_at: str | None = None
     notes: str | None = None
+
+
+class ParserRegionUpdate(BaseModel):
+    region: str

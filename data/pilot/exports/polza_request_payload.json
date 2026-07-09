@@ -1,0 +1,1220 @@
+{
+  "summary": {
+    "product_count": 10,
+    "keyword_count": 380,
+    "total_shows": 65105,
+    "total_clicks": 7294,
+    "total_orders": 1800,
+    "primary_keyword_count": 10,
+    "with_retail_price": 10,
+    "with_margin_pct": 0,
+    "with_full_economics": 0,
+    "optimizer_runs_logged": 310,
+    "actionable_suggestions_unique": 2,
+    "exclude_keyword_count": 2
+  },
+  "config_snapshot": {
+    "optimizer_mode": "suggest-only",
+    "parser_region": "Rostov",
+    "fullstats_enabled": true
+  },
+  "products": [
+    {
+      "advert_id": 31275686,
+      "nm_id": "624468743",
+      "primary_keyword": "перчатки для уборки",
+      "target_grade": "top_1_3",
+      "schedule": "always_on",
+      "notes": "status 9 active 2026-07-01",
+      "keyword_count": 39,
+      "total_shows": 15819,
+      "total_clicks": 2398,
+      "total_orders": 824,
+      "primary_shows": 9658,
+      "primary_ctr_pct": 16.16,
+      "primary_cpc_rub": 7.57,
+      "primary_orders": 568,
+      "retail_price_rub": 179.0,
+      "cost_price_rub": null,
+      "margin_pct": null,
+      "max_drr_pct": 15.0,
+      "has_full_economics": false,
+      "has_retail_only": true,
+      "sync_top_stats": {
+        "shows": 9658,
+        "ctr": 16.16,
+        "orders": 568
+      },
+      "sync_errors": [],
+      "parsed_position": null,
+      "position_error": null
+    },
+    {
+      "advert_id": 31314341,
+      "nm_id": "629004626",
+      "primary_keyword": "тряпка для стекол без разводов",
+      "target_grade": "top_1_3",
+      "schedule": "always_on",
+      "notes": "status 9 active 2026-07-01",
+      "keyword_count": 76,
+      "total_shows": 8985,
+      "total_clicks": 1036,
+      "total_orders": 203,
+      "primary_shows": 4336,
+      "primary_ctr_pct": 10.65,
+      "primary_cpc_rub": 8.03,
+      "primary_orders": 106,
+      "retail_price_rub": 275.0,
+      "cost_price_rub": null,
+      "margin_pct": null,
+      "max_drr_pct": 15.0,
+      "has_full_economics": false,
+      "has_retail_only": true,
+      "sync_top_stats": {
+        "shows": 4336,
+        "ctr": 10.65,
+        "orders": 106
+      },
+      "sync_errors": [],
+      "parsed_position": null,
+      "position_error": null
+    },
+    {
+      "advert_id": 33206165,
+      "nm_id": "754427875",
+      "primary_keyword": "перчатки резиновые хозяйственные",
+      "target_grade": "top_1_3",
+      "schedule": "always_on",
+      "notes": "status 9 active 2026-07-01",
+      "keyword_count": 46,
+      "total_shows": 10850,
+      "total_clicks": 1161,
+      "total_orders": 359,
+      "primary_shows": 2790,
+      "primary_ctr_pct": 14.8,
+      "primary_cpc_rub": 6.75,
+      "primary_orders": 143,
+      "retail_price_rub": 176.0,
+      "cost_price_rub": null,
+      "margin_pct": null,
+      "max_drr_pct": 15.0,
+      "has_full_economics": false,
+      "has_retail_only": true,
+      "sync_top_stats": {
+        "shows": 2790,
+        "ctr": 14.8,
+        "orders": 143
+      },
+      "sync_errors": [],
+      "parsed_position": null,
+      "position_error": null
+    },
+    {
+      "advert_id": 33206346,
+      "nm_id": "754549033",
+      "primary_keyword": "перчатки для уборки",
+      "target_grade": "top_1_3",
+      "schedule": "always_on",
+      "notes": "status 9 active; nm_id confirmed via get_advert",
+      "keyword_count": 63,
+      "total_shows": 14293,
+      "total_clicks": 1435,
+      "total_orders": 208,
+      "primary_shows": 9053,
+      "primary_ctr_pct": 10.13,
+      "primary_cpc_rub": 17.49,
+      "primary_orders": 128,
+      "retail_price_rub": 457.0,
+      "cost_price_rub": null,
+      "margin_pct": null,
+      "max_drr_pct": 15.0,
+      "has_full_economics": false,
+      "has_retail_only": true,
+      "sync_top_stats": {
+        "shows": 9053,
+        "ctr": 10.13,
+        "orders": 128
+      },
+      "sync_errors": [],
+      "parsed_position": null,
+      "position_error": "HTTP 429 rate limit"
+    },
+    {
+      "advert_id": 35098216,
+      "nm_id": "754606396",
+      "primary_keyword": "мочалка варежка для тела",
+      "target_grade": "top_1_3",
+      "schedule": "always_on",
+      "notes": "status 9 active 2026-06-24",
+      "keyword_count": 58,
+      "total_shows": 1779,
+      "total_clicks": 171,
+      "total_orders": 34,
+      "primary_shows": 458,
+      "primary_ctr_pct": 10.7,
+      "primary_cpc_rub": 0.75,
+      "primary_orders": 12,
+      "retail_price_rub": 246.0,
+      "cost_price_rub": null,
+      "margin_pct": null,
+      "max_drr_pct": 15.0,
+      "has_full_economics": false,
+      "has_retail_only": true,
+      "sync_top_stats": {
+        "shows": 458,
+        "ctr": 10.7,
+        "orders": 12
+      },
+      "sync_errors": [],
+      "parsed_position": null,
+      "position_error": null
+    },
+    {
+      "advert_id": 35110541,
+      "nm_id": "866360474",
+      "primary_keyword": "пенящиеся салфетки для уборки",
+      "target_grade": "top_1_3",
+      "schedule": "always_on",
+      "notes": "status 9 active 2026-07-03; 60 keywords synced",
+      "keyword_count": 59,
+      "total_shows": 2820,
+      "total_clicks": 369,
+      "total_orders": 37,
+      "primary_shows": 1433,
+      "primary_ctr_pct": 12.0,
+      "primary_cpc_rub": 2.92,
+      "primary_orders": 20,
+      "retail_price_rub": 561.0,
+      "cost_price_rub": null,
+      "margin_pct": null,
+      "max_drr_pct": 15.0,
+      "has_full_economics": false,
+      "has_retail_only": true,
+      "sync_top_stats": {
+        "shows": 1433,
+        "ctr": 12.0,
+        "orders": 20
+      },
+      "sync_errors": [],
+      "parsed_position": null,
+      "position_error": "HTTP 429 rate limit"
+    },
+    {
+      "advert_id": 35704170,
+      "nm_id": "929900180",
+      "primary_keyword": "спонж для умывания",
+      "target_grade": "top_1_3",
+      "schedule": "always_on",
+      "notes": "status 9 active 2026-07-03",
+      "keyword_count": 6,
+      "total_shows": 2053,
+      "total_clicks": 158,
+      "total_orders": 23,
+      "primary_shows": 1282,
+      "primary_ctr_pct": 5.46,
+      "primary_cpc_rub": 9.71,
+      "primary_orders": 10,
+      "retail_price_rub": 322.0,
+      "cost_price_rub": null,
+      "margin_pct": null,
+      "max_drr_pct": 15.0,
+      "has_full_economics": false,
+      "has_retail_only": true,
+      "sync_top_stats": {
+        "shows": 1282,
+        "ctr": 5.46,
+        "orders": 10
+      },
+      "sync_errors": [],
+      "parsed_position": null,
+      "position_error": null
+    },
+    {
+      "advert_id": 36713559,
+      "nm_id": "869367544",
+      "primary_keyword": "салфетки из микрофибры 30х30",
+      "target_grade": "top_1_3",
+      "schedule": "always_on",
+      "notes": "status 9 active 2026-07-03",
+      "keyword_count": 11,
+      "total_shows": 3667,
+      "total_clicks": 335,
+      "total_orders": 85,
+      "primary_shows": 154,
+      "primary_ctr_pct": 9.74,
+      "primary_cpc_rub": 7.19,
+      "primary_orders": 28,
+      "retail_price_rub": 330.0,
+      "cost_price_rub": null,
+      "margin_pct": null,
+      "max_drr_pct": 15.0,
+      "has_full_economics": false,
+      "has_retail_only": true,
+      "sync_top_stats": {
+        "shows": 154,
+        "ctr": 9.74,
+        "orders": 28
+      },
+      "sync_errors": [],
+      "parsed_position": null,
+      "position_error": null
+    },
+    {
+      "advert_id": 37328842,
+      "nm_id": "1001645746",
+      "primary_keyword": "губка для уборки",
+      "target_grade": "top_1_3",
+      "schedule": "always_on",
+      "notes": "status 9 active 2026-07-03",
+      "keyword_count": 13,
+      "total_shows": 2625,
+      "total_clicks": 125,
+      "total_orders": 12,
+      "primary_shows": 698,
+      "primary_ctr_pct": 5.73,
+      "primary_cpc_rub": 16.23,
+      "primary_orders": 7,
+      "retail_price_rub": 234.0,
+      "cost_price_rub": null,
+      "margin_pct": null,
+      "max_drr_pct": 15.0,
+      "has_full_economics": false,
+      "has_retail_only": true,
+      "sync_top_stats": {
+        "shows": 698,
+        "ctr": 5.73,
+        "orders": 7
+      },
+      "sync_errors": [],
+      "parsed_position": null,
+      "position_error": null
+    },
+    {
+      "advert_id": 37636194,
+      "nm_id": "1085061548",
+      "primary_keyword": "салфетки для кухни",
+      "target_grade": "top_1_3",
+      "schedule": "always_on",
+      "notes": "status 9 active 2026-07-03",
+      "keyword_count": 9,
+      "total_shows": 2214,
+      "total_clicks": 106,
+      "total_orders": 15,
+      "primary_shows": 724,
+      "primary_ctr_pct": 4.7,
+      "primary_cpc_rub": 13.37,
+      "primary_orders": 9,
+      "retail_price_rub": 235.0,
+      "cost_price_rub": null,
+      "margin_pct": null,
+      "max_drr_pct": 15.0,
+      "has_full_economics": false,
+      "has_retail_only": true,
+      "sync_top_stats": {
+        "shows": 724,
+        "ctr": 4.7,
+        "orders": 9
+      },
+      "sync_errors": [],
+      "parsed_position": null,
+      "position_error": null
+    }
+  ],
+  "optimizer_decisions_actionable": [
+    {
+      "advert_id": 37636194,
+      "nm_id": "1085061548",
+      "keyword": "кухонная тряпка",
+      "action": "exclude_keyword",
+      "reason_code": "SECONDARY_WEAK",
+      "reason_text": "Secondary/longtail без конверсии",
+      "before_state": {
+        "shows": 233,
+        "clicks": 2,
+        "orders": 0,
+        "ctr": 0.86,
+        "cpc_kopecks": 5375,
+        "status": "managed",
+        "bid_kopecks": null
+      },
+      "after_state": {
+        "shows": 233,
+        "clicks": 2,
+        "orders": 0,
+        "ctr": 0.86,
+        "cpc_kopecks": 5375,
+        "status": "excluded",
+        "bid_kopecks": null,
+        "retest_after": "+30d"
+      },
+      "decided_at": "2026-07-07T09:34:19.166807Z"
+    },
+    {
+      "advert_id": 33206346,
+      "nm_id": "754549033",
+      "keyword": "перчатка для пыли",
+      "action": "exclude_keyword",
+      "reason_code": "SECONDARY_WEAK",
+      "reason_text": "Secondary/longtail без конверсии",
+      "before_state": {
+        "shows": 161,
+        "clicks": 1,
+        "orders": 0,
+        "ctr": 0.62,
+        "cpc_kopecks": 5635,
+        "status": "managed",
+        "bid_kopecks": null
+      },
+      "after_state": {
+        "shows": 161,
+        "clicks": 1,
+        "orders": 0,
+        "ctr": 0.62,
+        "cpc_kopecks": 5635,
+        "status": "excluded",
+        "bid_kopecks": null,
+        "retest_after": "+30d"
+      },
+      "decided_at": "2026-07-07T09:34:19.135183Z"
+    }
+  ],
+  "manager_rules_from_call": [
+    {
+      "topic": "target_position",
+      "rule": "Основные ключи — top-5 (top_1_3); часть ключей окупается на 10–20 позиции",
+      "example": "Салфетки 30×30 — pos_10_20, не top-5"
+    },
+    {
+      "topic": "metrics_trust",
+      "rule": "Ориентир только CTR и CPC из WB API; Evirma/WB-кабинет завышает"
+    },
+    {
+      "topic": "bid_test_window",
+      "rule": "После смены ставки ждать минимум 2–3 часа перед выводами"
+    },
+    {
+      "topic": "cpm_cap",
+      "rule": "Жёсткий потолок ~1500 ₽ за 1000 показов"
+    },
+    {
+      "topic": "unit_economics",
+      "rule": "Лимит CPC из retail + margin_pct + max DRR, не обязательно cost_price из 1С",
+      "example": "Салфетки без рекламы — 11% маржи"
+    },
+    {
+      "topic": "keyword_cleanup",
+      "rule": "Отключать secondary/longtail без конверсии; периодически возвращать из исключений на тест"
+    },
+    {
+      "topic": "competitive_price",
+      "rule": "Цена должна быть конкурентоспособной относимо соседей в выдаче"
+    },
+    {
+      "topic": "primary_benchmark",
+      "rule": "Эталон primary «перчатки для уборки»: CTR ~13%, CPC ~7.6 ₽"
+    }
+  ],
+  "keywords_sample": [
+    {
+      "nm_id": "624468743",
+      "keyword": "перчатки для уборки",
+      "is_primary": true,
+      "shows": 9658,
+      "clicks": 1561,
+      "orders": 568,
+      "ctr_pct": 16.16,
+      "cpc_rub": 7.57
+    },
+    {
+      "nm_id": "624468743",
+      "keyword": "перчатки резиновые прочные",
+      "is_primary": false,
+      "shows": 1783,
+      "clicks": 296,
+      "orders": 82,
+      "ctr_pct": 16.6,
+      "cpc_rub": 8.99
+    },
+    {
+      "nm_id": "624468743",
+      "keyword": "перчатки резиновые хозяйственные",
+      "is_primary": false,
+      "shows": 1569,
+      "clicks": 144,
+      "orders": 59,
+      "ctr_pct": 9.18,
+      "cpc_rub": 8.72
+    },
+    {
+      "nm_id": "624468743",
+      "keyword": "перчатки для уборки сверхпрочные",
+      "is_primary": false,
+      "shows": 1036,
+      "clicks": 227,
+      "orders": 65,
+      "ctr_pct": 21.91,
+      "cpc_rub": 2.74
+    },
+    {
+      "nm_id": "624468743",
+      "keyword": "перчатки хозяйственные",
+      "is_primary": false,
+      "shows": 351,
+      "clicks": 14,
+      "orders": 4,
+      "ctr_pct": 3.99,
+      "cpc_rub": 12.54
+    },
+    {
+      "nm_id": "624468743",
+      "keyword": "перчатки резиновые хозяйственные суперпрочные",
+      "is_primary": false,
+      "shows": 246,
+      "clicks": 19,
+      "orders": 2,
+      "ctr_pct": 7.72,
+      "cpc_rub": 6.42
+    },
+    {
+      "nm_id": "624468743",
+      "keyword": "перчатки резиновые хозяйственные прочные",
+      "is_primary": false,
+      "shows": 192,
+      "clicks": 18,
+      "orders": 3,
+      "ctr_pct": 9.38,
+      "cpc_rub": 8.53
+    },
+    {
+      "nm_id": "624468743",
+      "keyword": "перчатки хозяйственные прочные",
+      "is_primary": false,
+      "shows": 110,
+      "clicks": 13,
+      "orders": 3,
+      "ctr_pct": 11.82,
+      "cpc_rub": 2.96
+    },
+    {
+      "nm_id": "754549033",
+      "keyword": "перчатки для уборки",
+      "is_primary": true,
+      "shows": 9053,
+      "clicks": 917,
+      "orders": 128,
+      "ctr_pct": 10.13,
+      "cpc_rub": 17.49
+    },
+    {
+      "nm_id": "754549033",
+      "keyword": "перчатки хозяйственные",
+      "is_primary": false,
+      "shows": 1377,
+      "clicks": 100,
+      "orders": 12,
+      "ctr_pct": 7.26,
+      "cpc_rub": 12.39
+    },
+    {
+      "nm_id": "754549033",
+      "keyword": "перчатки для мытья посуды",
+      "is_primary": false,
+      "shows": 450,
+      "clicks": 37,
+      "orders": 1,
+      "ctr_pct": 8.22,
+      "cpc_rub": 10.95
+    },
+    {
+      "nm_id": "754549033",
+      "keyword": "перчатки для кухни",
+      "is_primary": false,
+      "shows": 384,
+      "clicks": 44,
+      "orders": 4,
+      "ctr_pct": 11.46,
+      "cpc_rub": 7.85
+    },
+    {
+      "nm_id": "754549033",
+      "keyword": "перчатка для уборки пыли",
+      "is_primary": false,
+      "shows": 273,
+      "clicks": 5,
+      "orders": 0,
+      "ctr_pct": 1.83,
+      "cpc_rub": 19.11
+    },
+    {
+      "nm_id": "754549033",
+      "keyword": "перчатки резиновые хозяйственные суперпрочные",
+      "is_primary": false,
+      "shows": 235,
+      "clicks": 31,
+      "orders": 4,
+      "ctr_pct": 13.19,
+      "cpc_rub": 6.82
+    },
+    {
+      "nm_id": "754549033",
+      "keyword": "перчатки резиновые плотные",
+      "is_primary": false,
+      "shows": 234,
+      "clicks": 12,
+      "orders": 1,
+      "ctr_pct": 5.13,
+      "cpc_rub": 15.6
+    },
+    {
+      "nm_id": "754549033",
+      "keyword": "хлопковые перчатки для уборки",
+      "is_primary": false,
+      "shows": 208,
+      "clicks": 16,
+      "orders": 1,
+      "ctr_pct": 7.69,
+      "cpc_rub": 4.55
+    },
+    {
+      "nm_id": "754549033",
+      "keyword": "перчатка для пыли",
+      "is_primary": false,
+      "shows": 161,
+      "clicks": 1,
+      "orders": 0,
+      "ctr_pct": 0.62,
+      "cpc_rub": 56.35
+    },
+    {
+      "nm_id": "754427875",
+      "keyword": "перчатки для уборки",
+      "is_primary": false,
+      "shows": 5016,
+      "clicks": 337,
+      "orders": 134,
+      "ctr_pct": 6.72,
+      "cpc_rub": 17.05
+    },
+    {
+      "nm_id": "754427875",
+      "keyword": "перчатки резиновые хозяйственные",
+      "is_primary": true,
+      "shows": 2790,
+      "clicks": 413,
+      "orders": 143,
+      "ctr_pct": 14.8,
+      "cpc_rub": 6.75
+    },
+    {
+      "nm_id": "754427875",
+      "keyword": "перчатки резиновые для огорода прочные",
+      "is_primary": false,
+      "shows": 1077,
+      "clicks": 160,
+      "orders": 26,
+      "ctr_pct": 14.86,
+      "cpc_rub": 4.69
+    },
+    {
+      "nm_id": "754427875",
+      "keyword": "перчатки для уборки сверхпрочные",
+      "is_primary": false,
+      "shows": 830,
+      "clicks": 105,
+      "orders": 28,
+      "ctr_pct": 12.65,
+      "cpc_rub": 6.0
+    },
+    {
+      "nm_id": "754427875",
+      "keyword": "перчатки резиновые хозяйственные прочные",
+      "is_primary": false,
+      "shows": 158,
+      "clicks": 19,
+      "orders": 4,
+      "ctr_pct": 12.03,
+      "cpc_rub": 7.47
+    },
+    {
+      "nm_id": "754427875",
+      "keyword": "перчатки латексные",
+      "is_primary": false,
+      "shows": 148,
+      "clicks": 9,
+      "orders": 2,
+      "ctr_pct": 6.08,
+      "cpc_rub": 16.44
+    },
+    {
+      "nm_id": "754427875",
+      "keyword": "перчатки для уборки прочные",
+      "is_primary": false,
+      "shows": 144,
+      "clicks": 21,
+      "orders": 4,
+      "ctr_pct": 14.58,
+      "cpc_rub": 4.11
+    },
+    {
+      "nm_id": "754427875",
+      "keyword": "резиновые перчатки для уборки",
+      "is_primary": false,
+      "shows": 74,
+      "clicks": 1,
+      "orders": 1,
+      "ctr_pct": 1.35,
+      "cpc_rub": 44.4
+    },
+    {
+      "nm_id": "629004626",
+      "keyword": "тряпка для стекол без разводов",
+      "is_primary": true,
+      "shows": 4336,
+      "clicks": 462,
+      "orders": 106,
+      "ctr_pct": 10.65,
+      "cpc_rub": 8.03
+    },
+    {
+      "nm_id": "629004626",
+      "keyword": "салфетка для стекол и зеркал без разводов",
+      "is_primary": false,
+      "shows": 952,
+      "clicks": 102,
+      "orders": 20,
+      "ctr_pct": 10.71,
+      "cpc_rub": 9.48
+    },
+    {
+      "nm_id": "629004626",
+      "keyword": "тряпка для стекол и зеркал без разводов",
+      "is_primary": false,
+      "shows": 516,
+      "clicks": 76,
+      "orders": 10,
+      "ctr_pct": 14.73,
+      "cpc_rub": 5.42
+    },
+    {
+      "nm_id": "629004626",
+      "keyword": "салфетки для зеркал без разводов",
+      "is_primary": false,
+      "shows": 334,
+      "clicks": 46,
+      "orders": 9,
+      "ctr_pct": 13.77,
+      "cpc_rub": 11.06
+    },
+    {
+      "nm_id": "629004626",
+      "keyword": "тряпка для стекол и зеркал",
+      "is_primary": false,
+      "shows": 311,
+      "clicks": 45,
+      "orders": 11,
+      "ctr_pct": 14.47,
+      "cpc_rub": 5.52
+    },
+    {
+      "nm_id": "629004626",
+      "keyword": "тряпка для окон без разводов",
+      "is_primary": false,
+      "shows": 291,
+      "clicks": 21,
+      "orders": 9,
+      "ctr_pct": 7.22,
+      "cpc_rub": 12.17
+    },
+    {
+      "nm_id": "629004626",
+      "keyword": "тряпка для мытья окон",
+      "is_primary": false,
+      "shows": 248,
+      "clicks": 33,
+      "orders": 6,
+      "ctr_pct": 13.31,
+      "cpc_rub": 6.01
+    },
+    {
+      "nm_id": "629004626",
+      "keyword": "салфетки для мытья окон без разводов",
+      "is_primary": false,
+      "shows": 221,
+      "clicks": 36,
+      "orders": 3,
+      "ctr_pct": 16.29,
+      "cpc_rub": 4.91
+    },
+    {
+      "nm_id": "869367544",
+      "keyword": "тряпки для кухни для стола",
+      "is_primary": false,
+      "shows": 2383,
+      "clicks": 209,
+      "orders": 26,
+      "ctr_pct": 8.77,
+      "cpc_rub": 9.79
+    },
+    {
+      "nm_id": "869367544",
+      "keyword": "микрофибра тряпка",
+      "is_primary": false,
+      "shows": 529,
+      "clicks": 62,
+      "orders": 20,
+      "ctr_pct": 11.72,
+      "cpc_rub": 5.3
+    },
+    {
+      "nm_id": "869367544",
+      "keyword": "тряпка для кухня микрофибра",
+      "is_primary": false,
+      "shows": 183,
+      "clicks": 12,
+      "orders": 2,
+      "ctr_pct": 6.56,
+      "cpc_rub": 9.4
+    },
+    {
+      "nm_id": "869367544",
+      "keyword": "салфетки из микрофибры 30х30",
+      "is_primary": true,
+      "shows": 154,
+      "clicks": 15,
+      "orders": 28,
+      "ctr_pct": 9.74,
+      "cpc_rub": 7.19
+    },
+    {
+      "nm_id": "869367544",
+      "keyword": "салфетки из микрофибры для кухни 30х30",
+      "is_primary": false,
+      "shows": 107,
+      "clicks": 17,
+      "orders": 2,
+      "ctr_pct": 15.89,
+      "cpc_rub": 4.41
+    },
+    {
+      "nm_id": "869367544",
+      "keyword": "тряпки для кухни для стола из микрофибры",
+      "is_primary": false,
+      "shows": 91,
+      "clicks": 15,
+      "orders": 2,
+      "ctr_pct": 16.48,
+      "cpc_rub": 3.93
+    },
+    {
+      "nm_id": "869367544",
+      "keyword": "салфетки 30 30 микрофибра",
+      "is_primary": false,
+      "shows": 78,
+      "clicks": 4,
+      "orders": 0,
+      "ctr_pct": 5.13,
+      "cpc_rub": 6.83
+    },
+    {
+      "nm_id": "869367544",
+      "keyword": "тряпка для пола микрофибра",
+      "is_primary": false,
+      "shows": 69,
+      "clicks": 0,
+      "orders": 0,
+      "ctr_pct": 0.0,
+      "cpc_rub": null
+    },
+    {
+      "nm_id": "866360474",
+      "keyword": "пенящиеся салфетки для уборки",
+      "is_primary": true,
+      "shows": 1433,
+      "clicks": 172,
+      "orders": 20,
+      "ctr_pct": 12.0,
+      "cpc_rub": 2.92
+    },
+    {
+      "nm_id": "866360474",
+      "keyword": "салфетки пенящиеся",
+      "is_primary": false,
+      "shows": 342,
+      "clicks": 43,
+      "orders": 4,
+      "ctr_pct": 12.57,
+      "cpc_rub": 3.18
+    },
+    {
+      "nm_id": "866360474",
+      "keyword": "салфетки для уборки в рулоне многоразовые пенящиеся",
+      "is_primary": false,
+      "shows": 247,
+      "clicks": 42,
+      "orders": 8,
+      "ctr_pct": 17.0,
+      "cpc_rub": 2.06
+    },
+    {
+      "nm_id": "866360474",
+      "keyword": "салфетки с моющим средством для уборки",
+      "is_primary": false,
+      "shows": 125,
+      "clicks": 29,
+      "orders": 2,
+      "ctr_pct": 23.2,
+      "cpc_rub": 2.59
+    },
+    {
+      "nm_id": "866360474",
+      "keyword": "салфетки для уборки пенящиеся многоразовые",
+      "is_primary": false,
+      "shows": 111,
+      "clicks": 7,
+      "orders": 0,
+      "ctr_pct": 6.31,
+      "cpc_rub": 5.55
+    },
+    {
+      "nm_id": "866360474",
+      "keyword": "салфетки для уборки кухонные пенящиеся",
+      "is_primary": false,
+      "shows": 61,
+      "clicks": 10,
+      "orders": 0,
+      "ctr_pct": 16.39,
+      "cpc_rub": 2.14
+    },
+    {
+      "nm_id": "866360474",
+      "keyword": "салфетки для уборки с пеной в рулоне",
+      "is_primary": false,
+      "shows": 53,
+      "clicks": 14,
+      "orders": 2,
+      "ctr_pct": 26.42,
+      "cpc_rub": 1.33
+    },
+    {
+      "nm_id": "866360474",
+      "keyword": "салфетки с кокосовой пропиткой для уборки",
+      "is_primary": false,
+      "shows": 48,
+      "clicks": 5,
+      "orders": 0,
+      "ctr_pct": 10.42,
+      "cpc_rub": 3.36
+    },
+    {
+      "nm_id": "929900180",
+      "keyword": "спонж для умывания",
+      "is_primary": true,
+      "shows": 1282,
+      "clicks": 70,
+      "orders": 10,
+      "ctr_pct": 5.46,
+      "cpc_rub": 9.71
+    },
+    {
+      "nm_id": "929900180",
+      "keyword": "спонж для умывания лица",
+      "is_primary": false,
+      "shows": 356,
+      "clicks": 41,
+      "orders": 5,
+      "ctr_pct": 11.52,
+      "cpc_rub": 4.89
+    },
+    {
+      "nm_id": "929900180",
+      "keyword": "конжак",
+      "is_primary": false,
+      "shows": 169,
+      "clicks": 3,
+      "orders": 0,
+      "ctr_pct": 1.78,
+      "cpc_rub": 19.15
+    },
+    {
+      "nm_id": "929900180",
+      "keyword": "спонж конняку",
+      "is_primary": false,
+      "shows": 131,
+      "clicks": 30,
+      "orders": 3,
+      "ctr_pct": 22.9,
+      "cpc_rub": 1.48
+    },
+    {
+      "nm_id": "929900180",
+      "keyword": "спонж для умывания конняку",
+      "is_primary": false,
+      "shows": 63,
+      "clicks": 8,
+      "orders": 4,
+      "ctr_pct": 12.7,
+      "cpc_rub": 2.68
+    },
+    {
+      "nm_id": "929900180",
+      "keyword": "спонж для умывания конжаковый",
+      "is_primary": false,
+      "shows": 52,
+      "clicks": 6,
+      "orders": 1,
+      "ctr_pct": 11.54,
+      "cpc_rub": 2.95
+    },
+    {
+      "nm_id": "1085061548",
+      "keyword": "салфетки для уборки",
+      "is_primary": false,
+      "shows": 846,
+      "clicks": 43,
+      "orders": 3,
+      "ctr_pct": 5.08,
+      "cpc_rub": 8.68
+    },
+    {
+      "nm_id": "1085061548",
+      "keyword": "салфетки для кухни",
+      "is_primary": true,
+      "shows": 724,
+      "clicks": 34,
+      "orders": 9,
+      "ctr_pct": 4.7,
+      "cpc_rub": 13.37
+    },
+    {
+      "nm_id": "1085061548",
+      "keyword": "кухонная тряпка",
+      "is_primary": false,
+      "shows": 233,
+      "clicks": 2,
+      "orders": 0,
+      "ctr_pct": 0.86,
+      "cpc_rub": 53.75
+    },
+    {
+      "nm_id": "1085061548",
+      "keyword": "салфетки вискозные",
+      "is_primary": false,
+      "shows": 155,
+      "clicks": 20,
+      "orders": 3,
+      "ctr_pct": 12.9,
+      "cpc_rub": 2.71
+    },
+    {
+      "nm_id": "1085061548",
+      "keyword": "для уборки",
+      "is_primary": false,
+      "shows": 69,
+      "clicks": 0,
+      "orders": 0,
+      "ctr_pct": 0.0,
+      "cpc_rub": null
+    },
+    {
+      "nm_id": "1085061548",
+      "keyword": "салфетки вискозные для кухни",
+      "is_primary": false,
+      "shows": 68,
+      "clicks": 2,
+      "orders": 0,
+      "ctr_pct": 2.94,
+      "cpc_rub": 12.43
+    },
+    {
+      "nm_id": "1085061548",
+      "keyword": "кухонные салфетки для уборки",
+      "is_primary": false,
+      "shows": 65,
+      "clicks": 3,
+      "orders": 0,
+      "ctr_pct": 4.62,
+      "cpc_rub": 7.58
+    },
+    {
+      "nm_id": "1085061548",
+      "keyword": "тряпки",
+      "is_primary": false,
+      "shows": 36,
+      "clicks": 2,
+      "orders": 0,
+      "ctr_pct": 5.56,
+      "cpc_rub": 6.3
+    },
+    {
+      "nm_id": "1001645746",
+      "keyword": "губка для уборки",
+      "is_primary": true,
+      "shows": 698,
+      "clicks": 40,
+      "orders": 7,
+      "ctr_pct": 5.73,
+      "cpc_rub": 16.23
+    },
+    {
+      "nm_id": "1001645746",
+      "keyword": "кухонная тряпка",
+      "is_primary": false,
+      "shows": 485,
+      "clicks": 23,
+      "orders": 2,
+      "ctr_pct": 4.74,
+      "cpc_rub": 17.14
+    },
+    {
+      "nm_id": "1001645746",
+      "keyword": "тряпка для уборки",
+      "is_primary": false,
+      "shows": 420,
+      "clicks": 14,
+      "orders": 0,
+      "ctr_pct": 3.33,
+      "cpc_rub": 18.04
+    },
+    {
+      "nm_id": "1001645746",
+      "keyword": "салфетка для мытья посуды",
+      "is_primary": false,
+      "shows": 162,
+      "clicks": 12,
+      "orders": 0,
+      "ctr_pct": 7.41,
+      "cpc_rub": 10.38
+    },
+    {
+      "nm_id": "1001645746",
+      "keyword": "тряпка для мытья посуды",
+      "is_primary": false,
+      "shows": 153,
+      "clicks": 8,
+      "orders": 1,
+      "ctr_pct": 5.23,
+      "cpc_rub": 14.78
+    },
+    {
+      "nm_id": "1001645746",
+      "keyword": "кухонные салфетки для уборки",
+      "is_primary": false,
+      "shows": 137,
+      "clicks": 5,
+      "orders": 1,
+      "ctr_pct": 3.65,
+      "cpc_rub": 17.6
+    },
+    {
+      "nm_id": "1001645746",
+      "keyword": "салфетка из микрофибры для кухня",
+      "is_primary": false,
+      "shows": 104,
+      "clicks": 4,
+      "orders": 0,
+      "ctr_pct": 3.85,
+      "cpc_rub": 13.7
+    },
+    {
+      "nm_id": "1001645746",
+      "keyword": "салфетки для уборки двухсторонние",
+      "is_primary": false,
+      "shows": 93,
+      "clicks": 9,
+      "orders": 1,
+      "ctr_pct": 9.68,
+      "cpc_rub": 3.62
+    },
+    {
+      "nm_id": "1001645746",
+      "keyword": "салфетка для посуды",
+      "is_primary": false,
+      "shows": 92,
+      "clicks": 3,
+      "orders": 0,
+      "ctr_pct": 3.26,
+      "cpc_rub": 13.42
+    },
+    {
+      "nm_id": "754606396",
+      "keyword": "мочалка варежка для тела",
+      "is_primary": true,
+      "shows": 458,
+      "clicks": 49,
+      "orders": 12,
+      "ctr_pct": 10.7,
+      "cpc_rub": 0.75
+    },
+    {
+      "nm_id": "754606396",
+      "keyword": "мочалка варежка",
+      "is_primary": false,
+      "shows": 308,
+      "clicks": 35,
+      "orders": 7,
+      "ctr_pct": 11.36,
+      "cpc_rub": 0.7
+    },
+    {
+      "nm_id": "754606396",
+      "keyword": "мочалка варежка для душа",
+      "is_primary": false,
+      "shows": 156,
+      "clicks": 23,
+      "orders": 5,
+      "ctr_pct": 14.74,
+      "cpc_rub": 0.54
+    },
+    {
+      "nm_id": "754606396",
+      "keyword": "косметика",
+      "is_primary": false,
+      "shows": 123,
+      "clicks": 6,
+      "orders": 0,
+      "ctr_pct": 4.88,
+      "cpc_rub": 1.64
+    },
+    {
+      "nm_id": "754606396",
+      "keyword": "мочалка для душа женская варежка",
+      "is_primary": false,
+      "shows": 68,
+      "clicks": 10,
+      "orders": 1,
+      "ctr_pct": 14.71,
+      "cpc_rub": 0.54
+    },
+    {
+      "nm_id": "754606396",
+      "keyword": "мочалки тела",
+      "is_primary": false,
+      "shows": 63,
+      "clicks": 1,
+      "orders": 0,
+      "ctr_pct": 1.59,
+      "cpc_rub": 5.04
+    },
+    {
+      "nm_id": "754606396",
+      "keyword": "варежка мочалка для тела женская",
+      "is_primary": false,
+      "shows": 62,
+      "clicks": 9,
+      "orders": 2,
+      "ctr_pct": 14.52,
+      "cpc_rub": 0.55
+    },
+    {
+      "nm_id": "754606396",
+      "keyword": "варежка для душа",
+      "is_primary": false,
+      "shows": 60,
+      "clicks": 8,
+      "orders": 1,
+      "ctr_pct": 13.33,
+      "cpc_rub": 0.6
+    }
+  ],
+  "transcript_excerpt": "аюсь. Уходы 165, 246, а тут 110, 117, еще и размер больше, там 161, размер меньше, 185. Ну, тут карточки здесь. Нет, ну 110 штук, 185 придается. Ура, 60 штук за 385, и 385, тогда я сегодня понедел цену, потому что я решила, ну, они у нас все равно без рекламы работают. Я решила, 11% моржи поставить без рекламы. Вот, так они 20 были без рекламы, короче. Ну, все равно они пошли заказы. Потому что у нас наши салфетки, они везде в наших полках стоят. Вот тряпки для пол, например. И если мы сейчас зайдем, вот, любую тряпку, то вот они как бы стоят, они везде стоят. За 388 шублей, вот, сегодня 388 поставят. Это 12%, 7% моржи, но без учетов, что мы будем что-то тратить на рекламы. Но опять же, в по\n---\nбез рекламы, короче. Ну, все равно они пошли заказы. Потому что у нас наши салфетки, они везде в наших полках стоят. Вот тряпки для пол, например. И если мы сейчас зайдем, вот, любую тряпку, то вот они как бы стоят, они везде стоят. За 388 шублей, вот, сегодня 388 поставят. Это 12%, 7% моржи, но без учетов, что мы будем что-то тратить на рекламы. Но опять же, в поиске мы не можем появиться, потому что пойдут траты на рекламы, это будет больше 12%. Вот, вот так, посмотрим, сейчас посмотрим. Так, что еще надо сделать? Попугает его темпов, объяснить. Это наша тоже. Да, что бы был сетяр. Животные прибавляют сетяр. Я посадила, когда ты прибавляет, но я подумала, что ты у нас везде, и ка ты у все\n---\nдем, вот, любую тряпку, то вот они как бы стоят, они везде стоят. За 388 шублей, вот, сегодня 388 поставят. Это 12%, 7% моржи, но без учетов, что мы будем что-то тратить на рекламы. Но опять же, в поиске мы не можем появиться, потому что пойдут траты на рекламы, это будет больше 12%. Вот, вот так, посмотрим, сейчас посмотрим. Так, что еще надо сделать? Попугает его темпов, объяснить. Это наша тоже. Да, что бы был сетяр. Животные прибавляют сетяр. Я посадила, когда ты прибавляет, но я подумала, что ты у нас везде, и ка ты у всех, как присыпать, но всех, как у ка и у кого нет. И прибавила? Да. Да. Вот, можно так экспериментировать. Я, кстати, видео научилась делать. Видео научилась делать? Да.\n---\nвисимости от ставки, нас подкидывает. Ставка она подкидывает на каждый ключ по разному и каждый день она подкидывает по разному. Например, сегодня у нас 17 органика, не за тысячу, он нас подкидывает на третье место. Завтра может быть такое, что у нас органика будет десятая, и за 1500 у нас подкинет на тоже третье место, а за тысячу она подкинет на 11. Такое тоже бывает это норма. С ответственно, нужно каждый день отарегулировать, чтобы, во-первых, не переплачивать, потому что, например, если сегодня мы можем за 800 стоит на третьем месте, то на храм мы будем за 1600 стоит на третьем месте. Это дэрер, до рекламных расходов. Соответственно, вот этот момент нужно постоянно, ну, по сути это бибе\n---\nаса нужно на остатке посидеть, чтобы понять, ну реально картину, потому что то что там за 10 минут случится, это все в дичь на самом деле, хотя бы два часа, чтобы она просто яла, два, три часа и посмотреть, вот тут просто надо будет ботов угрейды, да, что например там больше там 1500 за тысячу показал, он не может ставить, потому что там может поставить вот так. Вот, это как раз нужная информация, понял, спасибо. Так, окей, хорошо, ну есть опять же такие товары исключения, например вот эти перчатки, это просто товары исключения, которые за 300 рублей покупают, и вот он именно длун стоит сюда на первом месте, и вы бы нам дают на первое место, все, то есть если он там будет на 5, даже на 3, на\n---\nсть по 5 считать, они, или там первая терапия третья одна позиция, ну крошу, не так что, вторая позиция, вторая позиция, так он будет метить ставку, он не приметит, не попадет в нее, потому что, например, на вторую позицию, в ББ не поставить. Вот. И по поводу тестить, ну хотя бы два часа нужно на остатке посидеть, чтобы понять, ну реально картину, потому что то что там за 10 минут случится, это все в дичь на самом деле, хотя бы два часа, чтобы она просто яла, два, три часа и посмотреть, вот тут просто надо будет ботов угрейды, да, что например там больше там 1500 за тысячу показал, он не может ставить, потому что там может поставить вот так. Вот, это как раз нужная информация, понял, спасибо\n---\nне приметит, не попадет в нее, потому что, например, на вторую позицию, в ББ не поставить. Вот. И по поводу тестить, ну хотя бы два часа нужно на остатке посидеть, чтобы понять, ну реально картину, потому что то что там за 10 минут случится, это все в дичь на самом деле, хотя бы два часа, чтобы она просто яла, два, три часа и посмотреть, вот тут просто надо будет ботов угрейды, да, что например там больше там 1500 за тысячу показал, он не может ставить, потому что там может поставить вот так. Вот, это как раз нужная информация, понял, спасибо. Так, окей, хорошо, ну есть опять же такие товары исключения, например вот эти перчатки, это просто товары исключения, которые за 300 рублей покупают,\n---\nпробуем, это свариться, куда-то вот сюда понитить ставку. То есть и посмотреть, что будет. Начнут оккупаться или нет. Если не начнут оккупаться, то уйти на текущий, там несколько часов, это уключается, пока ситуация не изменится. Он не будет целый день, состоять в топе. Он будет два часа посидит и умрёт. И вот. Дальше, переходим в карточку и тут надо посмотреть. Ну тоже, то же, например, начали дня это смотреть, кто у нас в полках. И если резон нам крутить в полке. Вот, мы видим, что патера у нее цена выше. Это вообще не наши нерелевантные эти. Как бы такая же цена. Это я сегодня понизила просто вам цена, чтобы перебить эту цину. И вот эти два хрюча, как бы они не устраивают. Ну вот. Ну что\n---\nцена, чтобы перебить эту цину. И вот эти два хрюча, как бы они не устраивают. Ну вот. Ну что мы поделаем? Ну тут два варианта, либо пробовать, будут включать полки, будут ли они оккупаться или нет. Либо они включать полки, но мы всегда пробуем. Поэтому включаем полки, там через два часа смотрим, что происходит. Это купаются или не оккупаются, и насколько оккупаются. Вот. Вот так. Вот. В целом, здесь это все тоже опустится до вот этой цены. Мы не можем. И вот. Дальше, дальше, дальше, дальше. А подождите, что я вам про полки говорю. Вот эти полки не считаются. Это просто, это влияет на конверсию в корзинаю заказ. Если они по поиску перешли по полкам. Соответственно, с ней, по сути, мы ничего\n---\nопять же тоже нужно все тестить как как купается каждый ключ есть крючи на котором и должно быть в топ-5 и есть крючи которые там такие средненькие там например они у нас в топ-5 не окупаются но они у нас там окупаются там десятая терапетнадцатая позиция или там если мы возьмем салфетки там для 20 на 30 которые у нас для стекла зеркал они например в топе не окупаются никогда они окупаются там позиции 15 и 20 а топ они просто не вытягивают потому что очень конкретно и нише и там 3000 что ставить ставку за тысячу показал чтобы оказаться в топ-5 у нас не окупается дальше ничего на cpc большое получается соответственно и дальше конверсии тоже не бьется соответственно там выгонить чтобы мы стоял\n---\nак расположили. Ну, уже не обращаю они, мое то, что она там лежит. Как-то не тесно. Просто вот расположение по крупности. Вот 50 на 60 вот так расположили. Хотя, приполагаю, что они вот такие же. Они такие ездят. Ну и наши такие же. Вот. Ух, хорошо. Хорошо, ладно. Вот, например, салфетки, здесь около зеркала. Вот у них нормальная кресть сопродавшина. Но они и ужники. У них цена очень дешевая. Вот, но вот это тоже не расположение тряпок. Ну как вы, блин. Тепку не просматривается. Вот какие-то две трубочки непонятные. Вот, вот это тоже не расположение. Вот, дальше. Это вар должен располагаться на обложке близко. Но близко, блин, я не знаю, как это описать. Но короче, близко, вот близко глазу.\n---\nе самое по сути. Ну, они индивидуально в столе, в основном. Да, вот, ну, то есть мы не можем тут считать. Ну, к цена мы не можем считать, там только один круч, который может давать там 2 заказа в день максимум. Вот, 27 вот эти, не проходим кручку. И так, ну, по любому крючу, там салфетки безборщего и в рулании салфетки безборщего и много раз в эту маму и главный круч. Здесь не ошибаюсь. Уходы 165, 246, а тут 110, 117, еще и размер больше, там 161, размер меньше, 185. Ну, тут карточки здесь. Нет, ну 110 штук, 185 придается. Ура, 60 штук за 385, и 385, тогда я сегодня понедел цену, потому что я решила, ну, они у нас все равно без рекламы работают. Я решила, 11% моржи поставить без рекламы. Вот\n---\nуально в столе, в основном. Да, вот, ну, то есть мы не можем тут считать. Ну, к цена мы не можем считать, там только один круч, который может давать там 2 заказа в день максимум. Вот, 27 вот эти, не проходим кручку. И так, ну, по любому крючу, там салфетки безборщего и в рулании салфетки безборщего и много раз в эту маму и главный круч. Здесь не ошибаюсь. Уходы 165, 246, а тут 110, 117, еще и размер больше, там 161, размер меньше, 185. Ну, тут карточки здесь. Нет, ну 110 штук, 185 придается. Ура, 60 штук за 385, и 385, тогда я сегодня понедел цену, потому что я решила, ну, они у нас все равно без рекламы работают. Я решила, 11% моржи поставить без рекламы. Вот, так они 20 были без рекламы, к\n---\n185 придается. Ура, 60 штук за 385, и 385, тогда я сегодня понедел цену, потому что я решила, ну, они у нас все равно без рекламы работают. Я решила, 11% моржи поставить без рекламы. Вот, так они 20 были без рекламы, короче. Ну, все равно они пошли заказы. Потому что у нас наши салфетки, они везде в наших полках стоят. Вот тряпки для пол, например. И если мы сейчас зайдем, вот, любую тряпку, то вот они как бы стоят, они везде стоят. За 388 шублей, вот, сегодня 388 поставят. Это 12%, 7% моржи, но без учетов, что мы будем что-то тратить на рекламы. Но опять же, в поиске мы не можем появиться, потому что пойдут траты на рекламы, это будет больше 12%. Вот, вот так, посмотрим, сейчас посмотрим.\n---\nнно, ну, по сути это бибер должен работать, ну просто какое-то качественное, потому что те, которые там по стазу предлагают и другие там эти X5 еще какие-то есть, и есть компании, которые это предлагают. У нас получается товарка, а в товарке нужно по основным ключам находиться в топ-5, то есть в топ-5 есть продажи, там топ-10 их уже намного меньше, топ дальше то, что идет там нет продажи. И соответственно, если мы берем бидер, то он может себя в бидере показывать, что он там на каком-то месте нормальном, а по факту мы переходим под к величую, нас на данном нет. Вот. Соответственно, в товарке через всего управление ручное идет, а вот в одежде там красоткий набород, то можно бидером, потому чт\n---\nэто бибер должен работать, ну просто какое-то качественное, потому что те, которые там по стазу предлагают и другие там эти X5 еще какие-то есть, и есть компании, которые это предлагают. У нас получается товарка, а в товарке нужно по основным ключам находиться в топ-5, то есть в топ-5 есть продажи, там топ-10 их уже намного меньше, топ дальше то, что идет там нет продажи. И соответственно, если мы берем бидер, то он может себя в бидере показывать, что он там на каком-то месте нормальном, а по факту мы переходим под к величую, нас на данном нет. Вот. Соответственно, в товарке через всего управление ручное идет, а вот в одежде там красоткий набород, то можно бидером, потому что поменда, то что\n---\nт тут 24 стоимость заказа, но тут уже не коррект не данный, коррект не данный, к сожалению, не получить. Ну вот 24 сепёта, это хорошая показатель. Вот, вот так, потому что он тут очень сильно завершает. Вот так. И, соответственно, так по каждому ключу, то есть нужно находиться в топ-5 по основным ключам. Дальше сетяр должен устраивать. Сипеси должен устраивать. Сетяр может быть маленький, но может beliefsи быть маленький. То есть тут не только на сетяр смотрим, может быть сетяр большой, но CPC тоже очень большой. То есть, может быть там сетяр 20, но conducся на сети Пικ nosaltresruy и поздалены с соблюч prevailна. Но сались 한다 и Чт Bereich. корректных не получить к сожалению вот еще момент е\n---\nпо моему ну и водит как-то вот соответственно эвермы все все все же пользуются эвермы она сюда плагин просто скачиваем и она сюда уже вшивается на бесплатное вот дальше есть крючи опять же тоже нужно все тестить как как купается каждый ключ есть крючи на котором и должно быть в топ-5 и есть крючи которые там такие средненькие там например они у нас в топ-5 не окупаются но они у нас там окупаются там десятая терапетнадцатая позиция или там если мы возьмем салфетки там для 20 на 30 которые у нас для стекла зеркал они например в топе не окупаются никогда они окупаются там позиции 15 и 20 а топ они просто не вытягивают потому что очень конкретно и нише и там 3000 что ставить ставку за тысячу по\n---\nуются эвермы она сюда плагин просто скачиваем и она сюда уже вшивается на бесплатное вот дальше есть крючи опять же тоже нужно все тестить как как купается каждый ключ есть крючи на котором и должно быть в топ-5 и есть крючи которые там такие средненькие там например они у нас в топ-5 не окупаются но они у нас там окупаются там десятая терапетнадцатая позиция или там если мы возьмем салфетки там для 20 на 30 которые у нас для стекла зеркал они например в топе не окупаются никогда они окупаются там позиции 15 и 20 а топ они просто не вытягивают потому что очень конкретно и нише и там 3000 что ставить ставку за тысячу показал чтобы оказаться в топ-5 у нас не окупается дальше ничего на cpc боль\n---\nесли мы возьмем салфетки там для 20 на 30 которые у нас для стекла зеркал они например в топе не окупаются никогда они окупаются там позиции 15 и 20 а топ они просто не вытягивают потому что очень конкретно и нише и там 3000 что ставить ставку за тысячу показал чтобы оказаться в топ-5 у нас не окупается дальше ничего на cpc большое получается соответственно и дальше конверсии тоже не бьется соответственно там выгонить чтобы мы стояли там 15 и 20 и места большинству ключей и только по несколько мы в топ-5 должны стоять вот вот так то есть тут вот этот момент тоже нужно тестить по каждому куришу какой ключ на "
+}

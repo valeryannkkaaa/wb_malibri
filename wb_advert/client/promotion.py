@@ -79,6 +79,100 @@ class PromotionClient:
             json_body={"items": [{"advertId": advert_id, "nmId": nm_id}]},
         )
 
+    def bids_min(
+        self,
+        advert_id: int,
+        nm_id: int,
+        *,
+        payment_type: str = "cpm",
+        placement_types: list[str] | None = None,
+    ) -> HttpResult:
+        return self.http.request(
+            self.base,
+            "POST",
+            "/api/advert/v1/bids/min",
+            json_body={
+                "advert_id": advert_id,
+                "nm_ids": [nm_id],
+                "payment_type": payment_type,
+                "placement_types": placement_types or ["search"],
+            },
+        )
+
+    def normquery_set_bids(
+        self,
+        advert_id: int,
+        nm_id: int,
+        keyword: str,
+        bid_kopecks: int,
+    ) -> HttpResult:
+        """Per-cluster bid for manual search campaigns (type 9)."""
+        return self.http.request(
+            self.base,
+            "POST",
+            "/adv/v0/normquery/bids",
+            json_body={
+                "items": [
+                    {
+                        "advert_id": advert_id,
+                        "nm_id": nm_id,
+                        "norm_query_bids": [
+                            {"norm_query": keyword, "bid": bid_kopecks},
+                        ],
+                    }
+                ]
+            },
+        )
+
+    def normquery_set_minus(
+        self,
+        advert_id: int,
+        nm_id: int,
+        keywords: list[str],
+    ) -> HttpResult:
+        """Exclude normquery clusters from search ads."""
+        return self.http.request(
+            self.base,
+            "POST",
+            "/adv/v0/normquery/set-minus",
+            json_body={
+                "items": [
+                    {
+                        "advert_id": advert_id,
+                        "nm_id": nm_id,
+                        "norm_queries": keywords,
+                    }
+                ]
+            },
+        )
+
+    def patch_auction_bids(
+        self,
+        advert_id: int,
+        nm_id: int,
+        bid_kopecks: int,
+        *,
+        placement: str = "search",
+    ) -> HttpResult:
+        """Campaign nm-level bid (manual bid type). bid in kopecks."""
+        return self.http.request(
+            self.base,
+            "PATCH",
+            "/api/advert/v1/bids",
+            json_body=[
+                {
+                    "advert_id": advert_id,
+                    "nm_bids": [
+                        {
+                            "nm": nm_id,
+                            "bid": bid_kopecks,
+                            "placement": placement,
+                        }
+                    ],
+                }
+            ],
+        )
+
     @staticmethod
     def extract_nm_ids_from_detail(data: Any) -> list[int]:
         ids: list[int] = []

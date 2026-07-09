@@ -15,6 +15,9 @@ wb_advert/
 │   ├── worker.py           # sync algorithm (TZ §5.2)
 │   ├── mappers.py          # API → KeywordMetrics
 │   └── metrics.py          # CTR/CPC расчёт
+├── parser/                 # organic search positions (phase 1)
+│   ├── search.py
+│   └── regions.py
 ├── schemas/                # Pydantic DTO
 ├── db/
 │   └── migrations/
@@ -67,6 +70,17 @@ cd ..
 # Сохранить полные списки ключей (1 кампания за запуск)
 cd wb_advert
 python -m scripts.backfill_keywords --advert-id 33206346
+
+# Цены продажи из WB API → unit_economics.csv (avgPrice за 7 дней)
+python -m scripts.fill_retail_prices
+python -m scripts.fill_retail_prices --dry-run   # только посмотреть
+
+# Phase 1 — daily cycle (sync 1 SKU + optimizer + parse 3 keys)
+.\run_daily_cycle.ps1
+.\run_daily_cycle.ps1 -SkipSync -ParseLimit 5
+
+# Позиции в выдаче (primary keywords)
+python -m scripts.parse_positions --limit 3
 ```
 
 Или через helper-скрипты (из папки `wb_advert`):

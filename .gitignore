@@ -7,3 +7,5 @@ __pycache__/
 venv/
 *.db
 .DS_Store
+data/pilot/logs/
+**/cycle_*.log

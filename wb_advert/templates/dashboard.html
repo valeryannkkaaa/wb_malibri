@@ -7,50 +7,171 @@
   <link rel="stylesheet" href="/static/advert.css">
 </head>
 <body>
+  {% include "_nav.html" %}
   <header class="header">
     <h1>WB Advert — пилот</h1>
-    <p class="muted">Phase 1 read-only · режим: <strong>{{ dash.optimizer_mode }}</strong></p>
+    <p class="muted">Режим: <strong>{{ dash.optimizer_mode }}</strong>
+      {% if dash.apply_settings %}
+      · применение: {% if dash.apply_settings.can_apply %}<span class="pos-ok">auto готов</span>{% else %}<span class="muted">только рекомендации</span>{% endif %}
+      {% endif %}
+      · авто-цикл каждые {{ dash.sync_interval_min or 15 }} мин · клик по заголовку — сортировка</p>
   </header>
+
+  <section class="status-bar">
+    {% if cycle %}
+    <span class="badge cycle-{{ cycle.status }}" title="{{ cycle.log_path or '' }}">Цикл: {{ cycle.status|cycle_ru }}{% if cycle.age_minutes is not none %} · {{ cycle.age_minutes|round(0)|int }} мин{% endif %}</span>
+    {% endif %}
+    <span class="badge">Синхронизация: {% if dash.synced_at %}{{ dash.synced_at|dt_msk }}{% else %}—{% endif %}</span>
+    <label class="badge region-picker" for="parser-region-select">
+      Парсер:
+      <select id="parser-region-select" class="region-select" title="Регион выдачи для позиций">
+        {% for opt in dash.parser_region_options %}
+        <option value="{{ opt.key }}"{% if opt.key == dash.parser_region_key %} selected{% endif %}>{{ opt.label }}</option>
+        {% endfor %}
+      </select>
+      <span id="parser-dest-badge" class="muted">({{ dash.parser_dest }})</span>
+    </label>
+    {% if dash.positions_by_region %}
+    <span class="badge muted" title="Найдено позиций по регионам">
+      {% for opt in dash.parser_region_options %}{{ opt.label }} {{ dash.positions_by_region.get(opt.key, 0) }}/{{ dash.product_count }}{% if not loop.last %} · {% endif %}{% endfor %}
+    </span>
+    {% endif %}
+    <span id="parser-region-status" class="region-status muted"></span>
+    <span class="badge">Позиции ({{ dash.parser_region_key|default('') }}): {{ dash.positions_parsed }}/{{ dash.product_count }}</span>
+    <span class="badge">Остатки: {% if dash.stocks_synced_at %}{{ dash.stocks_synced_at|dt_msk }}{% else %}—{% endif %}</span>
+    {% if dash.snapshots_meta %}
+    <span class="badge" title="Срезы после цикла: позиция + CTR/CPC + ставка + рекомендация">
+      Срезы: {% if dash.snapshots_meta.last_recorded_at %}{{ dash.snapshots_meta.last_recorded_at|dt_msk }}{% else %}—{% endif %}
+      {% if dash.snapshots_meta.cycles_today %}· {{ dash.snapshots_meta.cycles_today }} цикл{% if dash.snapshots_meta.cycles_today > 1 and dash.snapshots_meta.cycles_today < 5 %}а{% elif dash.snapshots_meta.cycles_today >= 5 %}ов{% endif %}{% endif %}
+    </span>
+    {% endif %}
+    {% if dash.alerts_summary and dash.alerts_summary.total %}
+    <span class="badge badge-alert{% if dash.alerts_summary.error_count %} badge-alert-error{% endif %}" title="CPC>max, остаток 0, парсер 429">
+      Алерты: {{ dash.alerts_summary.total }}{% if dash.alerts_summary.error_count %} ({{ dash.alerts_summary.error_count }} крит.){% endif %}
+    </span>
+    {% endif %}
+  </section>
 
   <section class="cards">
     <div class="card"><span class="label">SKU</span><span class="value">{{ dash.product_count }}</span></div>
-    <div class="card"><span class="label">Keywords</span><span class="value">{{ dash.total_keywords }}</span></div>
-    <div class="card"><span class="label">Orders 7d</span><span class="value">{{ dash.total_orders_7d }}</span></div>
-    <div class="card"><span class="label">Keywords saved</span><span class="value">{{ dash.keywords_saved }}/{{ dash.product_count }}</span></div>
-    <div class="card"><span class="label">Unit economics</span><span class="value">{{ dash.with_economics }}/{{ dash.product_count }}</span></div>
+    <div class="card"><span class="label">Ключей</span><span class="value">{{ dash.total_keywords }}</span></div>
+    <div class="card"><span class="label">Заказы 7д</span><span class="value">{{ dash.total_orders_7d }}</span></div>
+    <div class="card"><span class="label">Юнит-экономика</span><span class="value">{{ dash.with_economics }}/{{ dash.product_count }}</span></div>
+    <div class="card"><span class="label">Ключи в базе</span><span class="value">{{ dash.keywords_saved }}/{{ dash.product_count }}</span></div>
+    <div class="card"><span class="label">Рекомендаций</span><span class="value">{{ dash.recommendations|length }}</span></div>
+    <div class="card{% if dash.alerts_summary and dash.alerts_summary.total %} card-alert{% endif %}">
+      <span class="label">Алерты</span>
+      <span class="value{% if dash.alerts_summary and dash.alerts_summary.error_count %} warn{% endif %}">{{ dash.alerts_summary.total if dash.alerts_summary else 0 }}</span>
+    </div>
   </section>
 
-  {% if dash.synced_at %}
-  <p class="muted">Последний sync: {{ dash.synced_at }}</p>
-  {% endif %}
-
-  <table class="table">
+  {% if dash.alerts %}
+  <h2>Алерты</h2>
+  <table class="table compact sortable alerts-table">
     <thead>
       <tr>
-        <th>Кампания</th>
-        <th>nm_id</th>
-        <th>Primary keyword</th>
-        <th>Keywords</th>
-        <th>Orders 7d</th>
-        <th>CTR %</th>
-        <th>Юнитка</th>
+        <th data-sort="string">Тип</th>
+        <th data-sort="number">Кампания</th>
+        <th data-sort="string">Ключ</th>
+        <th data-sort="string">Сообщение</th>
+        <th data-sort="date">Обнаружено</th>
       </tr>
     </thead>
     <tbody>
-      {% for p in dash.products %}
-      <tr>
-        <td><a href="/advert/products/{{ p.advert_id }}">{{ p.advert_id }}</a></td>
-        <td>{{ p.nm_id }}</td>
-        <td>{{ p.primary_keyword or '—' }}</td>
-        <td>{{ p.keyword_count }}{% if not p.keywords_saved %}*{% endif %}</td>
-        <td>{{ p.top_stats.orders if p.top_stats else '—' }}</td>
-        <td>{{ p.top_stats.ctr if p.top_stats else '—' }}</td>
-        <td>{% if p.has_economics %}OK{% else %}<span class="warn">fill CSV</span>{% endif %}</td>
+      {% for a in dash.alerts %}
+      <tr class="alert-row alert-{{ a.severity }}">
+        <td data-sort-value="{{ a.code }}"><span class="alert-code alert-code-{{ a.code }}">{{ a.code|alert_ru }}</span></td>
+        <td data-sort-value="{{ a.advert_id or 0 }}">{% if a.advert_id %}<a href="/advert/products/{{ a.advert_id }}">{{ a.advert_id }}</a>{% else %}<span class="muted">система</span>{% endif %}</td>
+        <td>{{ a.keyword or '—' }}</td>
+        <td title="{{ a.detail or '' }}">{{ a.message }}</td>
+        <td data-sort-value="{{ a.detected_at or '' }}">{% if a.detected_at %}{{ a.detected_at|dt_msk }}{% else %}—{% endif %}</td>
       </tr>
       {% endfor %}
     </tbody>
   </table>
-  <p class="muted">* count из отчёта; детальный список — после backfill keywords JSON</p>
-  <p class="muted">Optimizer: <code>python -m scripts.run_optimizer</code> · API <code>POST /api/advert/optimize-all</code></p>
+  {% endif %}
+
+  {% if dash.recommendations %}
+  <h2>Рекомендации</h2>
+  <table class="table compact sortable">
+    <thead>
+      <tr>
+        <th data-sort="number">Кампания</th>
+        <th data-sort="string">Ключевое слово</th>
+        <th data-sort="string">Действие</th>
+        <th data-sort="string">Причина</th>
+        <th data-sort="date">Обновлено</th>
+      </tr>
+    </thead>
+    <tbody>
+      {% for d in dash.recommendations %}
+      <tr{% if d.action not in ('keep', 'skip') %} class="row-actionable"{% endif %}>
+        <td data-sort-value="{{ d.advert_id }}"><a href="/advert/products/{{ d.advert_id }}">{{ d.advert_id }}</a></td>
+        <td>{{ d.keyword }}</td>
+        <td data-sort-value="{{ d.action }}"><span class="action action-{{ d.action }}">{{ d.action|action_ru }}</span></td>
+        <td>{{ d.reason_text }}</td>
+        <td data-sort-value="{{ d.decided_at or '' }}">{{ d.decided_at|dt_msk }}</td>
+      </tr>
+      {% endfor %}
+    </tbody>
+  </table>
+  {% endif %}
+
+  <h2>Кампании</h2>
+  <table class="table sortable" data-default-sort="orders:desc">
+    <thead>
+      <tr>
+        <th data-sort="number" data-col="advert">Кампания</th>
+        <th data-sort="number" data-col="nm" title="номенклатура WB">Артикул</th>
+        <th data-sort="string" data-col="primary">Главный ключ</th>
+        <th data-sort="string" data-col="grade">Цель</th>
+        <th data-sort="number" data-col="orders">Заказы</th>
+        <th data-sort="number" data-col="ctr" title="кликабельность">CTR, %</th>
+        <th data-sort="number" data-col="cpc" title="цена клика">CPC, ₽</th>
+        <th data-sort="number" data-col="maxcpc" title="лимит по юнит-экономике">Макс. CPC</th>
+        <th data-sort="number" data-col="pos">Позиция</th>
+        <th data-sort="string" data-col="rec">Рекомендация</th>
+        <th data-sort="number" data-col="stock">Остаток</th>
+      </tr>
+    </thead>
+    <tbody>
+      {% for p in dash.products %}
+      <tr{% if p.alert_severity %} class="row-alert row-alert-{{ p.alert_severity }}"{% endif %}>
+        <td data-sort-value="{{ p.advert_id }}"><a href="/advert/products/{{ p.advert_id }}">{{ p.advert_id }}</a></td>
+        <td data-sort-value="{{ p.nm_id }}">{{ p.nm_id }}</td>
+        <td class="kw">{{ p.primary_keyword or '—' }}</td>
+        <td data-sort-value="{{ p.target_grade }}"><span class="grade">{{ p.target_grade|grade_ru }}</span></td>
+        <td data-sort-value="{{ p.top_stats.orders if p.top_stats else '' }}">{{ p.top_stats.orders if p.top_stats else '—' }}</td>
+        <td data-sort-value="{{ p.top_stats.ctr if p.top_stats else '' }}">{{ p.top_stats.ctr if p.top_stats else '—' }}</td>
+        <td data-sort-value="{{ p.primary_cpc_rub or '' }}">{% if p.primary_cpc_rub %}{% if p.cpc_over_limit %}<span class="warn">{{ p.primary_cpc_rub }}</span>{% else %}{{ p.primary_cpc_rub }}{% endif %}{% else %}—{% endif %}</td>
+        <td data-sort-value="{{ p.max_cpc_rub or '' }}">{% if p.max_cpc_rub %}{{ p.max_cpc_rub }}{% else %}—{% endif %}</td>
+        <td data-sort-value="{{ p.parsed_position or '' }}">
+          {% if p.parsed_position %}
+            <span class="pos-ok">{{ p.parsed_position }}</span>
+          {% elif p.position_error %}
+            <span class="warn" title="{{ p.position_error }}">—</span>
+          {% else %}—{% endif %}
+        </td>
+        <td data-sort-value="{{ p.recommendation.action if p.recommendation else '' }}">
+          {% if p.recommendation %}
+            <span class="action action-{{ p.recommendation.action }}" title="{{ p.recommendation.reason_text }}">{{ p.recommendation.summary }}</span>
+          {% else %}—{% endif %}
+        </td>
+        <td data-sort-value="{{ p.stock_quantity }}">{% if p.stock_quantity == 0 %}<span class="warn">0</span>{% else %}{{ p.stock_quantity }}{% endif %}{% if p.stock_in_way %} <span class="muted">(+{{ p.stock_in_way }} в пути)</span>{% endif %}</td>
+      </tr>
+      {% endfor %}
+    </tbody>
+  </table>
+
+  <p class="muted">Данные обновляются планировщиком · <a href="/advert/decisions">Журнал решений</a></p>
+  {% if cycle and cycle.tail %}
+  <details class="log-tail">
+    <summary>Последние строки лога цикла</summary>
+    <pre>{% for line in cycle.tail %}{{ line }}
+{% endfor %}</pre>
+  </details>
+  {% endif %}
+  <script src="/static/table-sort.js"></script>
+  <script src="/static/region-picker.js"></script>
 </body>
 </html>

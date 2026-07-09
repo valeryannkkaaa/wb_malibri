@@ -23,6 +23,21 @@ def calc_max_cpc_kopecks(
     return int(max_spend_per_order / expected_cr * 100)
 
 
+def calc_max_cpc_from_margin(
+    retail_price_rub: float,
+    margin_pct: float,
+    max_drr_pct: float,
+    *,
+    expected_cr: float = 0.05,
+) -> int | None:
+    """CPC cap when only retail + margin_pct known (manager workflow from call 12.06)."""
+    if retail_price_rub <= 0 or margin_pct <= 0 or expected_cr <= 0:
+        return None
+    margin_pool = retail_price_rub * (margin_pct / 100)
+    max_spend_per_order = margin_pool * (max_drr_pct / 100)
+    return int(max_spend_per_order / expected_cr * 100)
+
+
 def suggest_keyword_action(
     kw: dict,
     *,

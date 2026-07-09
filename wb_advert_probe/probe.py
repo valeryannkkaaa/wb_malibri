@@ -243,9 +243,37 @@ class WbAdvertProbe:
             return None
 
     def _extract_first_campaign(self, adverts_data: Any) -> dict | None:
-        """Parse GET /api/advert/v2/adverts list response — pick active type 9 campaign."""
+        """Parse adverts list — v2 flat format (`id`) or legacy promotion/count blocks."""
         if not isinstance(adverts_data, dict):
             return None
+
+        flat = adverts_data.get("adverts") or []
+        if flat and isinstance(flat[0], dict) and (
+            "id" in flat[0] or "nm_settings" in flat[0] or "nmSettings" in flat[0]
+        ):
+            candidates: list[tuple[int, str, int, list[int]]] = []
+            for block in flat:
+                if not isinstance(block, dict):
+                    continue
+                advert_id = block.get("advertId") or block.get("advert_id") or block.get("id")
+                if not advert_id:
+                    continue
+                status = int(block.get("status") or 0)
+                updated = (block.get("timestamps") or {}).get("updated") or ""
+                nm_ids: list[int] = []
+                for nm in block.get("nm_settings") or block.get("nmSettings") or []:
+                    if isinstance(nm, dict):
+                        nid = nm.get("nm_id") or nm.get("nmId") or nm.get("nm")
+                        if nid:
+                            nm_ids.append(int(nid))
+                candidates.append((0 if status == 9 else 1, updated, int(advert_id), nm_ids))
+            if candidates:
+                candidates.sort(key=lambda row: (row[0], row[1]), reverse=True)
+                row = candidates[0]
+                result: dict[str, Any] = {"advert_id": row[2], "type": 9}
+                if row[3]:
+                    result["nm_ids"] = row[3]
+                return result
 
         candidates: list[tuple[int, str, int]] = []
         for block in adverts_data.get("adverts") or []:
@@ -312,10 +340,11 @@ class WbAdvertProbe:
         for block in blocks:
             if not isinstance(block, dict):
                 continue
-            if block.get("advertId") in (advert_id, str(advert_id)):
+            block_id = block.get("advertId") or block.get("id")
+            if block_id in (advert_id, str(advert_id)):
                 first = block
                 break
-            if block.get("nmSettings") or block.get("nms"):
+            if block.get("nmSettings") or block.get("nm_settings") or block.get("nms"):
                 first = block
                 break
         if first is None and blocks and isinstance(blocks[0], dict):
@@ -325,7 +354,13 @@ class WbAdvertProbe:
             return None
 
         nm_ids: list[int] = []
-        for nm in first.get("nmSettings") or first.get("nms") or first.get("autoParams", {}).get("nms") or []:
+        for nm in (
+            first.get("nmSettings")
+            or first.get("nm_settings")
+            or first.get("nms")
+            or first.get("autoParams", {}).get("nms")
+            or []
+        ):
             if isinstance(nm, dict):
                 nid = nm.get("nm") or nm.get("nm_id") or nm.get("nmId")
                 if nid:
@@ -495,6 +530,8 @@ class WbAdvertProbe:
                     camp = self._extract_first_campaign(data)
                     if camp:
                         self._resolve_campaign_context(camp["advert_id"])
+                        if camp.get("nm_ids"):
+                            self._context["nm_ids"] = camp["nm_ids"]
                     elif data.get("all"):
                         self._context["adverts_parse_note"] = (
                             f"list has {data.get('all')} campaigns but no advert_list in response; use --advert-id"

@@ -7,21 +7,57 @@
   <link rel="stylesheet" href="/static/advert.css">
 </head>
 <body>
+  {% include "_nav.html" %}
   <header class="header">
-    <p><a href="/">&larr; Дашборд</a></p>
     <h1>Кампания {{ p.advert_id }}</h1>
-    <p class="muted">nm_id {{ p.nm_id }} · {{ p.schedule }} · target {{ p.target_grade }}</p>
+    <p class="muted">Артикул {{ p.nm_id }} · {{ p.schedule }} · цель {{ p.target_grade|grade_ru }}</p>
   </header>
 
   <section class="cards">
-    <div class="card"><span class="label">Primary</span><span class="value small">{{ p.primary_keyword or '—' }}</span></div>
-    <div class="card"><span class="label">Keywords</span><span class="value">{{ p.keyword_count }}</span></div>
+    <div class="card"><span class="label">Главный ключ</span><span class="value small">{{ p.primary_keyword or '—' }}</span></div>
     {% if p.top_stats %}
-    <div class="card"><span class="label">Shows 7d</span><span class="value">{{ p.top_stats.shows }}</span></div>
-    <div class="card"><span class="label">Orders 7d</span><span class="value">{{ p.top_stats.orders }}</span></div>
-    <div class="card"><span class="label">CTR %</span><span class="value">{{ p.top_stats.ctr }}</span></div>
+    <div class="card"><span class="label">Показы 7д</span><span class="value">{{ p.top_stats.shows }}</span></div>
+    <div class="card"><span class="label">Заказы 7д</span><span class="value">{{ p.top_stats.orders }}</span></div>
+    <div class="card"><span class="label">CTR, %</span><span class="value">{{ p.top_stats.ctr }}</span></div>
     {% endif %}
+    <div class="card"><span class="label">CPC primary</span><span class="value">{% if p.primary_cpc_rub %}{{ p.primary_cpc_rub }} ₽{% else %}—{% endif %}</span></div>
+    <div class="card"><span class="label">Макс. CPC</span><span class="value">{% if p.max_cpc_rub %}{{ p.max_cpc_rub }} ₽{% else %}—{% endif %}</span></div>
+    <div class="card"><span class="label">Позиция</span><span class="value">{% if p.parsed_position %}{{ p.parsed_position }}{% elif p.position_error %}<span class="warn" title="{{ p.position_error }}">—</span>{% else %}—{% endif %}</span></div>
+    <div class="card"><span class="label">Остаток</span><span class="value">{{ p.stock_quantity }}</span></div>
   </section>
+
+  {% if p.margin_pct or p.retail_price_rub %}
+  <p class="muted">Цена {{ p.retail_price_rub or '—' }} ₽ · маржа {{ p.margin_pct or '—' }}% · DRR макс. {{ p.max_drr_pct }}%</p>
+  {% endif %}
+
+  {% if pos_chart_json and ctr_chart_json %}
+  <section class="charts">
+    <div class="chart-box">
+      <h3>Позиция в выдаче</h3>
+      <canvas id="posChart" height="120"></canvas>
+    </div>
+    <div class="chart-box">
+      <h3>CTR главного ключа</h3>
+      <canvas id="ctrChart" height="120"></canvas>
+    </div>
+  </section>
+  {% endif %}
+
+  {% if position_history %}
+  <h2>История парсинга</h2>
+  <table class="table compact">
+    <thead><tr><th>Время (MSK)</th><th>Позиция</th><th>Статус</th></tr></thead>
+    <tbody>
+      {% for h in position_history %}
+      <tr>
+        <td>{{ h.parsed_at|dt_msk }}</td>
+        <td>{% if h.found %}{{ h.position }}{% else %}—{% endif %}</td>
+        <td>{% if h.found %}OK{% else %}<span class="muted">{{ h.error or '—' }}</span>{% endif %}</td>
+      </tr>
+      {% endfor %}
+    </tbody>
+  </table>
+  {% endif %}
 
   {% if opt.alerts %}
   <ul class="alerts">
@@ -30,59 +66,109 @@
   {% endif %}
 
   {% if opt.suggestions %}
-  <h2>Рекомендации optimizer ({{ opt.mode }}) — {{ opt.suggestions|length }}</h2>
-  <table class="table">
+  <h2>Рекомендации ({{ opt.mode }})</h2>
+  <table class="table compact">
     <thead>
-      <tr>
-        <th>Keyword</th>
-        <th>Action</th>
-        <th>Reason</th>
-      </tr>
+      <tr><th>Ключевое слово</th><th>Действие</th><th>Причина</th></tr>
     </thead>
     <tbody>
       {% for s in opt.suggestions %}
+      {% if s.action != 'skip' %}
       <tr>
         <td>{{ s.keyword }}</td>
-        <td><span class="action action-{{ s.action }}">{{ s.action }}</span></td>
+        <td><span class="action action-{{ s.action }}">{{ s.action|action_ru }}</span></td>
         <td>{{ s.reason_text }}</td>
       </tr>
+      {% endif %}
       {% endfor %}
     </tbody>
   </table>
-  {% elif p.keywords %}
-  <p class="muted">Optimizer: все ключи в норме или нет срабатываний правил.</p>
   {% endif %}
 
   {% if p.keywords %}
   <h2>Ключевые слова ({{ p.keywords|length }})</h2>
-  <table class="table">
+  <table class="table sortable" data-default-sort="shows:desc">
     <thead>
       <tr>
-        <th>Keyword</th>
-        <th>Shows</th>
-        <th>Clicks</th>
-        <th>CTR %</th>
-        <th>CPC ₽</th>
-        <th>Orders</th>
-        <th>Status</th>
+        <th data-sort="string" data-col="kw">Ключевое слово</th>
+        <th data-sort="number" data-col="shows">Показы</th>
+        <th data-sort="number" data-col="clicks">Клики</th>
+        <th data-sort="number" data-col="ctr">CTR, %</th>
+        <th data-sort="number" data-col="cpc">CPC, ₽</th>
+        <th data-sort="number" data-col="orders">Заказы</th>
+        <th data-sort="string" data-col="status">Статус</th>
       </tr>
     </thead>
     <tbody>
-      {% for k in p.keywords %}
-      <tr>
-        <td>{{ k.keyword }}</td>
-        <td>{{ k.shows }}</td>
-        <td>{{ k.clicks }}</td>
-        <td>{{ k.ctr_calculated or '—' }}</td>
-        <td>{% if k.cpc_calculated_kopecks %}{{ (k.cpc_calculated_kopecks / 100)|round(2) }}{% else %}—{% endif %}</td>
-        <td>{{ k.orders }}</td>
-        <td>{{ k.status }}</td>
+      {% for k in keywords_sorted %}
+      <tr{% if k.is_primary %} class="row-primary"{% endif %}>
+        <td data-sort-value="{% if k.is_primary %}0{% else %}1{% endif %}{{ k.keyword }}">{% if k.is_primary %}★ {% endif %}{{ k.keyword }}</td>
+        <td data-sort-value="{{ k.shows }}">{{ k.shows }}</td>
+        <td data-sort-value="{{ k.clicks }}">{{ k.clicks }}</td>
+        <td data-sort-value="{{ k.ctr_calculated or '' }}">{{ k.ctr_calculated or '—' }}</td>
+        <td data-sort-value="{{ k.cpc_calculated_kopecks or '' }}">{% if k.cpc_calculated_kopecks %}{{ (k.cpc_calculated_kopecks / 100)|round(2) }}{% else %}—{% endif %}</td>
+        <td data-sort-value="{{ k.orders }}">{{ k.orders }}</td>
+        <td data-sort-value="{{ k.status }}">{{ k.status|status_ru }}</td>
       </tr>
       {% endfor %}
     </tbody>
   </table>
   {% else %}
-  <p class="warn">Детальный список ключей не сохранён. Запустите: <code>python -m scripts.backfill_keywords --advert-id {{ p.advert_id }}</code></p>
+  <p class="warn">Детальный список ключей не сохранён. <code>python -m scripts.backfill_keywords --advert-id {{ p.advert_id }}</code></p>
   {% endif %}
+
+  {% if pos_chart_json and ctr_chart_json %}
+  <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.1/dist/chart.umd.min.js"></script>
+  <script>
+    const posData = {{ pos_chart_json | safe }};
+    const ctrData = {{ ctr_chart_json | safe }};
+
+    if (posData.values.length) {
+      new Chart(document.getElementById('posChart'), {
+        type: 'line',
+        data: {
+          labels: posData.labels,
+          datasets: [{
+            label: 'Позиция',
+            data: posData.values,
+            borderColor: '#2563eb',
+            backgroundColor: 'rgba(37,99,235,0.1)',
+            tension: 0.2,
+            fill: true,
+          }],
+        },
+        options: {
+          responsive: true,
+          scales: {
+            y: { reverse: true, title: { display: true, text: 'меньше = лучше' } },
+          },
+        },
+      });
+    } else {
+      document.getElementById('posChart').closest('.chart-box').innerHTML += '<p class="muted">Нет успешных парсингов</p>';
+    }
+
+    if (ctrData.values.length) {
+      new Chart(document.getElementById('ctrChart'), {
+        type: 'line',
+        data: {
+          labels: ctrData.labels,
+          datasets: [{
+            label: 'CTR, %',
+            data: ctrData.values,
+            borderColor: '#16a34a',
+            backgroundColor: 'rgba(22,163,74,0.1)',
+            tension: 0.2,
+            fill: true,
+          }],
+        },
+        options: { responsive: true },
+      });
+    } else {
+      document.getElementById('ctrChart').closest('.chart-box').innerHTML += '<p class="muted">Накопится после нескольких циклов</p>';
+    }
+  </script>
+  {% endif %}
+  <script src="/static/table-sort.js"></script>
 </body>
 </html>

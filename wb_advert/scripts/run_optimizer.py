@@ -13,12 +13,15 @@ sys.path.insert(0, str(ROOT.parent))
 
 from wb_advert.optimizer.engine import optimize_all, optimize_product  # noqa: E402
 from wb_advert.storage.decisions_store import append_decisions  # noqa: E402
+from wb_advert.executor.guards import get_apply_settings  # noqa: E402
 
 
 def main() -> int:
-    parser = argparse.ArgumentParser(description="Suggest-only optimizer (no WB writes)")
+    parser = argparse.ArgumentParser(description="Optimizer for pilot campaigns")
     parser.add_argument("--advert-id", type=int, action="append")
     parser.add_argument("--no-save", action="store_true")
+    parser.add_argument("--apply", action="store_true", help="Apply actionable suggestions to WB")
+    parser.add_argument("--dry-run", action="store_true", help="Simulate apply without WB writes")
     args = parser.parse_args()
 
     if args.advert_id:
@@ -43,6 +46,26 @@ def main() -> int:
 
     total = sum(len(r.suggestions) for r in results)
     print(f"\nTotal suggestions: {total}")
+
+    apply_settings = get_apply_settings()
+    should_apply = args.apply or (
+        apply_settings["optimizer_mode"] == "auto" and apply_settings["can_apply"]
+    )
+    if should_apply:
+        from wb_advert.executor.apply import apply_optimizer_results
+
+        batch = apply_optimizer_results(results, dry_run=args.dry_run)
+        if batch.items:
+            print(f"\nApply: {batch.applied_count} ok, {batch.failed_count} fail, dry_run={batch.dry_run}")
+        elif batch.blocked_reasons and not args.dry_run:
+            print("\nApply skipped:")
+            for r in batch.blocked_reasons:
+                print(f"  - {r}")
+    elif apply_settings["optimizer_mode"] == "auto" and apply_settings["blocked_reasons"]:
+        print("\nApply disabled:")
+        for r in apply_settings["blocked_reasons"]:
+            print(f"  - {r}")
+
     return 0
 
 

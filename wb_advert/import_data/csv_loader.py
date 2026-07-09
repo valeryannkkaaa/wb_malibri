@@ -139,3 +139,35 @@ def update_primary_keywords(data_dir: Path, nm_to_keyword: dict[str, str]) -> li
                 writer.writerows(rows)
             updated.append("keywords.csv")
     return updated
+
+
+def update_unit_economics_retail(
+    csv_path: Path,
+    nm_to_price: dict[str, float],
+    *,
+    overwrite: bool = False,
+) -> tuple[int, int]:
+    """Set retail_price_rub in unit_economics.csv from nm_id -> price mapping."""
+    with csv_path.open(encoding="utf-8-sig", newline="") as f:
+        reader = csv.DictReader(f)
+        fieldnames = reader.fieldnames or []
+        rows = list(reader)
+
+    updated = 0
+    skipped = 0
+    for row in rows:
+        nm = (row.get("nm_id") or "").strip()
+        if nm not in nm_to_price:
+            continue
+        if row.get("retail_price_rub") and not overwrite:
+            skipped += 1
+            continue
+        price = nm_to_price[nm]
+        row["retail_price_rub"] = str(int(price) if price == int(price) else round(price, 2))
+        updated += 1
+
+    with csv_path.open("w", encoding="utf-8-sig", newline="") as f:
+        writer = csv.DictWriter(f, fieldnames=fieldnames)
+        writer.writeheader()
+        writer.writerows(rows)
+    return updated, skipped

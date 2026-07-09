@@ -11,11 +11,19 @@ from fastapi import APIRouter, HTTPException
 
 from wb_advert.config import require_token
 from wb_advert.optimizer.engine import optimize_all, optimize_product
-from wb_advert.schemas.api import DashboardResponse, ProductDetailResponse, ProductSummary
+from wb_advert.schemas.api import (
+    DashboardResponse,
+    ParserRegionUpdate,
+    ProductDetailResponse,
+    ProductSummary,
+)
 from wb_advert.schemas.optimizer import OptimizeResult
 from wb_advert.schemas.sync import SyncProfileResult
-from wb_advert.storage.decisions_store import append_decisions, load_recent_decisions
+from wb_advert.storage.cycle_health import load_cycle_health
+from wb_advert.storage.decisions_store import append_decisions, load_decisions_audit, load_recent_decisions
 from wb_advert.storage.keywords_store import save_keywords
+from wb_advert.parser.regions import PARSER_REGION_OPTIONS, normalize_region_key
+from wb_advert.storage.config_store import get_parser_settings, set_parser_region
 from wb_advert.storage.pilot_store import build_dashboard, get_product_detail, pilot_data_dir
 from wb_advert.sync.worker import SyncWorker
 
@@ -71,6 +79,32 @@ def run_optimize(advert_id: int, save: bool = True):
 @router.get("/decisions")
 def list_decisions(advert_id: int | None = None, limit: int = 50):
     return load_recent_decisions(advert_id, limit)
+
+
+@router.get("/decisions/audit")
+def list_decisions_audit(limit: int = 200):
+    return load_decisions_audit(limit=limit)
+
+
+@router.get("/cycle-health")
+def cycle_health():
+    return load_cycle_health()
+
+
+
+@router.get("/settings/parser-region")
+def get_parser_region_settings():
+    return get_parser_settings()
+
+
+@router.put("/settings/parser-region")
+def update_parser_region(body: ParserRegionUpdate):
+    try:
+        return set_parser_region(body.region)
+    except ValueError as e:
+        raise HTTPException(400, str(e)) from e
+    except FileNotFoundError as e:
+        raise HTTPException(404, str(e)) from e
 
 
 @router.post("/optimize-all")

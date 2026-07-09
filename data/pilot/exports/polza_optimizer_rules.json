@@ -1,0 +1,169 @@
+{
+  "generated_at": "2023-10-07T12:00:00Z",
+  "confidence": "high",
+  "sku_profiles": [
+    {
+      "nm_id": "624468743",
+      "advert_id": 31275686,
+      "primary_keyword": "перчатки для уборки",
+      "margin_pct": 11,
+      "max_drr_pct": 15.0,
+      "target_grade": "top_1_3",
+      "notes": "status 9 active 2026-07-01",
+      "evidence": "11% маржи без рекламы, как указано в транскрипте."
+    },
+    {
+      "nm_id": "629004626",
+      "advert_id": 31314341,
+      "primary_keyword": "тряпка для стекол без разводов",
+      "margin_pct": 12,
+      "max_drr_pct": 15.0,
+      "target_grade": "top_1_3",
+      "notes": "status 9 active 2026-07-01",
+      "evidence": "12% маржи без рекламы, как указано в транскрипте."
+    },
+    {
+      "nm_id": "754427875",
+      "advert_id": 33206165,
+      "primary_keyword": "перчатки резиновые хозяйственные",
+      "margin_pct": 11,
+      "max_drr_pct": 15.0,
+      "target_grade": "top_1_3",
+      "notes": "status 9 active 2026-07-01",
+      "evidence": "11% маржи без рекламы, как указано в транскрипте."
+    },
+    {
+      "nm_id": "754549033",
+      "advert_id": 33206346,
+      "primary_keyword": "перчатки для уборки",
+      "margin_pct": 11,
+      "max_drr_pct": 15.0,
+      "target_grade": "top_1_3",
+      "notes": "status 9 active; nm_id confirmed via get_advert",
+      "evidence": "11% маржи без рекламы, как указано в транскрипте."
+    },
+    {
+      "nm_id": "754606396",
+      "advert_id": 35098216,
+      "primary_keyword": "мочалка варе��ка для тела",
+      "margin_pct": 11,
+      "max_drr_pct": 15.0,
+      "target_grade": "top_1_3",
+      "notes": "status 9 active 2026-06-24",
+      "evidence": "11% маржи без рекламы, как указано в транскрипте."
+    },
+    {
+      "nm_id": "866360474",
+      "advert_id": 35110541,
+      "primary_keyword": "пенящиеся салфетки для уборки",
+      "margin_pct": 11,
+      "max_drr_pct": 15.0,
+      "target_grade": "top_1_3",
+      "notes": "status 9 active 2026-07-03; 60 keywords synced",
+      "evidence": "11% маржи без рекламы, как указано в транскрипте."
+    },
+    {
+      "nm_id": "929900180",
+      "advert_id": 35704170,
+      "primary_keyword": "спонж для умывани��",
+      "margin_pct": 11,
+      "max_drr_pct": 15.0,
+      "target_grade": "top_1_3",
+      "notes": "status 9 active 2026-07-03",
+      "evidence": "11% маржи без рекламы, как указано в транскрипте."
+    },
+    {
+      "nm_id": "869367544",
+      "advert_id": 36713559,
+      "primary_keyword": "салфетки из микрофибры 30х30",
+      "margin_pct": 11,
+      "max_drr_pct": 15.0,
+      "target_grade": "pos_10_20",
+      "notes": "status 9 active 2026-07-03",
+      "evidence": "11% маржи без рекламы, как указано в транскрипте."
+    },
+    {
+      "nm_id": "1001645746",
+      "advert_id": 37328842,
+      "primary_keyword": "губка для уборки",
+      "margin_pct": 11,
+      "max_drr_pct": 15.0,
+      "target_grade": "top_1_3",
+      "notes": "status 9 active 2026-07-03",
+      "evidence": "11% маржи без рекламы, как указано в транскрипте."
+    },
+    {
+      "nm_id": "1085061548",
+      "advert_id": 37636194,
+      "primary_keyword": "салфетки для кухни",
+      "margin_pct": 11,
+      "max_drr_pct": 15.0,
+      "target_grade": "pos_10_20",
+      "notes": "status 9 active 2026-07-03",
+      "evidence": "11% маржи без рекламы, как указано в транскрипте."
+    }
+  ],
+  "benchmarks": {
+    "primary_ctr_pct_min": 4.7,
+    "primary_cpc_rub_max": 17.49,
+    "cpm_cap_rub_per_1000": 1500,
+    "bid_test_hours_min": 2,
+    "min_shows_for_decision": 100
+  },
+  "optimizer_rules": [
+    {
+      "code": "target_position",
+      "description": "Основные ключи — top-5 (top_1_3); часть ключей окупается на 10–20 позиции",
+      "priority": 1
+    },
+    {
+      "code": "metrics_trust",
+      "description": "Ориентир только CTR и CPC из WB API; Evirma/WB-кабинет завышает",
+      "priority": 2
+    },
+    {
+      "code": "bid_test_window",
+      "description": "После смены ставки ждать минимум 2–3 часа перед выводами",
+      "priority": 3
+    },
+    {
+      "code": "cpm_cap",
+      "description": "Жёсткий потолок ~1500 ₽ за 1000 показов",
+      "priority": 4
+    },
+    {
+      "code": "unit_economics",
+      "description": "Лимит CPC из retail + margin_pct + max DRR, не обязательно cost_price из 1С",
+      "priority": 5
+    },
+    {
+      "code": "keyword_cleanup",
+      "description": "Отключать secondary/longtail без конверсии; периодически возвращать из исключений на тест",
+      "priority": 6
+    },
+    {
+      "code": "competitive_price",
+      "description": "Цена должна быть конкурентоспособной относимо соседей в выдаче",
+      "priority": 7
+    },
+    {
+      "code": "primary_benchmark",
+      "description": "Эталон primary «перчатки для уборки»: CTR ~13%, CPC ~7.6 ₽",
+      "priority": 8
+    }
+  ],
+  "keyword_policies": {
+    "exclude_when": [
+      "Secondary/longtail без конверсии"
+    ],
+    "keep_primary_when": [
+      "Находится в топ-5"
+    ],
+    "retest_excluded_after_days": 30
+  },
+  "sources_cited": [
+    "Транскрипт звонка менеджера"
+  ],
+  "model": "openai/gpt-4o-mini",
+  "source_dataset": "C:\\Users\\Valeria\\Documents\\wb-content-portal\\data\\pilot\\exports\\manager_activity_dataset.json"
+}

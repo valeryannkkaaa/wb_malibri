@@ -7,6 +7,7 @@ from wb_advert.client.promotion import PromotionClient
 from wb_advert.constants import PENDING_NM_PREFIX
 from wb_advert.import_data.csv_loader import lookup_nm_id_for_campaign
 from wb_advert.schemas.sync import KeywordMetrics, SyncCampaignResult, SyncProfileResult
+from wb_advert.storage.pilot_store import load_config
 from wb_advert.sync.mappers import map_normquery_stats
 
 
@@ -99,18 +100,26 @@ class SyncWorker:
             result.keywords_updated = len(keywords)
 
         if with_fullstats:
-            print("  -> fullstats (base token: max 1/hour)...", flush=True)
+            print("  -> fullstats...", flush=True)
             fs = self.promotion.fullstats(advert_id, begin, end)
             result.fullstats_ok = fs.ok
             if fs.ok:
                 print(f"     HTTP {fs.status}", flush=True)
             else:
                 errors.append(f"fullstats: HTTP {fs.status} {fs.body[:120]}")
-        else:
-            print("  -> fullstats skipped (base token limit 1/hour)", flush=True)
+        elif self._fullstats_enabled():
+            print("  -> fullstats skipped (not scheduled this run)", flush=True)
 
         result.errors = errors
         return result, keywords
+
+    @staticmethod
+    def _fullstats_enabled() -> bool:
+        config = load_config()
+        if config.get("token_type") == "personal":
+            return True
+        sync_cfg = config.get("sync") or {}
+        return bool(sync_cfg.get("fullstats_enabled"))
 
     def sync_profile(
         self,

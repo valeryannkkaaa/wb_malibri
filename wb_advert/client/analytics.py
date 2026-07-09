@@ -26,9 +26,24 @@ class AnalyticsClient:
         }
         if nm_ids:
             body["nmIds"] = nm_ids
+    def stocks_report_wb_warehouses(
+        self,
+        begin: date,
+        end: date,
+        *,
+        limit: int = 100,
+        offset: int = 0,
+    ) -> HttpResult:
+        body = {
+            "currentPeriod": {"start": begin.isoformat(), "end": end.isoformat()},
+            "stockType": "",
+            "skipDeletedNm": True,
+            "limit": limit,
+            "offset": offset,
+        }
         return self.http.request(
             self.base,
             "POST",
-            "/api/analytics/v3/sales-funnel/products",
+            "/api/analytics/v1/stocks-report/wb-warehouses",
             json_body=body,
         )

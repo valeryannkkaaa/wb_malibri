@@ -1,0 +1,2463 @@
+{
+  "synced_at": "2026-07-08T12:52:22.371091+00:00",
+  "period": {
+    "start": "2026-07-01",
+    "end": "2026-07-08"
+  },
+  "pilot_nm_ids": [
+    624468743,
+    629004626,
+    754427875,
+    754549033,
+    754606396,
+    866360474,
+    869367544,
+    929900180,
+    1001645746,
+    1085061548
+  ],
+  "items_total": 1000,
+  "items_pilot": 244,
+  "items": [
+    {
+      "nmId": 624468743,
+      "chrtId": 846611218,
+      "warehouseId": 0,
+      "warehouseName": "Остальные",
+      "regionName": "Центральный",
+      "quantity": 0,
+      "inWayToClient": 97,
+      "inWayFromClient": 3
+    },
+    {
+      "nmId": 624468743,
+      "chrtId": 846611218,
+      "warehouseId": 120762,
+      "warehouseName": "Электросталь",
+      "regionName": "Центральный",
+      "quantity": 0,
+      "inWayToClient": 1,
+      "inWayFromClient": 0
+    },
+    {
+      "nmId": 624468743,
+      "chrtId": 846611218,
+      "warehouseId": 130744,
+      "warehouseName": "Краснодар",
+      "regionName": "Южный и Северо-Кавказский",
+      "quantity": 1,
+      "inWayToClient": 0,
+      "inWayFromClient": 0
+    },
+    {
+      "nmId": 624468743,
+      "chrtId": 846611218,
+      "warehouseId": 131643,
+      "warehouseName": "склад продавца Иркутск",
+      "regionName": "Дальневосточный и Сибирский",
+      "quantity": 0,
+      "inWayToClient": 1,
+      "inWayFromClient": 0
+    },
+    {
+      "nmId": 624468743,
+      "chrtId": 846611218,
+      "warehouseId": 205228,
+      "warehouseName": "Белая дача",
+      "regionName": "Центральный",
+      "quantity": 0,
+      "inWayToClient": 1,
+      "inWayFromClient": 0
+    },
+    {
+      "nmId": 624468743,
+      "chrtId": 846611218,
+      "warehouseId": 206348,
+      "warehouseName": "Тула",
+      "regionName": "Центральный",
+      "quantity": 0,
+      "inWayToClient": 1,
+      "inWayFromClient": 0
+    },
+    {
+      "nmId": 624468743,
+      "chrtId": 846611218,
+      "warehouseId": 207743,
+      "warehouseName": "Пушкино",
+      "regionName": "Центральный",
+      "quantity": 0,
+      "inWayToClient": 1,
+      "inWayFromClient": 0
+    },
+    {
+      "nmId": 624468743,
+      "chrtId": 846611218,
+      "warehouseId": 208277,
+      "warehouseName": "Невинномысск",
+      "regionName": "Южный и Северо-Кавказский",
+      "quantity": 41,
+      "inWayToClient": 8,
+      "inWayFromClient": 0
+    },
+    {
+      "nmId": 624468743,
+      "chrtId": 846611218,
+      "warehouseId": 210127,
+      "warehouseName": "Внуково",
+      "regionName": "Центральный",
+      "quantity": 0,
+      "inWayToClient": 1,
+      "inWayFromClient": 0
+    },
+    {
+      "nmId": 624468743,
+      "chrtId": 846611218,
+      "warehouseId": 210515,
+      "warehouseName": "Вёшки",
+      "regionName": "Центральный",
+      "quantity": 0,
+      "inWayToClient": 0,
+      "inWayFromClient": 1
+    },
+    {
+      "nmId": 624468743,
+      "chrtId": 846611218,
+      "warehouseId": 218644,
+      "warehouseName": "СЦ Хабаровск",
+      "regionName": "Дальневосточный и Сибирский",
+      "quantity": 0,
+      "inWayToClient": 1,
+      "inWayFromClient": 0
+    },
+    {
+      "nmId": 624468743,
+      "chrtId": 846611218,
+      "warehouseId": 218674,
+      "warehouseName": "Чита",
+      "regionName": "Дальневосточный и Сибирский",
+      "quantity": 0,
+      "inWayToClient": 4,
+      "inWayFromClient": 1
+    },
+    {
+      "nmId": 624468743,
+      "chrtId": 846611218,
+      "warehouseId": 300168,
+      "warehouseName": "Радумля 1",
+      "regionName": "Центральный",
+      "quantity": 0,
+      "inWayToClient": 4,
+      "inWayFromClient": 0
+    },
+    {
+      "nmId": 624468743,
+      "chrtId": 846611218,
+      "warehouseId": 301808,
+      "warehouseName": "Воронеж WB",
+      "regionName": "Центральный",
+      "quantity": 686,
+      "inWayToClient": 18,
+      "inWayFromClient": 3
+    },
+    {
+      "nmId": 624468743,
+      "chrtId": 846611218,
+      "warehouseId": 312259,
+      "warehouseName": "СЦ Шушары",
+      "regionName": "Северо-Западный",
+      "quantity": 0,
+      "inWayToClient": 2,
+      "inWayFromClient": 0
+    },
+    {
+      "nmId": 624468743,
+      "chrtId": 846611218,
+      "warehouseId": 318294,
+      "warehouseName": "Софьино",
+      "regionName": "Центральный",
+      "quantity": 0,
+      "inWayToClient": 1,
+      "inWayFromClient": 0
+    },
+    {
+      "nmId": 624468743,
+      "chrtId": 846611218,
+      "warehouseId": 50045809,
+      "warehouseName": "Пенза WB",
+      "regionName": "Приволжский",
+      "quantity": 118,
+      "inWayToClient": 21,
+      "inWayFromClient": 1
+    },
+    {
+      "nmId": 624468743,
+      "chrtId": 846611219,
+      "warehouseId": 0,
+      "warehouseName": "Остальные",
+      "regionName": "Центральный",
+      "quantity": 0,
+      "inWayToClient": 180,
+      "inWayFromClient": 5
+    },
+    {
+      "nmId": 624468743,
+      "chrtId": 846611219,
+      "warehouseId": 168458,
+      "warehouseName": "Омск",
+      "regionName": "Дальневосточный и Сибирский",
+      "quantity": 0,
+      "inWayToClient": 2,
+      "inWayFromClient": 0
+    },
+    {
+      "nmId": 624468743,
+      "chrtId": 846611219,
+      "warehouseId": 205228,
+      "warehouseName": "Белая дача",
+      "regionName": "Центральный",
+      "quantity": 0,
+      "inWayToClient": 3,
+      "inWayFromClient": 0
+    },
+    {
+      "nmId": 624468743,
+      "chrtId": 846611219,
+      "warehouseId": 207743,
+      "warehouseName": "Пушкино",
+      "regionName": "Центральный",
+      "quantity": 0,
+      "inWayToClient": 1,
+      "inWayFromClient": 0
+    },
+    {
+      "nmId": 624468743,
+      "chrtId": 846611219,
+      "warehouseId": 208277,
+      "warehouseName": "Невинномысск",
+      "regionName": "Южный и Северо-Кавказский",
+      "quantity": 0,
+      "inWayToClient": 3,
+      "inWayFromClient": 0
+    },
+    {
+      "nmId": 624468743,
+      "chrtId": 846611219,
+      "warehouseId": 210127,
+      "warehouseName": "Внуково",
+      "regionName": "Центральный",
+      "quantity": 0,
+      "inWayToClient": 3,
+      "inWayFromClient": 1
+    },
+    {
+      "nmId": 624468743,
+      "chrtId": 846611219,
+      "warehouseId": 210515,
+      "warehouseName": "Вёшки",
+      "regionName": "Центральный",
+      "quantity": 0,
+      "inWayToClient": 2,
+      "inWayFromClient": 0
+    },
+    {
+      "nmId": 624468743,
+      "chrtId": 846611219,
+      "warehouseId": 218210,
+      "warehouseName": "Обухово",
+      "regionName": "Центральный",
+      "quantity": 0,
+      "inWayToClient": 5,
+      "inWayFromClient": 0
+    },
+    {
+      "nmId": 624468743,
+      "chrtId": 846611219,
+      "warehouseId": 218225,
+      "warehouseName": "Челябинск",
+      "regionName": "Уральский",
+      "quantity": 0,
+      "inWayToClient": 4,
+      "inWayFromClient": 0
+    },
+    {
+      "nmId": 624468743,
+      "chrtId": 846611219,
+      "warehouseId": 218628,
+      "warehouseName": "СЦ Ижевск",
+      "regionName": "Приволжский",
+      "quantity": 0,
+      "inWayToClient": 1,
+      "inWayFromClient": 0
+    },
+    {
+      "nmId": 624468743,
+      "chrtId": 846611219,
+      "warehouseId": 218644,
+      "warehouseName": "СЦ Хабаровск",
+      "regionName": "Дальневосточный и Сибирский",
+      "quantity": 0,
+      "inWayToClient": 4,
+      "inWayFromClient": 0
+    },
+    {
+      "nmId": 624468743,
+      "chrtId": 846611219,
+      "warehouseId": 300168,
+      "warehouseName": "Радумля 1",
+      "regionName": "Центральный",
+      "quantity": 0,
+      "inWayToClient": 3,
+      "inWayFromClient": 0
+    },
+    {
+      "nmId": 624468743,
+      "chrtId": 846611219,
+      "warehouseId": 301805,
+      "warehouseName": "Новосемейкино",
+      "regionName": "Приволжский",
+      "quantity": 0,
+      "inWayToClient": 1,
+      "inWayFromClient": 0
+    },
+    {
+      "nmId": 624468743,
+      "chrtId": 846611219,
+      "warehouseId": 301808,
+      "warehouseName": "Воронеж WB",
+      "regionName": "Центральный",
+      "quantity": 1172,
+      "inWayToClient": 52,
+      "inWayFromClient": 12
+    },
+    {
+      "nmId": 624468743,
+      "chrtId": 846611219,
+      "warehouseId": 301809,
+      "warehouseName": "Котовск",
+      "regionName": "Центральный",
+      "quantity": 0,
+      "inWayToClient": 0,
+      "inWayFromClient": 1
+    },
+    {
+      "nmId": 624468743,
+      "chrtId": 846611219,
+      "warehouseId": 312259,
+      "warehouseName": "СЦ Шушары",
+      "regionName": "Северо-Западный",
+      "quantity": 0,
+      "inWayToClient": 3,
+      "inWayFromClient": 0
+    },
+    {
+      "nmId": 624468743,
+      "chrtId": 846611219,
+      "warehouseId": 315199,
+      "warehouseName": "Оренбург Центральная",
+      "regionName": "Приволжский",
+      "quantity": 0,
+      "inWayToClient": 2,
+      "inWayFromClient": 0
+    },
+    {
+      "nmId": 624468743,
+      "chrtId": 846611219,
+      "warehouseId": 318294,
+      "warehouseName": "Софьино",
+      "regionName": "Центральный",
+      "quantity": 0,
+      "inWayToClient": 1,
+      "inWayFromClient": 1
+    },
+    {
+      "nmId": 624468743,
+      "chrtId": 846611219,
+      "warehouseId": 361670,
+      "warehouseName": "Махачкала Сепараторная",
+      "regionName": "Южный и Северо-Кавказский",
+      "quantity": 0,
+      "inWayToClient": 1,
+      "inWayFromClient": 0
+    },
+    {
+      "nmId": 624468743,
+      "chrtId": 846611219,
+      "warehouseId": 387234,
+      "warehouseName": "Истра WB",
+      "regionName": "Центральный",
+      "quantity": 0,
+      "inWayToClient": 1,
+      "inWayFromClient": 0
+    },
+    {
+      "nmId": 624468743,
+      "chrtId": 846611219,
+      "warehouseId": 50045809,
+      "warehouseName": "Пенза WB",
+      "regionName": "Приволжский",
+      "quantity": 149,
+      "inWayToClient": 23,
+      "inWayFromClient": 1
+    },
+    {
+      "nmId": 624468743,
+      "chrtId": 846611219,
+      "warehouseId": 50144199,
+      "warehouseName": "СЦ Нижний Новгород Ларина",
+      "regionName": "Приволжский",
+      "quantity": 0,
+      "inWayToClient": 1,
+      "inWayFromClient": 0
+    },
+    {
+      "nmId": 624468743,
+      "chrtId": 846611220,
+      "warehouseId": 0,
+      "warehouseName": "Остальные",
+      "regionName": "Центральный",
+      "quantity": 0,
+      "inWayToClient": 128,
+      "inWayFromClient": 2
+    },
+    {
+      "nmId": 624468743,
+      "chrtId": 846611220,
+      "warehouseId": 131643,
+      "warehouseName": "склад продавца Иркутск",
+      "regionName": "Дальневосточный и Сибирский",
+      "quantity": 0,
+      "inWayToClient": 1,
+      "inWayFromClient": 0
+    },
+    {
+      "nmId": 624468743,
+      "chrtId": 846611220,
+      "warehouseId": 140302,
+      "warehouseName": "Курск",
+      "regionName": "Центральный",
+      "quantity": 0,
+      "inWayToClient": 1,
+      "inWayFromClient": 0
+    },
+    {
+      "nmId": 624468743,
+      "chrtId": 846611220,
+      "warehouseId": 161003,
+      "warehouseName": "Сургут",
+      "regionName": "Уральский",
+      "quantity": 0,
+      "inWayToClient": 1,
+      "inWayFromClient": 0
+    },
+    {
+      "nmId": 624468743,
+      "chrtId": 846611220,
+      "warehouseId": 207743,
+      "warehouseName": "Пушкино",
+      "regionName": "Центральный",
+      "quantity": 0,
+      "inWayToClient": 0,
+      "inWayFromClient": 1
+    },
+    {
+      "nmId": 624468743,
+      "chrtId": 846611220,
+      "warehouseId": 208277,
+      "warehouseName": "Невинномысск",
+      "regionName": "Южный и Северо-Кавказский",
+      "quantity": 11,
+      "inWayToClient": 4,
+      "inWayFromClient": 1
+    },
+    {
+      "nmId": 624468743,
+      "chrtId": 846611220,
+      "warehouseId": 210127,
+      "warehouseName": "Внуково",
+      "regionName": "Центральный",
+      "quantity": 0,
+      "inWayToClient": 5,
+      "inWayFromClient": 0
+    },
+    {
+      "nmId": 624468743,
+      "chrtId": 846611220,
+      "warehouseId": 213849,
+      "warehouseName": "Кемерово",
+      "regionName": "Дальневосточный и Сибирский",
+      "quantity": 0,
+      "inWayToClient": 1,
+      "inWayFromClient": 0
+    },
+    {
+      "nmId": 624468743,
+      "chrtId": 846611220,
+      "warehouseId": 218210,
+      "warehouseName": "Обухово",
+      "regionName": "Центральный",
+      "quantity": 0,
+      "inWayToClient": 2,
+      "inWayFromClient": 0
+    },
+    {
+      "nmId": 624468743,
+      "chrtId": 846611220,
+      "warehouseId": 218225,
+      "warehouseName": "Челябинск",
+      "regionName": "Уральский",
+      "quantity": 0,
+      "inWayToClient": 1,
+      "inWayFromClient": 0
+    },
+    {
+      "nmId": 624468743,
+      "chrtId": 846611220,
+      "warehouseId": 218628,
+      "warehouseName": "СЦ Ижевск",
+      "regionName": "Приволжский",
+      "quantity": 0,
+      "inWayToClient": 0,
+      "inWayFromClient": 1
+    },
+    {
+      "nmId": 624468743,
+      "chrtId": 846611220,
+      "warehouseId": 300168,
+      "warehouseName": "Радумля 1",
+      "regionName": "Центральный",
+      "quantity": 0,
+      "inWayToClient": 1,
+      "inWayFromClient": 0
+    },
+    {
+      "nmId": 624468743,
+      "chrtId": 846611220,
+      "warehouseId": 301808,
+      "warehouseName": "Воронеж WB",
+      "regionName": "Центральный",
+      "quantity": 1138,
+      "inWayToClient": 22,
+      "inWayFromClient": 6
+    },
+    {
+      "nmId": 624468743,
+      "chrtId": 846611220,
+      "warehouseId": 301981,
+      "warehouseName": "Владимир WB",
+      "regionName": "Центральный",
+      "quantity": 0,
+      "inWayToClient": 1,
+      "inWayFromClient": 0
+    },
+    {
+      "nmId": 624468743,
+      "chrtId": 846611220,
+      "warehouseId": 302737,
+      "warehouseName": "СЦ Барнаул",
+      "regionName": "Дальневосточный и Сибирский",
+      "quantity": 0,
+      "inWayToClient": 3,
+      "inWayFromClient": 0
+    },
+    {
+      "nmId": 624468743,
+      "chrtId": 846611220,
+      "warehouseId": 50045809,
+      "warehouseName": "Пенза WB",
+      "regionName": "Приволжский",
+      "quantity": 116,
+      "inWayToClient": 21,
+      "inWayFromClient": 3
+    },
+    {
+      "nmId": 624468743,
+      "chrtId": 846611220,
+      "warehouseId": 50144199,
+      "warehouseName": "СЦ Нижний Новгород Ларина",
+      "regionName": "Приволжский",
+      "quantity": 0,
+      "inWayToClient": 3,
+      "inWayFromClient": 0
+    },
+    {
+      "nmId": 624468743,
+      "chrtId": 846611221,
+      "warehouseId": 0,
+      "warehouseName": "Остальные",
+      "regionName": "Центральный",
+      "quantity": 0,
+      "inWayToClient": 90,
+      "inWayFromClient": 6
+    },
+    {
+      "nmId": 624468743,
+      "chrtId": 846611221,
+      "warehouseId": 120762,
+      "warehouseName": "Электросталь",
+      "regionName": "Центральный",
+      "quantity": 1,
+      "inWayToClient": 0,
+      "inWayFromClient": 0
+    },
+    {
+      "nmId": 624468743,
+      "chrtId": 846611221,
+      "warehouseId": 149445,
+      "warehouseName": "Уфа",
+      "regionName": "Приволжский",
+      "quantity": 0,
+      "inWayToClient": 1,
+      "inWayFromClient": 0
+    },
+    {
+      "nmId": 624468743,
+      "chrtId": 846611221,
+      "warehouseId": 161003,
+      "warehouseName": "Сургут",
+      "regionName": "Уральский",
+      "quantity": 0,
+      "inWayToClient": 1,
+      "inWayFromClient": 0
+    },
+    {
+      "nmId": 624468743,
+      "chrtId": 846611221,
+      "warehouseId": 205228,
+      "warehouseName": "Белая дача",
+      "regionName": "Центральный",
+      "quantity": 0,
+      "inWayToClient": 1,
+      "inWayFromClient": 0
+    },
+    {
+      "nmId": 624468743,
+      "chrtId": 846611221,
+      "warehouseId": 208277,
+      "warehouseName": "Невинномысск",
+      "regionName": "Южный и Северо-Кавказский",
+      "quantity": 16,
+      "inWayToClient": 5,
+      "inWayFromClient": 0
+    },
+    {
+      "nmId": 624468743,
+      "chrtId": 846611221,
+      "warehouseId": 214951,
+      "warehouseName": "Артём",
+      "regionName": "Дальневосточный и Сибирский",
+      "quantity": 0,
+      "inWayToClient": 1,
+      "inWayFromClient": 0
+    },
+    {
+      "nmId": 624468743,
+      "chrtId": 846611221,
+      "warehouseId": 217081,
+      "warehouseName": "Брянск Сталелитейная",
+      "regionName": "Центральный",
+      "quantity": 0,
+      "inWayToClient": 1,
+      "inWayFromClient": 0
+    },
+    {
+      "nmId": 624468743,
+      "chrtId": 846611221,
+      "warehouseId": 218210,
+      "warehouseName": "Обухово",
+      "regionName": "Центральный",
+      "quantity": 0,
+      "inWayToClient": 2,
+      "inWayFromClient": 0
+    },
+    {
+      "nmId": 624468743,
+      "chrtId": 846611221,
+      "warehouseId": 218628,
+      "warehouseName": "СЦ Ижевск",
+      "regionName": "Приволжский",
+      "quantity": 0,
+      "inWayToClient": 0,
+      "inWayFromClient": 1
+    },
+    {
+      "nmId": 624468743,
+      "chrtId": 846611221,
+      "warehouseId": 300168,
+      "warehouseName": "Радумля 1",
+      "regionName": "Центральный",
+      "quantity": 0,
+      "inWayToClient": 1,
+      "inWayFromClient": 0
+    },
+    {
+      "nmId": 624468743,
+      "chrtId": 846611221,
+      "warehouseId": 301808,
+      "warehouseName": "Воронеж WB",
+      "regionName": "Центральный",
+      "quantity": 726,
+      "inWayToClient": 15,
+      "inWayFromClient": 5
+    },
+    {
+      "nmId": 624468743,
+      "chrtId": 846611221,
+      "warehouseId": 301981,
+      "warehouseName": "Владимир WB",
+      "regionName": "Центральный",
+      "quantity": 1,
+      "inWayToClient": 0,
+      "inWayFromClient": 0
+    },
+    {
+      "nmId": 624468743,
+      "chrtId": 846611221,
+      "warehouseId": 312259,
+      "warehouseName": "СЦ Шушары",
+      "regionName": "Северо-Западный",
+      "quantity": 0,
+      "inWayToClient": 2,
+      "inWayFromClient": 0
+    },
+    {
+      "nmId": 624468743,
+      "chrtId": 846611221,
+      "warehouseId": 315199,
+      "warehouseName": "Оренбург Центральная",
+      "regionName": "Приволжский",
+      "quantity": 0,
+      "inWayToClient": 1,
+      "inWayFromClient": 0
+    },
+    {
+      "nmId": 624468743,
+      "chrtId": 846611221,
+      "warehouseId": 318294,
+      "warehouseName": "Софьино",
+      "regionName": "Центральный",
+      "quantity": 0,
+      "inWayToClient": 1,
+      "inWayFromClient": 0
+    },
+    {
+      "nmId": 624468743,
+      "chrtId": 846611221,
+      "warehouseId": 50045809,
+      "warehouseName": "Пенза WB",
+      "regionName": "Приволжский",
+      "quantity": 71,
+      "inWayToClient": 12,
+      "inWayFromClient": 1
+    },
+    {
+      "nmId": 629004626,
+      "chrtId": 851572726,
+      "warehouseId": 0,
+      "warehouseName": "Остальные",
+      "regionName": "Центральный",
+      "quantity": 0,
+      "inWayToClient": 144,
+      "inWayFromClient": 14
+    },
+    {
+      "nmId": 629004626,
+      "chrtId": 851572726,
+      "warehouseId": 117819,
+      "warehouseName": "Тюмень",
+      "regionName": "Уральский",
+      "quantity": 0,
+      "inWayToClient": 1,
+      "inWayFromClient": 0
+    },
+    {
+      "nmId": 629004626,
+      "chrtId": 851572726,
+      "warehouseId": 168458,
+      "warehouseName": "Омск",
+      "regionName": "Дальневосточный и Сибирский",
+      "quantity": 0,
+      "inWayToClient": 1,
+      "inWayFromClient": 0
+    },
+    {
+      "nmId": 629004626,
+      "chrtId": 851572726,
+      "warehouseId": 210127,
+      "warehouseName": "Внуково",
+      "regionName": "Центральный",
+      "quantity": 0,
+      "inWayToClient": 1,
+      "inWayFromClient": 0
+    },
+    {
+      "nmId": 629004626,
+      "chrtId": 851572726,
+      "warehouseId": 218210,
+      "warehouseName": "Обухово",
+      "regionName": "Центральный",
+      "quantity": 0,
+      "inWayToClient": 7,
+      "inWayFromClient": 0
+    },
+    {
+      "nmId": 629004626,
+      "chrtId": 851572726,
+      "warehouseId": 218225,
+      "warehouseName": "Челябинск",
+      "regionName": "Уральский",
+      "quantity": 0,
+      "inWayToClient": 1,
+      "inWayFromClient": 0
+    },
+    {
+      "nmId": 629004626,
+      "chrtId": 851572726,
+      "warehouseId": 218644,
+      "warehouseName": "СЦ Хабаровск",
+      "regionName": "Дальневосточный и Сибирский",
+      "quantity": 0,
+      "inWayToClient": 0,
+      "inWayFromClient": 1
+    },
+    {
+      "nmId": 629004626,
+      "chrtId": 851572726,
+      "warehouseId": 300168,
+      "warehouseName": "Радумля 1",
+      "regionName": "Центральный",
+      "quantity": 0,
+      "inWayToClient": 0,
+      "inWayFromClient": 1
+    },
+    {
+      "nmId": 629004626,
+      "chrtId": 851572726,
+      "warehouseId": 300219,
+      "warehouseName": "СЦ Вологда 2",
+      "regionName": "Северо-Западный",
+      "quantity": 0,
+      "inWayToClient": 1,
+      "inWayFromClient": 0
+    },
+    {
+      "nmId": 629004626,
+      "chrtId": 851572726,
+      "warehouseId": 300571,
+      "warehouseName": "Екатеринбург - Перспективная 14",
+      "regionName": "Уральский",
+      "quantity": 0,
+      "inWayToClient": 1,
+      "inWayFromClient": 0
+    },
+    {
+      "nmId": 629004626,
+      "chrtId": 851572726,
+      "warehouseId": 301808,
+      "warehouseName": "Воронеж WB",
+      "regionName": "Центральный",
+      "quantity": 863,
+      "inWayToClient": 25,
+      "inWayFromClient": 5
+    },
+    {
+      "nmId": 629004626,
+      "chrtId": 851572726,
+      "warehouseId": 301920,
+      "warehouseName": "Пятигорск, Этока",
+      "regionName": "Южный и Северо-Кавказский",
+      "quantity": 0,
+      "inWayToClient": 2,
+      "inWayFromClient": 0
+    },
+    {
+      "nmId": 629004626,
+      "chrtId": 851572726,
+      "warehouseId": 312259,
+      "warehouseName": "СЦ Шушары",
+      "regionName": "Северо-Западный",
+      "quantity": 0,
+      "inWayToClient": 2,
+      "inWayFromClient": 0
+    },
+    {
+      "nmId": 629004626,
+      "chrtId": 851572726,
+      "warehouseId": 50045809,
+      "warehouseName": "Пенза WB",
+      "regionName": "Приволжский",
+      "quantity": 102,
+      "inWayToClient": 20,
+      "inWayFromClient": 1
+    },
+    {
+      "nmId": 629004626,
+      "chrtId": 851572726,
+      "warehouseId": 50144199,
+      "warehouseName": "СЦ Нижний Новгород Ларина",
+      "regionName": "Приволжский",
+      "quantity": 0,
+      "inWayToClient": 0,
+      "inWayFromClient": 1
+    },
+    {
+      "nmId": 754427875,
+      "chrtId": 1091466217,
+      "warehouseId": 0,
+      "warehouseName": "Остальные",
+      "regionName": "Центральный",
+      "quantity": 0,
+      "inWayToClient": 93,
+      "inWayFromClient": 5
+    },
+    {
+      "nmId": 754427875,
+      "chrtId": 1091466217,
+      "warehouseId": 131643,
+      "warehouseName": "склад продавца Иркутск",
+      "regionName": "Дальневосточный и Сибирский",
+      "quantity": 0,
+      "inWayToClient": 1,
+      "inWayFromClient": 0
+    },
+    {
+      "nmId": 754427875,
+      "chrtId": 1091466217,
+      "warehouseId": 205228,
+      "warehouseName": "Белая дача",
+      "regionName": "Центральный",
+      "quantity": 0,
+      "inWayToClient": 1,
+      "inWayFromClient": 0
+    },
+    {
+      "nmId": 754427875,
+      "chrtId": 1091466217,
+      "warehouseId": 208277,
+      "warehouseName": "Невинномысск",
+      "regionName": "Южный и Северо-Кавказский",
+      "quantity": 230,
+      "inWayToClient": 5,
+      "inWayFromClient": 0
+    },
+    {
+      "nmId": 754427875,
+      "chrtId": 1091466217,
+      "warehouseId": 209208,
+      "warehouseName": "Сыктывкар",
+      "regionName": "Северо-Западный",
+      "quantity": 0,
+      "inWayToClient": 1,
+      "inWayFromClient": 0
+    },
+    {
+      "nmId": 754427875,
+      "chrtId": 1091466217,
+      "warehouseId": 210515,
+      "warehouseName": "Вёшки",
+      "regionName": "Центральный",
+      "quantity": 0,
+      "inWayToClient": 1,
+      "inWayFromClient": 0
+    },
+    {
+      "nmId": 754427875,
+      "chrtId": 1091466217,
+      "warehouseId": 218210,
+      "warehouseName": "Обухово",
+      "regionName": "Центральный",
+      "quantity": 0,
+      "inWayToClient": 4,
+      "inWayFromClient": 1
+    },
+    {
+      "nmId": 754427875,
+      "chrtId": 1091466217,
+      "warehouseId": 218628,
+      "warehouseName": "СЦ Ижевск",
+      "regionName": "Приволжский",
+      "quantity": 0,
+      "inWayToClient": 0,
+      "inWayFromClient": 1
+    },
+    {
+      "nmId": 754427875,
+      "chrtId": 1091466217,
+      "warehouseId": 301808,
+      "warehouseName": "Воронеж WB",
+      "regionName": "Центральный",
+      "quantity": 950,
+      "inWayToClient": 15,
+      "inWayFromClient": 1
+    },
+    {
+      "nmId": 754427875,
+      "chrtId": 1091466217,
+      "warehouseId": 301981,
+      "warehouseName": "Владимир WB",
+      "regionName": "Центральный",
+      "quantity": 0,
+      "inWayToClient": 1,
+      "inWayFromClient": 0
+    },
+    {
+      "nmId": 754427875,
+      "chrtId": 1091466217,
+      "warehouseId": 312259,
+      "warehouseName": "СЦ Шушары",
+      "regionName": "Северо-Западный",
+      "quantity": 0,
+      "inWayToClient": 1,
+      "inWayFromClient": 0
+    },
+    {
+      "nmId": 754427875,
+      "chrtId": 1091466217,
+      "warehouseId": 318294,
+      "warehouseName": "Софьино",
+      "regionName": "Центральный",
+      "quantity": 0,
+      "inWayToClient": 1,
+      "inWayFromClient": 0
+    },
+    {
+      "nmId": 754427875,
+      "chrtId": 1091466217,
+      "warehouseId": 50045809,
+      "warehouseName": "Пенза WB",
+      "regionName": "Приволжский",
+      "quantity": 179,
+      "inWayToClient": 7,
+      "inWayFromClient": 0
+    },
+    {
+      "nmId": 754427875,
+      "chrtId": 1091466218,
+      "warehouseId": 0,
+      "warehouseName": "Остальные",
+      "regionName": "Центральный",
+      "quantity": 0,
+      "inWayToClient": 86,
+      "inWayFromClient": 7
+    },
+    {
+      "nmId": 754427875,
+      "chrtId": 1091466218,
+      "warehouseId": 130744,
+      "warehouseName": "Краснодар",
+      "regionName": "Южный и Северо-Кавказский",
+      "quantity": 1,
+      "inWayToClient": 0,
+      "inWayFromClient": 0
+    },
+    {
+      "nmId": 754427875,
+      "chrtId": 1091466218,
+      "warehouseId": 131643,
+      "warehouseName": "склад продавца Иркутск",
+      "regionName": "Дальневосточный и Сибирский",
+      "quantity": 0,
+      "inWayToClient": 1,
+      "inWayFromClient": 0
+    },
+    {
+      "nmId": 754427875,
+      "chrtId": 1091466218,
+      "warehouseId": 208277,
+      "warehouseName": "Невинномысск",
+      "regionName": "Южный и Северо-Кавказский",
+      "quantity": 48,
+      "inWayToClient": 2,
+      "inWayFromClient": 0
+    },
+    {
+      "nmId": 754427875,
+      "chrtId": 1091466218,
+      "warehouseId": 210515,
+      "warehouseName": "Вёшки",
+      "regionName": "Центральный",
+      "quantity": 0,
+      "inWayToClient": 2,
+      "inWayFromClient": 0
+    },
+    {
+      "nmId": 754427875,
+      "chrtId": 1091466218,
+      "warehouseId": 214951,
+      "warehouseName": "Артём",
+      "regionName": "Дальневосточный и Сибирский",
+      "quantity": 0,
+      "inWayToClient": 0,
+      "inWayFromClient": 1
+    },
+    {
+      "nmId": 754427875,
+      "chrtId": 1091466218,
+      "warehouseId": 218674,
+      "warehouseName": "Чита",
+      "regionName": "Дальневосточный и Сибирский",
+      "quantity": 0,
+      "inWayToClient": 0,
+      "inWayFromClient": 1
+    },
+    {
+      "nmId": 754427875,
+      "chrtId": 1091466218,
+      "warehouseId": 300168,
+      "warehouseName": "Радумля 1",
+      "regionName": "Центральный",
+      "quantity": 0,
+      "inWayToClient": 2,
+      "inWayFromClient": 0
+    },
+    {
+      "nmId": 754427875,
+      "chrtId": 1091466218,
+      "warehouseId": 301805,
+      "warehouseName": "Новосемейкино",
+      "regionName": "Приволжский",
+      "quantity": 1,
+      "inWayToClient": 0,
+      "inWayFromClient": 0
+    },
+    {
+      "nmId": 754427875,
+      "chrtId": 1091466218,
+      "warehouseId": 301808,
+      "warehouseName": "Воронеж WB",
+      "regionName": "Центральный",
+      "quantity": 567,
+      "inWayToClient": 25,
+      "inWayFromClient": 2
+    },
+    {
+      "nmId": 754427875,
+      "chrtId": 1091466218,
+      "warehouseId": 302571,
+      "warehouseName": "СЦ Ереван Арташисян 106",
+      "regionName": "Армения",
+      "quantity": 0,
+      "inWayToClient": 1,
+      "inWayFromClient": 0
+    },
+    {
+      "nmId": 754427875,
+      "chrtId": 1091466218,
+      "warehouseId": 312259,
+      "warehouseName": "СЦ Шушары",
+      "regionName": "Северо-Западный",
+      "quantity": 0,
+      "inWayToClient": 1,
+      "inWayFromClient": 0
+    },
+    {
+      "nmId": 754427875,
+      "chrtId": 1091466218,
+      "warehouseId": 50045809,
+      "warehouseName": "Пенза WB",
+      "regionName": "Приволжский",
+      "quantity": 0,
+      "inWayToClient": 4,
+      "inWayFromClient": 0
+    },
+    {
+      "nmId": 754427875,
+      "chrtId": 1091466218,
+      "warehouseId": 50144199,
+      "warehouseName": "СЦ Нижний Новгород Ларина",
+      "regionName": "Приволжский",
+      "quantity": 0,
+      "inWayToClient": 1,
+      "inWayFromClient": 0
+    },
+    {
+      "nmId": 754427875,
+      "chrtId": 1091466219,
+      "warehouseId": 0,
+      "warehouseName": "Остальные",
+      "regionName": "Центральный",
+      "quantity": 0,
+      "inWayToClient": 73,
+      "inWayFromClient": 2
+    },
+    {
+      "nmId": 754427875,
+      "chrtId": 1091466219,
+      "warehouseId": 117819,
+      "warehouseName": "Тюмень",
+      "regionName": "Уральский",
+      "quantity": 0,
+      "inWayToClient": 1,
+      "inWayFromClient": 0
+    },
+    {
+      "nmId": 754427875,
+      "chrtId": 1091466219,
+      "warehouseId": 120762,
+      "warehouseName": "Электросталь",
+      "regionName": "Центральный",
+      "quantity": 1,
+      "inWayToClient": 0,
+      "inWayFromClient": 0
+    },
+    {
+      "nmId": 754427875,
+      "chrtId": 1091466219,
+      "warehouseId": 131643,
+      "warehouseName": "склад продавца Иркутск",
+      "regionName": "Дальневосточный и Сибирский",
+      "quantity": 0,
+      "inWayToClient": 1,
+      "inWayFromClient": 0
+    },
+    {
+      "nmId": 754427875,
+      "chrtId": 1091466219,
+      "warehouseId": 205228,
+      "warehouseName": "Белая дача",
+      "regionName": "Центральный",
+      "quantity": 0,
+      "inWayToClient": 1,
+      "inWayFromClient": 2
+    },
+    {
+      "nmId": 754427875,
+      "chrtId": 1091466219,
+      "warehouseId": 207743,
+      "warehouseName": "Пушкино",
+      "regionName": "Центральный",
+      "quantity": 0,
+      "inWayToClient": 2,
+      "inWayFromClient": 0
+    },
+    {
+      "nmId": 754427875,
+      "chrtId": 1091466219,
+      "warehouseId": 208277,
+      "warehouseName": "Невинномысск",
+      "regionName": "Южный и Северо-Кавказский",
+      "quantity": 53,
+      "inWayToClient": 7,
+      "inWayFromClient": 0
+    },
+    {
+      "nmId": 754427875,
+      "chrtId": 1091466219,
+      "warehouseId": 210515,
+      "warehouseName": "Вёшки",
+      "regionName": "Центральный",
+      "quantity": 0,
+      "inWayToClient": 1,
+      "inWayFromClient": 1
+    },
+    {
+      "nmId": 754427875,
+      "chrtId": 1091466219,
+      "warehouseId": 218225,
+      "warehouseName": "Челябинск",
+      "regionName": "Уральский",
+      "quantity": 0,
+      "inWayToClient": 1,
+      "inWayFromClient": 0
+    },
+    {
+      "nmId": 754427875,
+      "chrtId": 1091466219,
+      "warehouseId": 218628,
+      "warehouseName": "СЦ Ижевск",
+      "regionName": "Приволжский",
+      "quantity": 0,
+      "inWayToClient": 0,
+      "inWayFromClient": 1
+    },
+    {
+      "nmId": 754427875,
+      "chrtId": 1091466219,
+      "warehouseId": 300168,
+      "warehouseName": "Радумля 1",
+      "regionName": "Центральный",
+      "quantity": 0,
+      "inWayToClient": 1,
+      "inWayFromClient": 0
+    },
+    {
+      "nmId": 754427875,
+      "chrtId": 1091466219,
+      "warehouseId": 300219,
+      "warehouseName": "СЦ Вологда 2",
+      "regionName": "Северо-Западный",
+      "quantity": 0,
+      "inWayToClient": 2,
+      "inWayFromClient": 0
+    },
+    {
+      "nmId": 754427875,
+      "chrtId": 1091466219,
+      "warehouseId": 300571,
+      "warehouseName": "Екатеринбург - Перспективная 14",
+      "regionName": "Уральский",
+      "quantity": 0,
+      "inWayToClient": 1,
+      "inWayFromClient": 0
+    },
+    {
+      "nmId": 754427875,
+      "chrtId": 1091466219,
+      "warehouseId": 301808,
+      "warehouseName": "Воронеж WB",
+      "regionName": "Центральный",
+      "quantity": 727,
+      "inWayToClient": 16,
+      "inWayFromClient": 0
+    },
+    {
+      "nmId": 754427875,
+      "chrtId": 1091466219,
+      "warehouseId": 301809,
+      "warehouseName": "Котовск",
+      "regionName": "Центральный",
+      "quantity": 0,
+      "inWayToClient": 1,
+      "inWayFromClient": 0
+    },
+    {
+      "nmId": 754427875,
+      "chrtId": 1091466219,
+      "warehouseId": 301981,
+      "warehouseName": "Владимир WB",
+      "regionName": "Центральный",
+      "quantity": 0,
+      "inWayToClient": 0,
+      "inWayFromClient": 1
+    },
+    {
+      "nmId": 754427875,
+      "chrtId": 1091466219,
+      "warehouseId": 312259,
+      "warehouseName": "СЦ Шушары",
+      "regionName": "Северо-Западный",
+      "quantity": 0,
+      "inWayToClient": 1,
+      "inWayFromClient": 0
+    },
+    {
+      "nmId": 754427875,
+      "chrtId": 1091466219,
+      "warehouseId": 315199,
+      "warehouseName": "Оренбург Центральная",
+      "regionName": "Приволжский",
+      "quantity": 0,
+      "inWayToClient": 2,
+      "inWayFromClient": 0
+    },
+    {
+      "nmId": 754427875,
+      "chrtId": 1091466219,
+      "warehouseId": 333530,
+      "warehouseName": "Симферополь, Молодежненское",
+      "regionName": "Южный и Северо-Кавказский",
+      "quantity": 0,
+      "inWayToClient": 1,
+      "inWayFromClient": 0
+    },
+    {
+      "nmId": 754427875,
+      "chrtId": 1091466219,
+      "warehouseId": 387234,
+      "warehouseName": "Истра WB",
+      "regionName": "Центральный",
+      "quantity": 0,
+      "inWayToClient": 1,
+      "inWayFromClient": 0
+    },
+    {
+      "nmId": 754427875,
+      "chrtId": 1091466219,
+      "warehouseId": 50045809,
+      "warehouseName": "Пенза WB",
+      "regionName": "Приволжский",
+      "quantity": 30,
+      "inWayToClient": 3,
+      "inWayFromClient": 1
+    },
+    {
+      "nmId": 754427875,
+      "chrtId": 1273988860,
+      "warehouseId": 0,
+      "warehouseName": "Остальные",
+      "regionName": "Центральный",
+      "quantity": 0,
+      "inWayToClient": 9,
+      "inWayFromClient": 0
+    },
+    {
+      "nmId": 754427875,
+      "chrtId": 1273988860,
+      "warehouseId": 300862,
+      "warehouseName": "Абакан 2",
+      "regionName": "Дальневосточный и Сибирский",
+      "quantity": 0,
+      "inWayToClient": 0,
+      "inWayFromClient": 1
+    },
+    {
+      "nmId": 754427875,
+      "chrtId": 1273988860,
+      "warehouseId": 50045809,
+      "warehouseName": "Пенза WB",
+      "regionName": "Приволжский",
+      "quantity": 0,
+      "inWayToClient": 1,
+      "inWayFromClient": 1
+    },
+    {
+      "nmId": 754549033,
+      "chrtId": 1091640304,
+      "warehouseId": 0,
+      "warehouseName": "Остальные",
+      "regionName": "Центральный",
+      "quantity": 0,
+      "inWayToClient": 169,
+      "inWayFromClient": 8
+    },
+    {
+      "nmId": 754549033,
+      "chrtId": 1091640304,
+      "warehouseId": 117819,
+      "warehouseName": "Тюмень",
+      "regionName": "Уральский",
+      "quantity": 0,
+      "inWayToClient": 2,
+      "inWayFromClient": 0
+    },
+    {
+      "nmId": 754549033,
+      "chrtId": 1091640304,
+      "warehouseId": 120762,
+      "warehouseName": "Электросталь",
+      "regionName": "Центральный",
+      "quantity": 0,
+      "inWayToClient": 2,
+      "inWayFromClient": 0
+    },
+    {
+      "nmId": 754549033,
+      "chrtId": 1091640304,
+      "warehouseId": 131643,
+      "warehouseName": "склад продавца Иркутск",
+      "regionName": "Дальневосточный и Сибирский",
+      "quantity": 0,
+      "inWayToClient": 2,
+      "inWayFromClient": 1
+    },
+    {
+      "nmId": 754549033,
+      "chrtId": 1091640304,
+      "warehouseId": 168458,
+      "warehouseName": "Омск",
+      "regionName": "Дальневосточный и Сибирский",
+      "quantity": 0,
+      "inWayToClient": 0,
+      "inWayFromClient": 1
+    },
+    {
+      "nmId": 754549033,
+      "chrtId": 1091640304,
+      "warehouseId": 210127,
+      "warehouseName": "Внуково",
+      "regionName": "Центральный",
+      "quantity": 0,
+      "inWayToClient": 0,
+      "inWayFromClient": 1
+    },
+    {
+      "nmId": 754549033,
+      "chrtId": 1091640304,
+      "warehouseId": 210515,
+      "warehouseName": "Вёшки",
+      "regionName": "Центральный",
+      "quantity": 0,
+      "inWayToClient": 1,
+      "inWayFromClient": 0
+    },
+    {
+      "nmId": 754549033,
+      "chrtId": 1091640304,
+      "warehouseId": 218210,
+      "warehouseName": "Обухово",
+      "regionName": "Центральный",
+      "quantity": 0,
+      "inWayToClient": 2,
+      "inWayFromClient": 0
+    },
+    {
+      "nmId": 754549033,
+      "chrtId": 1091640304,
+      "warehouseId": 218225,
+      "warehouseName": "Челябинск",
+      "regionName": "Уральский",
+      "quantity": 0,
+      "inWayToClient": 1,
+      "inWayFromClient": 0
+    },
+    {
+      "nmId": 754549033,
+      "chrtId": 1091640304,
+      "warehouseId": 218644,
+      "warehouseName": "СЦ Хабаровск",
+      "regionName": "Дальневосточный и Сибирский",
+      "quantity": 0,
+      "inWayToClient": 0,
+      "inWayFromClient": 1
+    },
+    {
+      "nmId": 754549033,
+      "chrtId": 1091640304,
+      "warehouseId": 218674,
+      "warehouseName": "Чита",
+      "regionName": "Дальневосточный и Сибирский",
+      "quantity": 0,
+      "inWayToClient": 1,
+      "inWayFromClient": 0
+    },
+    {
+      "nmId": 754549033,
+      "chrtId": 1091640304,
+      "warehouseId": 300571,
+      "warehouseName": "Екатеринбург - Перспективная 14",
+      "regionName": "Уральский",
+      "quantity": 1,
+      "inWayToClient": 0,
+      "inWayFromClient": 0
+    },
+    {
+      "nmId": 754549033,
+      "chrtId": 1091640304,
+      "warehouseId": 301760,
+      "warehouseName": "Рязань (Тюшевское)",
+      "regionName": "Центральный",
+      "quantity": 0,
+      "inWayToClient": 1,
+      "inWayFromClient": 0
+    },
+    {
+      "nmId": 754549033,
+      "chrtId": 1091640304,
+      "warehouseId": 301808,
+      "warehouseName": "Воронеж WB",
+      "regionName": "Центральный",
+      "quantity": 395,
+      "inWayToClient": 37,
+      "inWayFromClient": 5
+    },
+    {
+      "nmId": 754549033,
+      "chrtId": 1091640304,
+      "warehouseId": 338827,
+      "warehouseName": "Ярославль Громова СЦ  WB",
+      "regionName": "Центральный",
+      "quantity": 0,
+      "inWayToClient": 0,
+      "inWayFromClient": 1
+    },
+    {
+      "nmId": 754549033,
+      "chrtId": 1091640304,
+      "warehouseId": 50045809,
+      "warehouseName": "Пенза WB",
+      "regionName": "Приволжский",
+      "quantity": 7,
+      "inWayToClient": 10,
+      "inWayFromClient": 1
+    },
+    {
+      "nmId": 754549033,
+      "chrtId": 1091640305,
+      "warehouseId": 0,
+      "warehouseName": "Остальные",
+      "regionName": "Центральный",
+      "quantity": 0,
+      "inWayToClient": 8,
+      "inWayFromClient": 2
+    },
+    {
+      "nmId": 754549033,
+      "chrtId": 1091640305,
+      "warehouseId": 507,
+      "warehouseName": "Коледино",
+      "regionName": "Центральный",
+      "quantity": 0,
+      "inWayToClient": 1,
+      "inWayFromClient": 0
+    },
+    {
+      "nmId": 754549033,
+      "chrtId": 1091640305,
+      "warehouseId": 120762,
+      "warehouseName": "Электросталь",
+      "regionName": "Центральный",
+      "quantity": 0,
+      "inWayToClient": 1,
+      "inWayFromClient": 0
+    },
+    {
+      "nmId": 754549033,
+      "chrtId": 1091640305,
+      "warehouseId": 130744,
+      "warehouseName": "Краснодар",
+      "regionName": "Южный и Северо-Кавказский",
+      "quantity": 0,
+      "inWayToClient": 1,
+      "inWayFromClient": 0
+    },
+    {
+      "nmId": 754549033,
+      "chrtId": 1091640305,
+      "warehouseId": 210557,
+      "warehouseName": "Белогорск",
+      "regionName": "Дальневосточный и Сибирский",
+      "quantity": 0,
+      "inWayToClient": 0,
+      "inWayFromClient": 1
+    },
+    {
+      "nmId": 754549033,
+      "chrtId": 1091640305,
+      "warehouseId": 300571,
+      "warehouseName": "Екатеринбург - Перспективная 14",
+      "regionName": "Уральский",
+      "quantity": 0,
+      "inWayToClient": 2,
+      "inWayFromClient": 0
+    },
+    {
+      "nmId": 754549033,
+      "chrtId": 1091640305,
+      "warehouseId": 50045809,
+      "warehouseName": "Пенза WB",
+      "regionName": "Приволжский",
+      "quantity": 0,
+      "inWayToClient": 0,
+      "inWayFromClient": 1
+    },
+    {
+      "nmId": 754549033,
+      "chrtId": 1091640306,
+      "warehouseId": 0,
+      "warehouseName": "Остальные",
+      "regionName": "Центральный",
+      "quantity": 0,
+      "inWayToClient": 92,
+      "inWayFromClient": 4
+    },
+    {
+      "nmId": 754549033,
+      "chrtId": 1091640306,
+      "warehouseId": 131643,
+      "warehouseName": "склад продавца Иркутск",
+      "regionName": "Дальневосточный и Сибирский",
+      "quantity": 0,
+      "inWayToClient": 1,
+      "inWayFromClient": 0
+    },
+    {
+      "nmId": 754549033,
+      "chrtId": 1091640306,
+      "warehouseId": 160030,
+      "warehouseName": "Липецк",
+      "regionName": "Центральный",
+      "quantity": 0,
+      "inWayToClient": 2,
+      "inWayFromClient": 0
+    },
+    {
+      "nmId": 754549033,
+      "chrtId": 1091640306,
+      "warehouseId": 168458,
+      "warehouseName": "Омск",
+      "regionName": "Дальневосточный и Сибирский",
+      "quantity": 0,
+      "inWayToClient": 1,
+      "inWayFromClient": 0
+    },
+    {
+      "nmId": 754549033,
+      "chrtId": 1091640306,
+      "warehouseId": 205228,
+      "warehouseName": "Белая дача",
+      "regionName": "Центральный",
+      "quantity": 0,
+      "inWayToClient": 1,
+      "inWayFromClient": 0
+    },
+    {
+      "nmId": 754549033,
+      "chrtId": 1091640306,
+      "warehouseId": 207743,
+      "warehouseName": "Пушкино",
+      "regionName": "Центральный",
+      "quantity": 0,
+      "inWayToClient": 1,
+      "inWayFromClient": 0
+    },
+    {
+      "nmId": 754549033,
+      "chrtId": 1091640306,
+      "warehouseId": 208277,
+      "warehouseName": "Невинномысск",
+      "regionName": "Южный и Северо-Кавказский",
+      "quantity": 36,
+      "inWayToClient": 4,
+      "inWayFromClient": 0
+    },
+    {
+      "nmId": 754549033,
+      "chrtId": 1091640306,
+      "warehouseId": 218210,
+      "warehouseName": "Обухово",
+      "regionName": "Центральный",
+      "quantity": 0,
+      "inWayToClient": 1,
+      "inWayFromClient": 0
+    },
+    {
+      "nmId": 754549033,
+      "chrtId": 1091640306,
+      "warehouseId": 218644,
+      "warehouseName": "СЦ Хабаровск",
+      "regionName": "Дальневосточный и Сибирский",
+      "quantity": 0,
+      "inWayToClient": 1,
+      "inWayFromClient": 0
+    },
+    {
+      "nmId": 754549033,
+      "chrtId": 1091640306,
+      "warehouseId": 301760,
+      "warehouseName": "Рязань (Тюшевское)",
+      "regionName": "Центральный",
+      "quantity": 0,
+      "inWayToClient": 2,
+      "inWayFromClient": 0
+    },
+    {
+      "nmId": 754549033,
+      "chrtId": 1091640306,
+      "warehouseId": 301808,
+      "warehouseName": "Воронеж WB",
+      "regionName": "Центральный",
+      "quantity": 9,
+      "inWayToClient": 12,
+      "inWayFromClient": 4
+    },
+    {
+      "nmId": 754549033,
+      "chrtId": 1091640306,
+      "warehouseId": 301920,
+      "warehouseName": "Пятигорск, Этока",
+      "regionName": "Южный и Северо-Кавказский",
+      "quantity": 0,
+      "inWayToClient": 1,
+      "inWayFromClient": 0
+    },
+    {
+      "nmId": 754549033,
+      "chrtId": 1091640306,
+      "warehouseId": 302769,
+      "warehouseName": "Архангельск Ленина",
+      "regionName": "Северо-Западный",
+      "quantity": 0,
+      "inWayToClient": 1,
+      "inWayFromClient": 0
+    },
+    {
+      "nmId": 754549033,
+      "chrtId": 1091640306,
+      "warehouseId": 315199,
+      "warehouseName": "Оренбург Центральная",
+      "regionName": "Приволжский",
+      "quantity": 0,
+      "inWayToClient": 1,
+      "inWayFromClient": 0
+    },
+    {
+      "nmId": 754549033,
+      "chrtId": 1091640306,
+      "warehouseId": 318294,
+      "warehouseName": "Софьино",
+      "regionName": "Центральный",
+      "quantity": 0,
+      "inWayToClient": 2,
+      "inWayFromClient": 0
+    },
+    {
+      "nmId": 754549033,
+      "chrtId": 1091640306,
+      "warehouseId": 324108,
+      "warehouseName": "Астана Карагандинское шоссе",
+      "regionName": "Казахстан",
+      "quantity": 0,
+      "inWayToClient": 1,
+      "inWayFromClient": 0
+    },
+    {
+      "nmId": 754549033,
+      "chrtId": 1091640306,
+      "warehouseId": 50045809,
+      "warehouseName": "Пенза WB",
+      "regionName": "Приволжский",
+      "quantity": 30,
+      "inWayToClient": 9,
+      "inWayFromClient": 0
+    },
+    {
+      "nmId": 754606396,
+      "chrtId": 1091724602,
+      "warehouseId": 0,
+      "warehouseName": "Остальные",
+      "regionName": "Центральный",
+      "quantity": 0,
+      "inWayToClient": 311,
+      "inWayFromClient": 19
+    },
+    {
+      "nmId": 754606396,
+      "chrtId": 1091724602,
+      "warehouseId": 120762,
+      "warehouseName": "Электросталь",
+      "regionName": "Центральный",
+      "quantity": 0,
+      "inWayToClient": 2,
+      "inWayFromClient": 0
+    },
+    {
+      "nmId": 754606396,
+      "chrtId": 1091724602,
+      "warehouseId": 140302,
+      "warehouseName": "Курск",
+      "regionName": "Центральный",
+      "quantity": 0,
+      "inWayToClient": 1,
+      "inWayFromClient": 1
+    },
+    {
+      "nmId": 754606396,
+      "chrtId": 1091724602,
+      "warehouseId": 160030,
+      "warehouseName": "Липецк",
+      "regionName": "Центральный",
+      "quantity": 0,
+      "inWayToClient": 1,
+      "inWayFromClient": 0
+    },
+    {
+      "nmId": 754606396,
+      "chrtId": 1091724602,
+      "warehouseId": 161003,
+      "warehouseName": "Сургут",
+      "regionName": "Уральский",
+      "quantity": 0,
+      "inWayToClient": 1,
+      "inWayFromClient": 0
+    },
+    {
+      "nmId": 754606396,
+      "chrtId": 1091724602,
+      "warehouseId": 168458,
+      "warehouseName": "Омск",
+      "regionName": "Дальневосточный и Сибирский",
+      "quantity": 0,
+      "inWayToClient": 1,
+      "inWayFromClient": 0
+    },
+    {
+      "nmId": 754606396,
+      "chrtId": 1091724602,
+      "warehouseId": 204615,
+      "warehouseName": "Томск",
+      "regionName": "Дальневосточный и Сибирский",
+      "quantity": 0,
+      "inWayToClient": 0,
+      "inWayFromClient": 2
+    },
+    {
+      "nmId": 754606396,
+      "chrtId": 1091724602,
+      "warehouseId": 205228,
+      "warehouseName": "Белая дача",
+      "regionName": "Центральный",
+      "quantity": 0,
+      "inWayToClient": 2,
+      "inWayFromClient": 0
+    },
+    {
+      "nmId": 754606396,
+      "chrtId": 1091724602,
+      "warehouseId": 205349,
+      "warehouseName": "Мурманск",
+      "regionName": "Северо-Западный",
+      "quantity": 0,
+      "inWayToClient": 1,
+      "inWayFromClient": 0
+    },
+    {
+      "nmId": 754606396,
+      "chrtId": 1091724602,
+      "warehouseId": 206348,
+      "warehouseName": "Тула",
+      "regionName": "Центральный",
+      "quantity": 0,
+      "inWayToClient": 1,
+      "inWayFromClient": 0
+    },
+    {
+      "nmId": 754606396,
+      "chrtId": 1091724602,
+      "warehouseId": 210127,
+      "warehouseName": "Внуково",
+      "regionName": "Центральный",
+      "quantity": 0,
+      "inWayToClient": 2,
+      "inWayFromClient": 0
+    },
+    {
+      "nmId": 754606396,
+      "chrtId": 1091724602,
+      "warehouseId": 210515,
+      "warehouseName": "Вёшки",
+      "regionName": "Центральный",
+      "quantity": 0,
+      "inWayToClient": 1,
+      "inWayFromClient": 0
+    },
+    {
+      "nmId": 754606396,
+      "chrtId": 1091724602,
+      "warehouseId": 210557,
+      "warehouseName": "Белогорск",
+      "regionName": "Дальневосточный и Сибирский",
+      "quantity": 0,
+      "inWayToClient": 1,
+      "inWayFromClient": 0
+    },
+    {
+      "nmId": 754606396,
+      "chrtId": 1091724602,
+      "warehouseId": 218210,
+      "warehouseName": "Обухово",
+      "regionName": "Центральный",
+      "quantity": 0,
+      "inWayToClient": 6,
+      "inWayFromClient": 0
+    },
+    {
+      "nmId": 754606396,
+      "chrtId": 1091724602,
+      "warehouseId": 218225,
+      "warehouseName": "Челябинск",
+      "regionName": "Уральский",
+      "quantity": 0,
+      "inWayToClient": 2,
+      "inWayFromClient": 0
+    },
+    {
+      "nmId": 754606396,
+      "chrtId": 1091724602,
+      "warehouseId": 218628,
+      "warehouseName": "СЦ Ижевск",
+      "regionName": "Приволжский",
+      "quantity": 0,
+      "inWayToClient": 1,
+      "inWayFromClient": 0
+    },
+    {
+      "nmId": 754606396,
+      "chrtId": 1091724602,
+      "warehouseId": 218644,
+      "warehouseName": "СЦ Хабаровск",
+      "regionName": "Дальневосточный и Сибирский",
+      "quantity": 0,
+      "inWayToClient": 1,
+      "inWayFromClient": 0
+    },
+    {
+      "nmId": 754606396,
+      "chrtId": 1091724602,
+      "warehouseId": 218674,
+      "warehouseName": "Чита",
+      "regionName": "Дальневосточный и Сибирский",
+      "quantity": 0,
+      "inWayToClient": 1,
+      "inWayFromClient": 0
+    },
+    {
+      "nmId": 754606396,
+      "chrtId": 1091724602,
+      "warehouseId": 300168,
+      "warehouseName": "Радумля 1",
+      "regionName": "Центральный",
+      "quantity": 0,
+      "inWayToClient": 2,
+      "inWayFromClient": 0
+    },
+    {
+      "nmId": 754606396,
+      "chrtId": 1091724602,
+      "warehouseId": 300461,
+      "warehouseName": "Гомель 2",
+      "regionName": "Беларусь",
+      "quantity": 0,
+      "inWayToClient": 0,
+      "inWayFromClient": 1
+    },
+    {
+      "nmId": 754606396,
+      "chrtId": 1091724602,
+      "warehouseId": 300571,
+      "warehouseName": "Екатеринбург - Перспективная 14",
+      "regionName": "Уральский",
+      "quantity": 0,
+      "inWayToClient": 1,
+      "inWayFromClient": 0
+    },
+    {
+      "nmId": 754606396,
+      "chrtId": 1091724602,
+      "warehouseId": 301760,
+      "warehouseName": "Рязань (Тюшевское)",
+      "regionName": "Центральный",
+      "quantity": 0,
+      "inWayToClient": 1,
+      "inWayFromClient": 0
+    },
+    {
+      "nmId": 754606396,
+      "chrtId": 1091724602,
+      "warehouseId": 301805,
+      "warehouseName": "Новосемейкино",
+      "regionName": "Приволжский",
+      "quantity": 0,
+      "inWayToClient": 1,
+      "inWayFromClient": 0
+    },
+    {
+      "nmId": 754606396,
+      "chrtId": 1091724602,
+      "warehouseId": 301808,
+      "warehouseName": "Воронеж WB",
+      "regionName": "Центральный",
+      "quantity": 408,
+      "inWayToClient": 111,
+      "inWayFromClient": 11
+    },
+    {
+      "nmId": 754606396,
+      "chrtId": 1091724602,
+      "warehouseId": 301809,
+      "warehouseName": "Котовск",
+      "regionName": "Центральный",
+      "quantity": 0,
+      "inWayToClient": 1,
+      "inWayFromClient": 0
+    },
+    {
+      "nmId": 754606396,
+      "chrtId": 1091724602,
+      "warehouseId": 301920,
+      "warehouseName": "Пятигорск, Этока",
+      "regionName": "Южный и Северо-Кавказский",
+      "quantity": 0,
+      "inWayToClient": 1,
+      "inWayFromClient": 0
+    },
+    {
+      "nmId": 754606396,
+      "chrtId": 1091724602,
+      "warehouseId": 302737,
+      "warehouseName": "СЦ Барнаул",
+      "regionName": "Дальневосточный и Сибирский",
+      "quantity": 0,
+      "inWayToClient": 3,
+      "inWayFromClient": 1
+    },
+    {
+      "nmId": 754606396,
+      "chrtId": 1091724602,
+      "warehouseId": 312259,
+      "warehouseName": "СЦ Шушары",
+      "regionName": "Северо-Западный",
+      "quantity": 0,
+      "inWayToClient": 3,
+      "inWayFromClient": 2
+    },
+    {
+      "nmId": 754606396,
+      "chrtId": 1091724602,
+      "warehouseId": 314137,
+      "warehouseName": "СЦ Гродно",
+      "regionName": "Беларусь",
+      "quantity": 0,
+      "inWayToClient": 1,
+      "inWayFromClient": 0
+    },
+    {
+      "nmId": 754606396,
+      "chrtId": 1091724602,
+      "warehouseId": 318294,
+      "warehouseName": "Софьино",
+      "regionName": "Центральный",
+      "quantity": 0,
+      "inWayToClient": 2,
+      "inWayFromClient": 0
+    },
+    {
+      "nmId": 754606396,
+      "chrtId": 1091724602,
+      "warehouseId": 324108,
+      "warehouseName": "Астана Карагандинское шоссе",
+      "regionName": "Казахстан",
+      "quantity": 0,
+      "inWayToClient": 1,
+      "inWayFromClient": 0
+    },
+    {
+      "nmId": 754606396,
+      "chrtId": 1091724602,
+      "warehouseId": 361670,
+      "warehouseName": "Махачкала Сепараторная",
+      "regionName": "Южный и Северо-Кавказский",
+      "quantity": 0,
+      "inWayToClient": 4,
+      "inWayFromClient": 0
+    },
+    {
+      "nmId": 754606396,
+      "chrtId": 1091724602,
+      "warehouseId": 387234,
+      "warehouseName": "Истра WB",
+      "regionName": "Центральный",
+      "quantity": 0,
+      "inWayToClient": 1,
+      "inWayFromClient": 0
+    },
+    {
+      "nmId": 754606396,
+      "chrtId": 1091724602,
+      "warehouseId": 50045809,
+      "warehouseName": "Пенза WB",
+      "regionName": "Приволжский",
+      "quantity": 0,
+      "inWayToClient": 18,
+      "inWayFromClient": 1
+    },
+    {
+      "nmId": 754606396,
+      "chrtId": 1091724602,
+      "warehouseId": 50047765,
+      "warehouseName": "Нижний Тагил Восточное  WB",
+      "regionName": "Уральский",
+      "quantity": 0,
+      "inWayToClient": 1,
+      "inWayFromClient": 0
+    },
+    {
+      "nmId": 754606396,
+      "chrtId": 1091724602,
+      "warehouseId": 50144199,
+      "warehouseName": "СЦ Нижний Новгород Ларина",
+      "regionName": "Приволжский",
+      "quantity": 0,
+      "inWayToClient": 2,
+      "inWayFromClient": 0
+    },
+    {
+      "nmId": 754606396,
+      "chrtId": 1091724602,
+      "warehouseId": 50150595,
+      "warehouseName": "СК Ереван",
+      "regionName": "Армения",
+      "quantity": 1,
+      "inWayToClient": 0,
+      "inWayFromClient": 0
+    },
+    {
+      "nmId": 866360474,
+      "chrtId": 1304645134,
+      "warehouseId": 0,
+      "warehouseName": "Остальные",
+      "regionName": "Центральный",
+      "quantity": 0,
+      "inWayToClient": 35,
+      "inWayFromClient": 2
+    },
+    {
+      "nmId": 866360474,
+      "chrtId": 1304645134,
+      "warehouseId": 507,
+      "warehouseName": "Коледино",
+      "regionName": "Центральный",
+      "quantity": 0,
+      "inWayToClient": 1,
+      "inWayFromClient": 0
+    },
+    {
+      "nmId": 866360474,
+      "chrtId": 1304645134,
+      "warehouseId": 205228,
+      "warehouseName": "Белая дача",
+      "regionName": "Центральный",
+      "quantity": 0,
+      "inWayToClient": 1,
+      "inWayFromClient": 0
+    },
+    {
+      "nmId": 866360474,
+      "chrtId": 1304645134,
+      "warehouseId": 206708,
+      "warehouseName": "Новокузнецк WB",
+      "regionName": "Дальневосточный и Сибирский",
+      "quantity": 0,
+      "inWayToClient": 1,
+      "inWayFromClient": 0
+    },
+    {
+      "nmId": 866360474,
+      "chrtId": 1304645134,
+      "warehouseId": 210515,
+      "warehouseName": "Вёшки",
+      "regionName": "Центральный",
+      "quantity": 0,
+      "inWayToClient": 1,
+      "inWayFromClient": 0
+    },
+    {
+      "nmId": 866360474,
+      "chrtId": 1304645134,
+      "warehouseId": 213849,
+      "warehouseName": "Кемерово",
+      "regionName": "Дальневосточный и Сибирский",
+      "quantity": 0,
+      "inWayToClient": 1,
+      "inWayFromClient": 0
+    },
+    {
+      "nmId": 866360474,
+      "chrtId": 1304645134,
+      "warehouseId": 218210,
+      "warehouseName": "Обухово",
+      "regionName": "Центральный",
+      "quantity": 0,
+      "inWayToClient": 2,
+      "inWayFromClient": 1
+    },
+    {
+      "nmId": 866360474,
+      "chrtId": 1304645134,
+      "warehouseId": 218616,
+      "warehouseName": "Ростов, Гайдара",
+      "regionName": "Южный и Северо-Кавказский",
+      "quantity": 0,
+      "inWayToClient": 1,
+      "inWayFromClient": 0
+    },
+    {
+      "nmId": 866360474,
+      "chrtId": 1304645134,
+      "warehouseId": 218674,
+      "warehouseName": "Чита",
+      "regionName": "Дальневосточный и Сибирский",
+      "quantity": 0,
+      "inWayToClient": 1,
+      "inWayFromClient": 0
+    },
+    {
+      "nmId": 866360474,
+      "chrtId": 1304645134,
+      "warehouseId": 301808,
+      "warehouseName": "Воронеж WB",
+      "regionName": "Центральный",
+      "quantity": 225,
+      "inWayToClient": 13,
+      "inWayFromClient": 3
+    },
+    {
+      "nmId": 866360474,
+      "chrtId": 1304645134,
+      "warehouseId": 302737,
+      "warehouseName": "СЦ Барнаул",
+      "regionName": "Дальневосточный и Сибирский",
+      "quantity": 0,
+      "inWayToClient": 1,
+      "inWayFromClient": 0
+    },
+    {
+      "nmId": 866360474,
+      "chrtId": 1304645134,
+      "warehouseId": 314137,
+      "warehouseName": "СЦ Гродно",
+      "regionName": "Беларусь",
+      "quantity": 0,
+      "inWayToClient": 1,
+      "inWayFromClient": 0
+    },
+    {
+      "nmId": 866360474,
+      "chrtId": 1304645134,
+      "warehouseId": 361670,
+      "warehouseName": "Махачкала Сепараторная",
+      "regionName": "Южный и Северо-Кавказский",
+      "quantity": 0,
+      "inWayToClient": 1,
+      "inWayFromClient": 0
+    },
+    {
+      "nmId": 869367544,
+      "chrtId": 1309317972,
+      "warehouseId": 0,
+      "warehouseName": "Остальные",
+      "regionName": "Центральный",
+      "quantity": 0,
+      "inWayToClient": 52,
+      "inWayFromClient": 3
+    },
+    {
+      "nmId": 869367544,
+      "chrtId": 1309317972,
+      "warehouseId": 131643,
+      "warehouseName": "склад продавца Иркутск",
+      "regionName": "Дальневосточный и Сибирский",
+      "quantity": 0,
+      "inWayToClient": 1,
+      "inWayFromClient": 0
+    },
+    {
+      "nmId": 869367544,
+      "chrtId": 1309317972,
+      "warehouseId": 206236,
+      "warehouseName": "Белые Столбы",
+      "regionName": "Центральный",
+      "quantity": 0,
+      "inWayToClient": 1,
+      "inWayFromClient": 0
+    },
+    {
+      "nmId": 869367544,
+      "chrtId": 1309317972,
+      "warehouseId": 208277,
+      "warehouseName": "Невинномысск",
+      "regionName": "Южный и Северо-Кавказский",
+      "quantity": 68,
+      "inWayToClient": 0,
+      "inWayFromClient": 0
+    },
+    {
+      "nmId": 869367544,
+      "chrtId": 1309317972,
+      "warehouseId": 210127,
+      "warehouseName": "Внуково",
+      "regionName": "Центральный",
+      "quantity": 0,
+      "inWayToClient": 1,
+      "inWayFromClient": 0
+    },
+    {
+      "nmId": 869367544,
+      "chrtId": 1309317972,
+      "warehouseId": 301808,
+      "warehouseName": "Воронеж WB",
+      "regionName": "Центральный",
+      "quantity": 359,
+      "inWayToClient": 17,
+      "inWayFromClient": 2
+    },
+    {
+      "nmId": 869367544,
+      "chrtId": 1309317972,
+      "warehouseId": 301809,
+      "warehouseName": "Котовск",
+      "regionName": "Центральный",
+      "quantity": 0,
+      "inWayToClient": 1,
+      "inWayFromClient": 0
+    },
+    {
+      "nmId": 869367544,
+      "chrtId": 1309317972,
+      "warehouseId": 50064725,
+      "warehouseName": "СЦ Шымкент Асар WB",
+      "regionName": "Казахстан",
+      "quantity": 0,
+      "inWayToClient": 1,
+      "inWayFromClient": 0
+    },
+    {
+      "nmId": 929900180,
+      "chrtId": 1403398878,
+      "warehouseId": 0,
+      "warehouseName": "Остальные",
+      "regionName": "Центральный",
+      "quantity": 0,
+      "inWayToClient": 20,
+      "inWayFromClient": 1
+    },
+    {
+      "nmId": 929900180,
+      "chrtId": 1403398878,
+      "warehouseId": 507,
+      "warehouseName": "Коледино",
+      "regionName": "Центральный",
+      "quantity": 0,
+      "inWayToClient": 1,
+      "inWayFromClient": 0
+    },
+    {
+      "nmId": 929900180,
+      "chrtId": 1403398878,
+      "warehouseId": 208277,
+      "warehouseName": "Невинномысск",
+      "regionName": "Южный и Северо-Кавказский",
+      "quantity": 10,
+      "inWayToClient": 0,
+      "inWayFromClient": 0
+    },
+    {
+      "nmId": 929900180,
+      "chrtId": 1403398878,
+      "warehouseId": 214951,
+      "warehouseName": "Артём",
+      "regionName": "Дальневосточный и Сибирский",
+      "quantity": 0,
+      "inWayToClient": 1,
+      "inWayFromClient": 0
+    },
+    {
+      "nmId": 929900180,
+      "chrtId": 1403398878,
+      "warehouseId": 218644,
+      "warehouseName": "СЦ Хабаровск",
+      "regionName": "Дальневосточный и Сибирский",
+      "quantity": 0,
+      "inWayToClient": 2,
+      "inWayFromClient": 0
+    },
+    {
+      "nmId": 929900180,
+      "chrtId": 1403398878,
+      "warehouseId": 301808,
+      "warehouseName": "Воронеж WB",
+      "regionName": "Центральный",
+      "quantity": 105,
+      "inWayToClient": 8,
+      "inWayFromClient": 0
+    },
+    {
+      "nmId": 929900180,
+      "chrtId": 1403398878,
+      "warehouseId": 338827,
+      "warehouseName": "Ярославль Громова СЦ  WB",
+      "regionName": "Центральный",
+      "quantity": 0,
+      "inWayToClient": 1,
+      "inWayFromClient": 0
+    }
+  ]
+}

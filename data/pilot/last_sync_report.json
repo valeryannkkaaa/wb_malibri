@@ -1,76 +1,78 @@
 {
-  "synced_at": "2026-07-05T18:14:00.856067+00:00",
+  "synced_at": "2026-07-09T09:04:18.744061+00:00",
   "campaigns": [
     {
       "wb_campaign_id": 31275686,
       "nm_id": 624468743,
-      "keywords": 52,
+      "keywords": 39,
       "errors": [],
       "top_keyword": "перчатки для уборки",
       "top_stats": {
-        "shows": 9546,
-        "ctr": 14.68,
-        "orders": 527
+        "shows": 9658,
+        "ctr": 16.16,
+        "orders": 568
       }
     },
     {
       "wb_campaign_id": 31314341,
       "nm_id": 629004626,
-      "keywords": 77,
+      "keywords": 76,
       "errors": [],
       "top_keyword": "тряпка для стекол без разводов",
       "top_stats": {
-        "shows": 4493,
-        "ctr": 10.44,
-        "orders": 97
+        "shows": 4336,
+        "ctr": 10.65,
+        "orders": 106
       }
     },
     {
       "wb_campaign_id": 33206165,
       "nm_id": 754427875,
-      "keywords": 50,
+      "keywords": 46,
       "errors": [],
-      "top_keyword": "перчатки для уборки",
+      "top_keyword": "перчатки резиновые хозяйственные",
       "top_stats": {
-        "shows": 5099,
-        "ctr": 6.69,
-        "orders": 135
+        "shows": 2790,
+        "ctr": 14.8,
+        "orders": 143
       }
     },
     {
       "wb_campaign_id": 33206346,
       "nm_id": 754549033,
-      "keywords": 64,
+      "keywords": 63,
       "errors": [],
       "top_keyword": "перчатки для уборки",
+      "fullstats_ok": false,
       "top_stats": {
-        "shows": 8061,
-        "ctr": 9.07,
-        "orders": 105
-      }
+        "shows": 8660,
+        "ctr": 10.1,
+        "orders": 127
+      },
+      "synced_at": "2026-07-09T09:04:18.744061+00:00"
     },
     {
       "wb_campaign_id": 35098216,
       "nm_id": 754606396,
-      "keywords": 59,
+      "keywords": 58,
       "errors": [],
       "top_keyword": "мочалка варежка для тела",
       "top_stats": {
-        "shows": 483,
-        "ctr": 10.35,
+        "shows": 458,
+        "ctr": 10.7,
         "orders": 12
       }
     },
     {
       "wb_campaign_id": 35110541,
       "nm_id": 866360474,
-      "keywords": 60,
+      "keywords": 59,
       "errors": [],
       "top_keyword": "пенящиеся салфетки для уборки",
       "top_stats": {
-        "shows": 1544,
-        "ctr": 12.63,
-        "orders": 25
+        "shows": 1433,
+        "ctr": 12.0,
+        "orders": 20
       }
     },
     {
@@ -80,8 +82,8 @@
       "errors": [],
       "top_keyword": "спонж для умывания",
       "top_stats": {
-        "shows": 1105,
-        "ctr": 5.88,
+        "shows": 1282,
+        "ctr": 5.46,
         "orders": 10
       }
     },
@@ -92,33 +94,33 @@
       "errors": [],
       "top_keyword": "салфетки из микрофибры 30х30",
       "top_stats": {
-        "shows": 166,
-        "ctr": 10.84,
-        "orders": 29
+        "shows": 154,
+        "ctr": 9.74,
+        "orders": 28
       }
     },
     {
       "wb_campaign_id": 37328842,
       "nm_id": 1001645746,
-      "keywords": 14,
+      "keywords": 13,
       "errors": [],
       "top_keyword": "губка для уборки",
       "top_stats": {
-        "shows": 588,
-        "ctr": 6.12,
-        "orders": 6
+        "shows": 698,
+        "ctr": 5.73,
+        "orders": 7
       }
     },
     {
       "wb_campaign_id": 37636194,
       "nm_id": 1085061548,
-      "keywords": 8,
+      "keywords": 9,
       "errors": [],
       "top_keyword": "салфетки для кухни",
       "top_stats": {
-        "shows": 580,
-        "ctr": 4.48,
-        "orders": 7
+        "shows": 724,
+        "ctr": 4.7,
+        "orders": 9
       }
     }
   ],
@@ -129,7 +131,7 @@
     "869367544": "салфетки из микрофибры 30х30",
     "1001645746": "губка для уборки",
     "624468743": "перчатки для уборки",
-    "754427875": "перчатки для уборки",
+    "754427875": "перчатки резиновые хозяйственные",
     "629004626": "тряпка для стекол без разводов",
     "754606396": "мочалка варежка для тела",
     "1085061548": "салфетки для кухни"

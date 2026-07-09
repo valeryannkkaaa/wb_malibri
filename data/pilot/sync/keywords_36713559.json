@@ -1,0 +1,128 @@
+{
+  "wb_campaign_id": 36713559,
+  "nm_id": 869367544,
+  "synced_at": "2026-07-06T11:40:28.342228+00:00",
+  "keywords": [
+    {
+      "keyword": "тряпки для кухни для стола",
+      "shows": 2383,
+      "clicks": 209,
+      "spend_kopecks": 204611,
+      "orders": 26,
+      "ctr_calculated": 8.77,
+      "cpc_calculated_kopecks": 979,
+      "current_bid_kopecks": 800,
+      "status": "managed"
+    },
+    {
+      "keyword": "микрофибра тряпка",
+      "shows": 529,
+      "clicks": 62,
+      "spend_kopecks": 32860,
+      "orders": 20,
+      "ctr_calculated": 11.72,
+      "cpc_calculated_kopecks": 530,
+      "current_bid_kopecks": 600,
+      "status": "managed"
+    },
+    {
+      "keyword": "тряпка для кухня микрофибра",
+      "shows": 183,
+      "clicks": 12,
+      "spend_kopecks": 11280,
+      "orders": 2,
+      "ctr_calculated": 6.56,
+      "cpc_calculated_kopecks": 940,
+      "current_bid_kopecks": 700,
+      "status": "managed"
+    },
+    {
+      "keyword": "салфетки из микрофибры 30х30",
+      "shows": 154,
+      "clicks": 15,
+      "spend_kopecks": 10785,
+      "orders": 28,
+      "ctr_calculated": 9.74,
+      "cpc_calculated_kopecks": 719,
+      "current_bid_kopecks": 700,
+      "status": "managed"
+    },
+    {
+      "keyword": "салфетки из микрофибры для кухни 30х30",
+      "shows": 107,
+      "clicks": 17,
+      "spend_kopecks": 7497,
+      "orders": 2,
+      "ctr_calculated": 15.89,
+      "cpc_calculated_kopecks": 441,
+      "current_bid_kopecks": 700,
+      "status": "managed"
+    },
+    {
+      "keyword": "тряпки для кухни для стола из микрофибры",
+      "shows": 91,
+      "clicks": 15,
+      "spend_kopecks": 5895,
+      "orders": 2,
+      "ctr_calculated": 16.48,
+      "cpc_calculated_kopecks": 393,
+      "current_bid_kopecks": 800,
+      "status": "pending_100_shows"
+    },
+    {
+      "keyword": "салфетки 30 30 микрофибра",
+      "shows": 78,
+      "clicks": 4,
+      "spend_kopecks": 2732,
+      "orders": 0,
+      "ctr_calculated": 5.13,
+      "cpc_calculated_kopecks": 683,
+      "current_bid_kopecks": null,
+      "status": "pending_100_shows"
+    },
+    {
+      "keyword": "тряпка для пола микрофибра",
+      "shows": 69,
+      "clicks": 0,
+      "spend_kopecks": 0,
+      "orders": 0,
+      "ctr_calculated": 0.0,
+      "cpc_calculated_kopecks": null,
+      "current_bid_kopecks": null,
+      "status": "pending_100_shows"
+    },
+    {
+      "keyword": "половые тряпки для пола",
+      "shows": 63,
+      "clicks": 1,
+      "spend_kopecks": 2205,
+      "orders": 0,
+      "ctr_calculated": 1.59,
+      "cpc_calculated_kopecks": 2205,
+      "current_bid_kopecks": null,
+      "status": "pending_100_shows"
+    },
+    {
+      "keyword": "тряпка из микрофибры",
+      "shows": 10,
+      "clicks": 0,
+      "spend_kopecks": 0,
+      "orders": 0,
+      "ctr_calculated": 0.0,
+      "cpc_calculated_kopecks": null,
+      "current_bid_kopecks": null,
+      "status": "pending_100_shows"
+    },
+    {
+      "keyword": "кухонная тряпка",
+      "shows": 0,
+      "clicks": 0,
+      "spend_kopecks": 0,
+      "orders": 5,
+      "ctr_calculated": 0.0,
+      "cpc_calculated_kopecks": null,
+      "current_bid_kopecks": null,
+      "status": "pending_100_shows"
+    }
+  ]
+}

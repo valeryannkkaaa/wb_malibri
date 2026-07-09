@@ -22,5 +22,7 @@ if ($inUse) {
     exit 1
 }
 
-Write-Host "Advert dashboard: http://127.0.0.1:$Port"
+Write-Host "Advert dashboard: http://127.0.0.1:$Port" -ForegroundColor Green
+Write-Host "  /  or  /advert  — главная" -ForegroundColor DarkGray
+Write-Host "  /advert/decisions — audit log" -ForegroundColor DarkGray
 python -m uvicorn wb_advert.app:app --host 127.0.0.1 --port $Port --reload

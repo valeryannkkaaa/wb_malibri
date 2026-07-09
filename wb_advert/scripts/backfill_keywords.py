@@ -59,8 +59,11 @@ def main() -> int:
             with_fullstats=False,
         )
         if not result.keywords:
-            err = (result.errors[0] if result.errors else "unknown")[:120]
+            err = (result.errors[0] if result.errors else "unknown")[:200]
             print(f"  FAILED: {err}")
+            if "401" in err or "withdrawn" in err.lower() or "unauthorized" in err.lower():
+                print("  -> WB token revoked. Create new token in seller cabinet, update wb_advert_probe\\.env")
+                return 3
             if "429" in err:
                 print("  -> rate limit: wait 10-15 min, re-run with --skip-existing")
                 return 2

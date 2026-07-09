@@ -24,6 +24,10 @@ foreach ($id in $ids) {
         Write-Warning "429 at $id. Wait 15 min, then re-run: .\backfill_all.ps1"
         exit 1
     }
+    if ($code -eq 3) {
+        Write-Warning "Token invalid/revoked. Update WB_API_TOKEN in wb_advert_probe\.env then re-run."
+        exit 1
+    }
     if ($code -ne 0) {
         Write-Warning "Failed at $id (exit $code)"
         exit 1

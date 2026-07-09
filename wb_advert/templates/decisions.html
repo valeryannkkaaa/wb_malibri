@@ -1,0 +1,62 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Журнал решений — WB Advert</title>
+  <link rel="stylesheet" href="/static/advert.css">
+</head>
+<body>
+  {% include "_nav.html" %}
+  <header class="header">
+    <h1>Журнал решений optimizer</h1>
+    <p class="muted">Последние {{ rows|length }} записей · режим только рекомендации</p>
+  </header>
+
+  {% if cycle %}
+  <section class="status-bar">
+    <span class="badge cycle-{{ cycle.status }}">Цикл: {{ cycle.status|cycle_ru }}</span>
+    {% if cycle.age_minutes is not none %}<span class="badge">{{ cycle.age_minutes|round(0)|int }} мин назад</span>{% endif %}
+    {% if cycle.log_path %}<span class="badge" title="{{ cycle.log_path }}">лог</span>{% endif %}
+  </section>
+  {% endif %}
+
+  <table class="table sortable" data-default-sort="time:desc">
+    <thead>
+      <tr>
+        <th data-sort="date" data-col="time">Время (MSK)</th>
+        <th data-sort="number" data-col="advert">Кампания</th>
+        <th data-sort="number" data-col="nm">Артикул</th>
+        <th data-sort="string" data-col="kw">Ключевое слово</th>
+        <th data-sort="string" data-col="action">Действие</th>
+        <th data-sort="string" data-col="reason">Причина</th>
+        <th data-sort="number" data-col="cpc">CPC / ставка</th>
+      </tr>
+    </thead>
+    <tbody>
+      {% for r in rows %}
+      <tr>
+        <td data-sort-value="{{ r.decided_at or '' }}">{{ r.decided_at|dt_msk }}</td>
+        <td data-sort-value="{{ r.advert_id }}"><a href="/advert/products/{{ r.advert_id }}">{{ r.advert_id }}</a></td>
+        <td data-sort-value="{{ r.nm_id }}">{{ r.nm_id }}</td>
+        <td>{{ r.keyword }}</td>
+        <td data-sort-value="{{ r.action }}"><span class="action action-{{ r.action }}">{{ r.action|action_ru }}</span></td>
+        <td>{{ r.reason_text }}</td>
+        <td class="muted" data-sort-value="{% if r.before_state and r.before_state.cpc_kopecks %}{{ r.before_state.cpc_kopecks }}{% endif %}">
+          {% if r.before_state and r.before_state.cpc_kopecks %}
+            {{ (r.before_state.cpc_kopecks / 100)|round(2) }} ₽
+          {% else %}—{% endif %}
+          {% if r.after_state and r.after_state.bid_kopecks and r.before_state and r.before_state.bid_kopecks and r.after_state.bid_kopecks != r.before_state.bid_kopecks %}
+            → {{ (r.after_state.bid_kopecks / 100)|round(2) }} ₽
+          {% endif %}
+        </td>
+      </tr>
+      {% endfor %}
+    </tbody>
+  </table>
+  {% if not rows %}
+  <p class="muted">Пока нет записей. Запустите <code>python -m scripts.run_optimizer</code> или дождитесь планировщика.</p>
+  {% endif %}
+  <script src="/static/table-sort.js"></script>
+</body>
+</html>

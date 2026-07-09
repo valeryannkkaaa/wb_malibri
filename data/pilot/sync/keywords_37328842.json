@@ -1,0 +1,150 @@
+{
+  "wb_campaign_id": 37328842,
+  "nm_id": 1001645746,
+  "synced_at": "2026-07-06T11:40:52.893238+00:00",
+  "keywords": [
+    {
+      "keyword": "губка для уборки",
+      "shows": 698,
+      "clicks": 40,
+      "spend_kopecks": 64920,
+      "orders": 7,
+      "ctr_calculated": 5.73,
+      "cpc_calculated_kopecks": 1623,
+      "current_bid_kopecks": 1000,
+      "status": "managed"
+    },
+    {
+      "keyword": "кухонная тряпка",
+      "shows": 485,
+      "clicks": 23,
+      "spend_kopecks": 39422,
+      "orders": 2,
+      "ctr_calculated": 4.74,
+      "cpc_calculated_kopecks": 1714,
+      "current_bid_kopecks": null,
+      "status": "managed"
+    },
+    {
+      "keyword": "тряпка для уборки",
+      "shows": 420,
+      "clicks": 14,
+      "spend_kopecks": 25256,
+      "orders": 0,
+      "ctr_calculated": 3.33,
+      "cpc_calculated_kopecks": 1804,
+      "current_bid_kopecks": null,
+      "status": "managed"
+    },
+    {
+      "keyword": "салфетка для мытья посуды",
+      "shows": 162,
+      "clicks": 12,
+      "spend_kopecks": 12456,
+      "orders": 0,
+      "ctr_calculated": 7.41,
+      "cpc_calculated_kopecks": 1038,
+      "current_bid_kopecks": null,
+      "status": "managed"
+    },
+    {
+      "keyword": "тряпка для мытья посуды",
+      "shows": 153,
+      "clicks": 8,
+      "spend_kopecks": 11824,
+      "orders": 1,
+      "ctr_calculated": 5.23,
+      "cpc_calculated_kopecks": 1478,
+      "current_bid_kopecks": null,
+      "status": "managed"
+    },
+    {
+      "keyword": "кухонные салфетки для уборки",
+      "shows": 137,
+      "clicks": 5,
+      "spend_kopecks": 8800,
+      "orders": 1,
+      "ctr_calculated": 3.65,
+      "cpc_calculated_kopecks": 1760,
+      "current_bid_kopecks": null,
+      "status": "managed"
+    },
+    {
+      "keyword": "салфетка из микрофибры для кухня",
+      "shows": 104,
+      "clicks": 4,
+      "spend_kopecks": 5480,
+      "orders": 0,
+      "ctr_calculated": 3.85,
+      "cpc_calculated_kopecks": 1370,
+      "current_bid_kopecks": null,
+      "status": "managed"
+    },
+    {
+      "keyword": "салфетки для уборки двухсторонние",
+      "shows": 93,
+      "clicks": 9,
+      "spend_kopecks": 3258,
+      "orders": 1,
+      "ctr_calculated": 9.68,
+      "cpc_calculated_kopecks": 362,
+      "current_bid_kopecks": null,
+      "status": "pending_100_shows"
+    },
+    {
+      "keyword": "салфетка для посуды",
+      "shows": 92,
+      "clicks": 3,
+      "spend_kopecks": 4026,
+      "orders": 0,
+      "ctr_calculated": 3.26,
+      "cpc_calculated_kopecks": 1342,
+      "current_bid_kopecks": null,
+      "status": "pending_100_shows"
+    },
+    {
+      "keyword": "салфетки для кухни",
+      "shows": 91,
+      "clicks": 5,
+      "spend_kopecks": 5335,
+      "orders": 0,
+      "ctr_calculated": 5.49,
+      "cpc_calculated_kopecks": 1067,
+      "current_bid_kopecks": null,
+      "status": "pending_100_shows"
+    },
+    {
+      "keyword": "тряпка для посуды",
+      "shows": 73,
+      "clicks": 0,
+      "spend_kopecks": 0,
+      "orders": 0,
+      "ctr_calculated": 0.0,
+      "cpc_calculated_kopecks": null,
+      "current_bid_kopecks": null,
+      "status": "pending_100_shows"
+    },
+    {
+      "keyword": "салфетки тканевые",
+      "shows": 63,
+      "clicks": 1,
+      "spend_kopecks": 2205,
+      "orders": 0,
+      "ctr_calculated": 1.59,
+      "cpc_calculated_kopecks": 2205,
+      "current_bid_kopecks": null,
+      "status": "pending_100_shows"
+    },
+    {
+      "keyword": "для уборки",
+      "shows": 54,
+      "clicks": 1,
+      "spend_kopecks": 1890,
+      "orders": 0,
+      "ctr_calculated": 1.85,
+      "cpc_calculated_kopecks": 1890,
+      "current_bid_kopecks": null,
+      "status": "pending_100_shows"
+    }
+  ]
+}

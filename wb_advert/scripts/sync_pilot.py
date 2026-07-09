@@ -49,6 +49,7 @@ def load_synced_from_report(report_path: Path) -> dict[int, dict]:
 
 
 def merge_report(report_path: Path, new_campaigns: list[dict]) -> dict:
+    now = datetime.now(timezone.utc).isoformat()
     prev = {}
     if report_path.is_file():
         try:
@@ -57,16 +58,67 @@ def merge_report(report_path: Path, new_campaigns: list[dict]) -> dict:
             prev = {}
     by_id = {int(c["wb_campaign_id"]): c for c in prev.get("campaigns") or [] if c.get("wb_campaign_id")}
     for row in new_campaigns:
+        row.setdefault("synced_at", now)
         by_id[int(row["wb_campaign_id"])] = row
     keywords_map = dict(prev.get("primary_keywords") or {})
     for row in by_id.values():
         if row.get("top_keyword"):
             keywords_map[str(row["nm_id"])] = row["top_keyword"]
     return {
-        "synced_at": datetime.now(timezone.utc).isoformat(),
+        "synced_at": now,
         "campaigns": sorted(by_id.values(), key=lambda c: c["wb_campaign_id"]),
         "primary_keywords": keywords_map,
     }
+
+
+def pick_rotate_skus(ready: list, report_path: Path, limit: int = 1) -> list:
+    """Pick campaign(s) with oldest synced_at for incremental scheduler runs."""
+    report: dict = {}
+    if report_path.is_file():
+        try:
+            report = json.loads(report_path.read_text(encoding="utf-8"))
+        except (json.JSONDecodeError, OSError):
+            report = {}
+    by_advert = {int(c["wb_campaign_id"]): c for c in report.get("campaigns") or [] if c.get("wb_campaign_id")}
+    global_ts = report.get("synced_at") or ""
+
+    def sort_key(sku) -> str:
+        row = by_advert.get(sku.wb_campaign_search) or {}
+        return row.get("synced_at") or global_ts or ""
+
+    ordered = sorted(ready, key=sort_key)
+    return ordered[: max(limit, 1)]
+
+
+def should_fetch_fullstats(advert_id: int, report_path: Path, *, min_hours: int = 24) -> bool:
+    from wb_advert.storage.pilot_store import load_config
+
+    config = load_config(report_path.parent)
+    sync_cfg = config.get("sync") or {}
+    if not sync_cfg.get("fullstats_enabled", config.get("token_type") == "personal"):
+        return False
+    min_hours = int(sync_cfg.get("fullstats_min_hours") or 24)
+    if not report_path.is_file():
+        return True
+    try:
+        data = json.loads(report_path.read_text(encoding="utf-8"))
+    except (json.JSONDecodeError, OSError):
+        return True
+    for row in data.get("campaigns") or []:
+        if int(row.get("wb_campaign_id") or 0) != advert_id:
+            continue
+        if not row.get("fullstats_ok"):
+            return True
+        ts = row.get("fullstats_at") or row.get("synced_at")
+        if not ts:
+            return True
+        try:
+            then = datetime.fromisoformat(str(ts).replace("Z", "+00:00"))
+            age_h = (datetime.now(timezone.utc) - then).total_seconds() / 3600
+            return age_h >= min_hours
+        except ValueError:
+            return True
+    return True
 
 
 def resolve_pending(
@@ -143,6 +195,16 @@ def main() -> int:
         action="store_true",
         help="Re-sync all campaigns (disables --skip-synced)",
     )
+    parser.add_argument(
+        "--rotate",
+        action="store_true",
+        help="Sync oldest-updated campaign(s) — for scheduled incremental runs",
+    )
+    parser.add_argument(
+        "--with-fullstats",
+        action="store_true",
+        help="Force fullstats on this run",
+    )
     parser.add_argument("--report", type=Path, default=None, help="JSON report path")
     args = parser.parse_args()
     if args.force_all:
@@ -166,10 +228,16 @@ def main() -> int:
     skus = load_pilot_skus(data_dir / "pilot_skus.csv")
     ready = [s for s in skus if s.nm_id and not s.nm_id.startswith(PENDING_NM_PREFIX)]
     pending = [s for s in skus if s.nm_id.startswith(PENDING_NM_PREFIX)]
-    already_ok = load_synced_from_report(report_path) if args.skip_synced else {}
-    to_sync = [s for s in ready if s.wb_campaign_search not in already_ok]
-    if args.limit is not None and not args.resolve_nm and not args.resolve_only:
-        to_sync = to_sync[: args.limit]
+    already_ok = load_synced_from_report(report_path) if args.skip_synced and not args.rotate else {}
+    if args.rotate:
+        lim = args.limit if args.limit is not None else 1
+        to_sync = pick_rotate_skus(ready, report_path, lim)
+        skipped = 0
+    else:
+        to_sync = [s for s in ready if s.wb_campaign_search not in already_ok]
+        if args.limit is not None and not args.resolve_nm and not args.resolve_only:
+            to_sync = to_sync[: args.limit]
+        skipped = len(already_ok)
 
     if pending:
         print(f"{len(pending)} campaign(s) still PENDING nm_id - re-run with -ResolveNm after cooldown", flush=True)
@@ -180,10 +248,9 @@ def main() -> int:
     batch_campaigns: list[dict] = []
     nm_to_keyword: dict[str, str] = {}
     failures = 0
-    skipped = len(already_ok)
     stopped_429 = False
 
-    print(f"Sync queue: {len(to_sync)} campaign(s)", flush=True)
+    print(f"Sync queue: {len(to_sync)} campaign(s)" + (" (rotate)" if args.rotate else ""), flush=True)
     for i, sku in enumerate(to_sync):
         advert_id = sku.wb_campaign_search
         if stopped_429:
@@ -191,21 +258,26 @@ def main() -> int:
         if i:
             time.sleep(args.pause)
         nm_id = int(sku.nm_id)
+        want_fs = args.with_fullstats or should_fetch_fullstats(advert_id, report_path)
         print(f"\n[{i + 1}/{len(to_sync)}] Sync {advert_id} (nm_id={nm_id})...", flush=True)
         result = worker.sync_profile(
             nm_id_label=sku.nm_id,
             wb_campaign_id=advert_id,
             resolved_nm_id=nm_id,
             try_resolve_nm=False,
-            with_fullstats=False,
+            with_fullstats=want_fs,
         )
+        fs_ok = bool(result.campaigns and result.campaigns[0].fullstats_ok)
         entry = {
             "wb_campaign_id": advert_id,
             "nm_id": nm_id,
             "keywords": len(result.keywords),
             "errors": result.errors,
             "top_keyword": None,
+            "fullstats_ok": fs_ok,
         }
+        if fs_ok:
+            entry["fullstats_at"] = datetime.now(timezone.utc).isoformat()
         if result.keywords:
             primary = pick_primary_keyword(result.keywords)
             if primary:

@@ -79,8 +79,12 @@ def classify(code: int | None, body: str) -> str:
         return "ok"
     if code == 429:
         return "rate_limit"
-    if code in (401, 403):
-        return "tls_ok"
+    if code == 401 and "withdrawn" in body.lower():
+        return "token_revoked"
+    if code == 401:
+        return "unauthorized"
+    if code == 403:
+        return "forbidden"
     return "warn"
 
 
@@ -94,6 +98,14 @@ def main() -> int:
     status = classify(code, body)
     advert_ok = status in ("ok", "rate_limit")
 
+    if status == "token_revoked":
+        print(f"  FAIL HTTP 401: token withdrawn — create new token in WB seller cabinet\n")
+        print("Update WB_API_TOKEN in wb_advert_probe\\.env (do not commit to git).")
+        return 1
+    if status == "unauthorized":
+        print(f"  FAIL HTTP 401 via {transport}: {body[:120]}\n")
+        print("Check WB_API_TOKEN in wb_advert_probe\\.env")
+        return 1
     if status == "ok":
         print(f"  OK HTTP {code} via {transport}: {body[:100]}\n")
     elif status == "rate_limit":

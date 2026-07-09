@@ -1,34 +1,30 @@
-# Пилот MVP — фаза 0–2 (заполнено по результатам wb_advert_probe, 03.07.2026)
-
-optimizer_mode: suggest-only   # suggest-only 3–5 дней → auto (см. MVP §5)
+optimizer_mode: suggest-only
+allow_wb_writes: false
 pilot_sku_count: 10
-campaign_type: 9               # подтверждено: все 155 РК type 9
-
-# WB API (read-only токен — фаза 0 sync + дашборд)
-token_type: base_readonly
+campaign_type: 9
+token_type: personal
 token_scopes_confirmed:
-  - promotion    # fullstats, normquery/stats, get-bids
-  - analytics    # sales-funnel v3
-  - marketplace  # orders/new
-
-# Не работает с текущим токеном
+- promotion
+- analytics
+- marketplace
 token_gaps:
-  - stocks_report   # нужен персональный / базовый с секретом
-  - bid_write       # фаза 2: write-токен без бита read-only
-
+- bid_write
 sync:
   interval_minutes: 15
   normquery_stats_per_day: 4
   rate_limit_pause_sec: 1.2
-
+  fullstats_enabled: true
+  fullstats_min_hours: 24
 parser:
-  region: Rostov              # TODO: подтвердить с менеджером
+  region: Moscow
+  dest: '-1257786'
   interval_min: 5
-
+  pause_sec: 3
+  pause_between_queries_sec: 3
+  pause_between_regions_sec: 8
+  max_pages: 5
 alerts:
-  telegram_chat_id: null      # TODO: фаза 2
-
-# Прогресс пилота (Phase 0 complete 05.07.2026)
+  telegram_chat_id: null
 pilot_progress:
   nm_ids_resolved: 10
   campaigns_with_keywords: 10
@@ -37,4 +33,43 @@ pilot_progress:
   phase_1_status: dashboard_ready
   phase_2_status: optimizer_suggest_only
   manager_fill_required:
-    - unit_economics.csv      # cost_price_rub, retail_price_rub, margin_pct
+  - unit_economics.csv
+optimizer_benchmarks:
+  primary_ctr_pct_min: 4.7
+  primary_cpc_rub_max: 17.49
+  cpm_cap_rub_per_1000: 1500
+  bid_test_hours_min: 2
+  min_shows_for_decision: 100
+keyword_policies:
+  exclude_when:
+  - Secondary/longtail без конверсии
+  keep_primary_when:
+  - Находится в топ-5
+  retest_excluded_after_days: 30
+optimizer_rules_ai:
+- code: target_position
+  description: Основные ключи — top-5 (top_1_3); часть ключей окупается на 10–20 позиции
+  priority: 1
+- code: metrics_trust
+  description: Ориентир только CTR и CPC из WB API; Evirma/WB-кабинет завышает
+  priority: 2
+- code: bid_test_window
+  description: После смены ставки ждать минимум 2–3 часа перед выводами
+  priority: 3
+- code: cpm_cap
+  description: Жёсткий потолок ~1500 ₽ за 1000 показов
+  priority: 4
+- code: unit_economics
+  description: Лимит CPC из retail + margin_pct + max DRR, не обязательно cost_price
+    из 1С
+  priority: 5
+- code: keyword_cleanup
+  description: Отключать secondary/longtail без конверсии; периодически возвращать
+    из исключений на тест
+  priority: 6
+- code: competitive_price
+  description: Цена должна быть конкурентоспособной относимо соседей в выдаче
+  priority: 7
+- code: primary_benchmark
+  description: 'Эталон primary «перчатки для уборки»: CTR ~13%, CPC ~7.6 ₽'
+  priority: 8

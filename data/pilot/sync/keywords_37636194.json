@@ -1,0 +1,106 @@
+{
+  "wb_campaign_id": 37636194,
+  "nm_id": 1085061548,
+  "synced_at": "2026-07-06T11:42:56.036228+00:00",
+  "keywords": [
+    {
+      "keyword": "салфетки для уборки",
+      "shows": 846,
+      "clicks": 43,
+      "spend_kopecks": 37324,
+      "orders": 3,
+      "ctr_calculated": 5.08,
+      "cpc_calculated_kopecks": 868,
+      "current_bid_kopecks": null,
+      "status": "managed"
+    },
+    {
+      "keyword": "салфетки для кухни",
+      "shows": 724,
+      "clicks": 34,
+      "spend_kopecks": 45458,
+      "orders": 9,
+      "ctr_calculated": 4.7,
+      "cpc_calculated_kopecks": 1337,
+      "current_bid_kopecks": 700,
+      "status": "managed"
+    },
+    {
+      "keyword": "кухонная тряпка",
+      "shows": 233,
+      "clicks": 2,
+      "spend_kopecks": 10750,
+      "orders": 0,
+      "ctr_calculated": 0.86,
+      "cpc_calculated_kopecks": 5375,
+      "current_bid_kopecks": null,
+      "status": "managed"
+    },
+    {
+      "keyword": "салфетки вискозные",
+      "shows": 155,
+      "clicks": 20,
+      "spend_kopecks": 5420,
+      "orders": 3,
+      "ctr_calculated": 12.9,
+      "cpc_calculated_kopecks": 271,
+      "current_bid_kopecks": null,
+      "status": "managed"
+    },
+    {
+      "keyword": "для уборки",
+      "shows": 69,
+      "clicks": 0,
+      "spend_kopecks": 0,
+      "orders": 0,
+      "ctr_calculated": 0.0,
+      "cpc_calculated_kopecks": null,
+      "current_bid_kopecks": null,
+      "status": "pending_100_shows"
+    },
+    {
+      "keyword": "салфетки вискозные для кухни",
+      "shows": 68,
+      "clicks": 2,
+      "spend_kopecks": 2486,
+      "orders": 0,
+      "ctr_calculated": 2.94,
+      "cpc_calculated_kopecks": 1243,
+      "current_bid_kopecks": null,
+      "status": "pending_100_shows"
+    },
+    {
+      "keyword": "кухонные салфетки для уборки",
+      "shows": 65,
+      "clicks": 3,
+      "spend_kopecks": 2274,
+      "orders": 0,
+      "ctr_calculated": 4.62,
+      "cpc_calculated_kopecks": 758,
+      "current_bid_kopecks": null,
+      "status": "pending_100_shows"
+    },
+    {
+      "keyword": "тряпки",
+      "shows": 36,
+      "clicks": 2,
+      "spend_kopecks": 1260,
+      "orders": 0,
+      "ctr_calculated": 5.56,
+      "cpc_calculated_kopecks": 630,
+      "current_bid_kopecks": null,
+      "status": "pending_100_shows"
+    },
+    {
+      "keyword": "салфетка",
+      "shows": 18,
+      "clicks": 0,
+      "spend_kopecks": 0,
+      "orders": 0,
+      "ctr_calculated": 0.0,
+      "cpc_calculated_kopecks": null,
+      "current_bid_kopecks": null,
+      "status": "pending_100_shows"
+    }
+  ]
+}

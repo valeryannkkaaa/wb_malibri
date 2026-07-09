@@ -31,6 +31,9 @@ class Settings(BaseSettings):
     )
 
     wb_api_token: str = ""
+    polza_ai_api_key: str = ""
+    polza_ai_base_url: str = "https://polza.ai/api/v1"
+    polza_ai_model: str = "openai/gpt-4o-mini"
     database_url: str = ""
     sync_interval_min: int = 15
     request_pause_sec: float = 2.0
@@ -52,6 +55,16 @@ def require_token() -> str:
             "WB_API_TOKEN not set.\n"
             f"  Create {_PKG_ROOT / '.env'} with WB_API_TOKEN=...\n"
             f"  Or use {_PKG_ROOT.parent / 'wb_advert_probe' / '.env'}"
+        )
+    return token
+
+
+def require_polza_token() -> str:
+    token = (settings.polza_ai_api_key or "").strip()
+    if not token:
+        raise SystemExit(
+            "POLZA_AI_API_KEY not set.\n"
+            f"  Add POLZA_AI_API_KEY=... to {_PKG_ROOT / '.env'}"
         )
     return token
 
