@@ -34,7 +34,9 @@ if [ "${SKIP_PARSE:-0}" != "1" ]; then
     PARSE_ARGS=(--all-regions --skip-fresh)
     [ "$PARSE_LIMIT" -gt 0 ] && PARSE_ARGS+=(--limit "$PARSE_LIMIT")
     [ "${FORCE_PARSE:-0}" = "1" ] && PARSE_ARGS+=(--force)
-    python -m scripts.parse_positions "${PARSE_ARGS[@]}"
+    python -m scripts.parse_positions "${PARSE_ARGS[@]}" || {
+        echo "[3/5] Parse positions failed (best-effort), continuing..."
+    }
 fi
 
 if [ "${SKIP_STOCKS:-0}" != "1" ]; then

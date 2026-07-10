@@ -84,15 +84,15 @@ def test_fetch_page_uses_v18_and_limit_100():
         json={"products": [{"id": 42}]},
         request=httpx.Request("GET", SEARCH_URL),
     )
-    parser._client = MagicMock()
-    parser._client.get.return_value = search_response
+    parser._session = MagicMock()
+    parser._session.get.return_value = search_response
 
     status, products, err = parser._fetch_page("перчатки", 1)
 
     assert status == 200
     assert err is None
     assert products == [{"id": 42}]
-    call = parser._client.get.call_args
+    call = parser._session.get.call_args
     assert call.args[0] == SEARCH_URL
     assert call.kwargs["params"]["limit"] == "100"
     assert call.kwargs["params"]["dest"] == "1259570991"
@@ -112,8 +112,8 @@ def test_find_position_calculates_page_offset():
         json={"products": [{"id": PRODUCTS_PER_PAGE + 1}]},
         request=httpx.Request("GET", SEARCH_URL),
     )
-    parser._client = MagicMock()
-    parser._client.get.side_effect = [page1, page2]
+    parser._session = MagicMock()
+    parser._session.get.side_effect = [page1, page2]
 
     result = parser.find_position("перчатки", PRODUCTS_PER_PAGE + 1)
 

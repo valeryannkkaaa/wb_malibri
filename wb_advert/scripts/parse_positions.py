@@ -204,7 +204,9 @@ def main() -> int:
         print("Tip: WB rate-limits search API — retry in 10–30 min or use --skip-fresh", flush=True)
     if parsed == 0 and skipped_fresh > 0:
         return 0
-    return 0 if ok > 0 or parsed == 0 else 1
+    if failures and ok == 0:
+        print("Parse completed with errors (best-effort; daily cycle continues)", flush=True)
+    return 0
 
 
 if __name__ == "__main__":

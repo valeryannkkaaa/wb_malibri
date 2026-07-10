@@ -3,7 +3,8 @@ from __future__ import annotations
 import time
 from typing import Any
 
-import httpx
+from curl_cffi import requests as cffi
+from curl_cffi.requests import RequestsError
 
 from wb_advert.parser.regions import normalize_region_key, resolve_dest
 
@@ -50,10 +51,10 @@ class WbSearchParser:
         self.pause_sec = max(0.1, float(pause_sec))
         self.max_pages = max(1, max_pages)
         self.max_retries = max_retries
-        self._client = httpx.Client(headers=DEFAULT_HEADERS, timeout=30.0, follow_redirects=True)
+        self._session = cffi.Session(impersonate="chrome120", headers=DEFAULT_HEADERS)
 
     def close(self) -> None:
-        self._client.close()
+        self._session.close()
 
     def __enter__(self) -> WbSearchParser:
         return self
@@ -87,8 +88,8 @@ class WbSearchParser:
             self._backoff_sleep(attempt)
             time.sleep(self.pause_sec)
             try:
-                resp = self._client.get(SEARCH_URL, params=params)
-            except httpx.HTTPError as exc:
+                resp = self._session.get(SEARCH_URL, params=params, timeout=30)
+            except RequestsError as exc:
                 last_err = str(exc)
                 continue
             if resp.status_code == 429:
