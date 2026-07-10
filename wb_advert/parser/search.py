@@ -51,7 +51,8 @@ class WbSearchParser:
         self.pause_sec = max(0.1, float(pause_sec))
         self.max_pages = max(1, max_pages)
         self.max_retries = max_retries
-        self._session = cffi.Session(impersonate="chrome120", headers=DEFAULT_HEADERS)
+        self._impersonate = "chrome120"
+        self._session = cffi.Session(headers=DEFAULT_HEADERS)
 
     def close(self) -> None:
         self._session.close()
@@ -88,7 +89,9 @@ class WbSearchParser:
             self._backoff_sleep(attempt)
             time.sleep(self.pause_sec)
             try:
-                resp = self._session.get(SEARCH_URL, params=params, timeout=30)
+                resp = self._session.get(
+                    SEARCH_URL, params=params, timeout=30, impersonate=self._impersonate
+                )
             except RequestsError as exc:
                 last_err = str(exc)
                 continue
