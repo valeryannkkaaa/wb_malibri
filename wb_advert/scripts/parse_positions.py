@@ -33,7 +33,7 @@ def _region_plans(
     args_dest: str | None,
 ) -> list[tuple[str, str | None, str]]:
     if all_regions:
-        return [(opt["key"], opt["dest"], opt["label"]) for opt in PARSER_REGION_OPTIONS]
+        return [(opt["key"], None, opt["label"]) for opt in PARSER_REGION_OPTIONS]
     region_val = args_region if args_region is not None else parser_cfg.get("region")
     dest_val = args_dest
     from wb_advert.parser.regions import normalize_region_key
