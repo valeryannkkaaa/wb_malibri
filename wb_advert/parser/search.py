@@ -5,10 +5,11 @@ from typing import Any
 
 import httpx
 
-from wb_advert.parser.regions import resolve_dest
+from wb_advert.parser.regions import normalize_region_key, resolve_dest
 
-SEARCH_URL = "https://search.wb.ru/exactmatch/ru/common/v9/search"
+SEARCH_URL = "https://u-search.wb.ru/exactmatch/ru/common/v18/search"
 PRODUCTS_PER_PAGE = 100
+DEFAULT_PAUSE_SEC = 0.4
 
 DEFAULT_HEADERS = {
     "User-Agent": (
@@ -40,12 +41,13 @@ class WbSearchParser:
         *,
         dest: str | None = None,
         region: str | None = None,
-        pause_sec: float = 3.0,
+        pause_sec: float = DEFAULT_PAUSE_SEC,
         max_pages: int = 5,
         max_retries: int = 3,
     ) -> None:
+        self.region_key = normalize_region_key(region)
         self.dest = resolve_dest(region, dest)
-        self.pause_sec = pause_sec
+        self.pause_sec = max(0.1, float(pause_sec))
         self.max_pages = max(1, max_pages)
         self.max_retries = max_retries
         self._client = httpx.Client(headers=DEFAULT_HEADERS, timeout=30.0, follow_redirects=True)
@@ -59,6 +61,13 @@ class WbSearchParser:
     def __exit__(self, *args: object) -> None:
         self.close()
 
+    def _backoff_sleep(self, attempt: int, *, rate_limited: bool = False) -> None:
+        if rate_limited:
+            time.sleep(min(5.0, self.pause_sec * (2**attempt)))
+            return
+        if attempt:
+            time.sleep(self.pause_sec * attempt)
+
     def _fetch_page(self, query: str, page: int) -> tuple[int, list[dict], str | None]:
         params = {
             "appType": "1",
@@ -68,14 +77,15 @@ class WbSearchParser:
             "page": str(page),
             "query": query,
             "resultset": "catalog",
+            "limit": str(PRODUCTS_PER_PAGE),
             "sort": "popular",
             "spp": "30",
             "suppressSpellcheck": "false",
         }
         last_err: str | None = None
         for attempt in range(self.max_retries):
-            if attempt:
-                time.sleep(self.pause_sec * (attempt + 1))
+            self._backoff_sleep(attempt)
+            time.sleep(self.pause_sec)
             try:
                 resp = self._client.get(SEARCH_URL, params=params)
             except httpx.HTTPError as exc:
@@ -83,7 +93,7 @@ class WbSearchParser:
                 continue
             if resp.status_code == 429:
                 last_err = "HTTP 429 rate limit"
-                time.sleep(self.pause_sec * (2 ** (attempt + 1)))
+                self._backoff_sleep(attempt + 1, rate_limited=True)
                 continue
             if resp.status_code != 200:
                 last_err = f"HTTP {resp.status_code}"
@@ -99,12 +109,16 @@ class WbSearchParser:
     def find_position(self, query: str, nm_id: int) -> dict[str, Any]:
         query = (query or "").strip()
         if not query:
-            return {"found": False, "position": None, "error": "empty query", "nm_id": nm_id}
+            return {
+                "found": False,
+                "position": None,
+                "error": "empty query",
+                "nm_id": nm_id,
+                "region_key": self.region_key,
+            }
 
         scanned = 0
         for page in range(1, self.max_pages + 1):
-            if page > 1:
-                time.sleep(self.pause_sec)
             _status, products, err = self._fetch_page(query, page)
             if err:
                 return {
@@ -115,6 +129,7 @@ class WbSearchParser:
                     "keyword": query,
                     "page": page,
                     "dest": self.dest,
+                    "region_key": self.region_key,
                     "scanned": scanned,
                 }
             if not products:
@@ -132,6 +147,7 @@ class WbSearchParser:
                         "keyword": query,
                         "page": page,
                         "dest": self.dest,
+                        "region_key": self.region_key,
                         "scanned": scanned,
                     }
 
@@ -142,6 +158,7 @@ class WbSearchParser:
             "nm_id": nm_id,
             "keyword": query,
             "dest": self.dest,
+            "region_key": self.region_key,
             "scanned": scanned,
         }
 
@@ -152,7 +169,7 @@ def find_nm_position(
     *,
     dest: str | None = None,
     region: str | None = None,
-    pause_sec: float = 3.0,
+    pause_sec: float = DEFAULT_PAUSE_SEC,
     max_pages: int = 5,
 ) -> dict[str, Any]:
     with WbSearchParser(dest=dest, region=region, pause_sec=pause_sec, max_pages=max_pages) as parser:
