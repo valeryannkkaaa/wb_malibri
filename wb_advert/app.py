@@ -45,7 +45,8 @@ def index(request: Request):
 async def not_found(request: Request, _exc):
     path = request.url.path
     hint = (
-        "Запустите сервер: <code>cd wb_advert; .\\run_server.ps1</code><br>"
+        "Запустите сервер: <code>./wb_advert/run_server.sh</code> (Linux) "
+        "или <code>wb_advert\\run_server.ps1</code> (Windows)<br>"
         "Дашборд: <a href='/'>/</a> или <a href='/advert'>/advert</a><br>"
         "Audit log: <a href='/advert/decisions'>/advert/decisions</a>"
     )
@@ -102,9 +103,14 @@ def product_page(request: Request, advert_id: int):
 
 
 def main() -> None:
+    import os
+
     import uvicorn
 
-    uvicorn.run("wb_advert.app:app", host="127.0.0.1", port=8765, reload=True)
+    host = os.getenv("WB_ADVERT_HOST", "127.0.0.1")
+    port = int(os.getenv("WB_ADVERT_PORT", "8765"))
+    reload = os.getenv("WB_ADVERT_RELOAD", "0") == "1"
+    uvicorn.run("wb_advert.app:app", host=host, port=port, reload=reload)
 
 
 if __name__ == "__main__":
