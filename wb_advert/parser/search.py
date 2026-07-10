@@ -4,6 +4,7 @@ import time
 from typing import Any
 
 from curl_cffi import requests as cffi
+from curl_cffi.const import CurlHttpVersion
 from curl_cffi.requests import RequestsError
 
 from wb_advert.parser.regions import normalize_region_key, resolve_dest
@@ -90,7 +91,11 @@ class WbSearchParser:
             time.sleep(self.pause_sec)
             try:
                 resp = self._session.get(
-                    SEARCH_URL, params=params, timeout=30, impersonate=self._impersonate
+                    SEARCH_URL,
+                    params=params,
+                    timeout=30,
+                    impersonate=self._impersonate,
+                    http_version=CurlHttpVersion.V1_1,
                 )
             except RequestsError as exc:
                 last_err = str(exc)
