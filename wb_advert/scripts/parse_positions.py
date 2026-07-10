@@ -35,7 +35,7 @@ def _region_plans(
     if all_regions:
         return [(opt["key"], opt["dest"], opt["label"]) for opt in PARSER_REGION_OPTIONS]
     region_val = args_region if args_region is not None else parser_cfg.get("region")
-    dest_val = args_dest if args_dest is not None else parser_cfg.get("dest")
+    dest_val = args_dest
     from wb_advert.parser.regions import normalize_region_key
 
     rk = normalize_region_key(str(region_val) if region_val else None)
@@ -96,14 +96,14 @@ def main() -> int:
         print("No pilot SKUs with primary_keyword", flush=True)
         return 1
 
-    pause = float(parser_cfg.get("pause_sec") or 3.0)
+    pause = float(parser_cfg.get("pause_sec") or 0.4)
     max_pages = args.max_pages or int(parser_cfg.get("max_pages") or 5)
     pause_regions = args.pause_between_regions
     if pause_regions is None:
         pause_regions = float(parser_cfg.get("pause_between_regions_sec") or 8.0)
     pause_queries = args.pause_between_queries
     if pause_queries is None:
-        pause_queries = float(parser_cfg.get("pause_between_queries_sec") or 3.0)
+        pause_queries = float(parser_cfg.get("pause_between_queries_sec") or 0.5)
 
     min_age_min = 0.0
     if args.skip_fresh and not args.force:
