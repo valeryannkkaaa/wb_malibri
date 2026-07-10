@@ -20,6 +20,7 @@ STATUS_RU: dict[str, str] = {
 
 GRADE_RU: dict[str, str] = {
     "top_1_3": "топ 1–3",
+    "pos_4_10": "поз. 4–10",
     "pos_10_20": "поз. 10–20",
 }
 

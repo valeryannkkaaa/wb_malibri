@@ -22,7 +22,7 @@
     {% endif %}
     <div class="card"><span class="label">CPC primary</span><span class="value">{% if p.primary_cpc_rub %}{{ p.primary_cpc_rub }} ₽{% else %}—{% endif %}</span></div>
     <div class="card"><span class="label">Макс. CPC</span><span class="value">{% if p.max_cpc_rub %}{{ p.max_cpc_rub }} ₽{% else %}—{% endif %}</span></div>
-    <div class="card"><span class="label">Позиция</span><span class="value">{% if p.parsed_position %}{{ p.parsed_position }}{% elif p.position_error %}<span class="warn" title="{{ p.position_error }}">—</span>{% else %}—{% endif %}</span></div>
+    <div class="card"><span class="label">Позиция</span><span class="value">{% if p.parsed_position %}{{ p.parsed_position }}{% set goal_met = p.target_grade|position_meets_target(p.parsed_position) %}{% if goal_met is sameas true %}<span class="pos-ok" title="цель {{ p.target_grade|grade_ru }}, факт {{ p.parsed_position }}"> ✓</span>{% elif goal_met is sameas false %}<span class="warn" title="цель {{ p.target_grade|grade_ru }}, факт {{ p.parsed_position }}"> ✗</span>{% endif %}{% elif p.position_error %}<span class="warn" title="{{ p.position_error }}">—</span>{% else %}<span class="muted" title="позиция не известна">—</span>{% endif %}</span></div>
     <div class="card"><span class="label">Остаток</span><span class="value">{{ p.stock_quantity }}</span></div>
   </section>
 
