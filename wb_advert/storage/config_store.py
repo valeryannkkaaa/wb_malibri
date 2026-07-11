@@ -43,7 +43,7 @@ def get_parser_settings(data_dir: Path | None = None) -> dict:
     return {
         "region_key": key,
         "region": region_config_label(key),
-        "dest": parser.get("dest") or resolve_dest(key),
+        "dest": resolve_dest(key),
         "options": PARSER_REGION_OPTIONS,
     }
 

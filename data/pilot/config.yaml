@@ -19,9 +19,9 @@ parser:
   region: Moscow
   dest: '-1257786'
   interval_min: 5
-  pause_sec: 3
-  pause_between_queries_sec: 3
-  pause_between_regions_sec: 8
+  pause_sec: 0.4
+  pause_between_queries_sec: 0.5
+  pause_between_regions_sec: 2
   max_pages: 5
 alerts:
   telegram_chat_id: null
