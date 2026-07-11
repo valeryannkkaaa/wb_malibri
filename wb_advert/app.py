@@ -50,7 +50,7 @@ def create_app() -> FastAPI:
         return _TEMPLATES.TemplateResponse(
             request,
             "dashboard.html",
-            {"dash": dash, "cycle": cycle, "active": "dashboard"},
+            {"dash": dash, "cycle": cycle, "active": "dashboard", "portal_nav_active": "advert"},
         )
 
     @application.exception_handler(404)
@@ -74,7 +74,7 @@ def create_app() -> FastAPI:
         return _TEMPLATES.TemplateResponse(
             request,
             "decisions.html",
-            {"rows": audit, "cycle": load_cycle_health(), "active": "decisions"},
+            {"rows": audit, "cycle": load_cycle_health(), "active": "decisions", "portal_nav_active": "advert"},
         )
 
     @application.get("/advert/products/{advert_id}", response_class=HTMLResponse)
@@ -108,6 +108,7 @@ def create_app() -> FastAPI:
                 "pos_chart_json": json.dumps(pos_chart, ensure_ascii=False),
                 "ctr_chart_json": json.dumps(ctr_chart, ensure_ascii=False),
                 "active": "dashboard",
+                "portal_nav_active": "advert",
             },
         )
 
