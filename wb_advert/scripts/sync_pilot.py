@@ -22,24 +22,49 @@ from wb_advert.import_data.csv_loader import (  # noqa: E402
     load_pilot_skus,
     update_primary_keywords,
 )
-from wb_advert.storage.keywords_store import save_keywords  # noqa: E402
+from wb_advert.storage.keywords_store import campaign_keywords_synced_at, save_keywords  # noqa: E402
 from wb_advert.sync.metrics import pick_primary_keyword  # noqa: E402
 from wb_advert.sync.worker import SyncWorker  # noqa: E402
 
 DEFAULT_PAUSE_SEC = 25.0
+
+_ATTEMPT_FIELDS = ("wb_campaign_id", "nm_id", "keywords", "errors")
+
+
+def merge_campaign_row(prev_row: dict, attempt_row: dict, *, now: str) -> dict:
+    """Merge one campaign row: success replaces all; failure updates only the attempt."""
+    if attempt_row.get("keywords", 0) > 0:
+        return {**prev_row, **attempt_row, "last_attempt_at": now, "synced_at": now}
+    merged = dict(prev_row)
+    for key in _ATTEMPT_FIELDS:
+        if key in attempt_row:
+            merged[key] = attempt_row[key]
+    merged["last_attempt_at"] = now
+    return merged
 
 
 def _has_429(errors: list[str]) -> bool:
     return any("429" in e for e in errors)
 
 
-def load_synced_from_report(report_path: Path) -> dict[int, dict]:
+def load_sync_report(report_path: Path) -> dict:
     if not report_path.is_file():
         return {}
     try:
-        data = json.loads(report_path.read_text(encoding="utf-8"))
+        return json.loads(report_path.read_text(encoding="utf-8"))
     except (json.JSONDecodeError, OSError):
         return {}
+
+
+def campaign_rotate_at(advert_id: int, report_row: dict | None, data_dir: Path) -> str:
+    """Rotation sort key: last attempt from report, else legacy keywords file timestamp."""
+    if report_row and report_row.get("last_attempt_at"):
+        return str(report_row["last_attempt_at"])
+    return campaign_keywords_synced_at(advert_id, data_dir) or ""
+
+
+def load_synced_from_report(report_path: Path) -> dict[int, dict]:
+    data = load_sync_report(report_path)
     out: dict[int, dict] = {}
     for row in data.get("campaigns") or []:
         aid = row.get("wb_campaign_id")
@@ -50,16 +75,12 @@ def load_synced_from_report(report_path: Path) -> dict[int, dict]:
 
 def merge_report(report_path: Path, new_campaigns: list[dict]) -> dict:
     now = datetime.now(timezone.utc).isoformat()
-    prev = {}
-    if report_path.is_file():
-        try:
-            prev = json.loads(report_path.read_text(encoding="utf-8"))
-        except (json.JSONDecodeError, OSError):
-            prev = {}
+    prev = load_sync_report(report_path)
     by_id = {int(c["wb_campaign_id"]): c for c in prev.get("campaigns") or [] if c.get("wb_campaign_id")}
     for row in new_campaigns:
-        row.setdefault("synced_at", now)
-        by_id[int(row["wb_campaign_id"])] = row
+        cid = int(row["wb_campaign_id"])
+        prev_row = by_id.get(cid, {})
+        by_id[cid] = merge_campaign_row(prev_row, row, now=now)
     keywords_map = dict(prev.get("primary_keywords") or {})
     for row in by_id.values():
         if row.get("top_keyword"):
@@ -72,21 +93,14 @@ def merge_report(report_path: Path, new_campaigns: list[dict]) -> dict:
 
 
 def pick_rotate_skus(ready: list, report_path: Path, limit: int = 1) -> list:
-    """Pick campaign(s) with oldest synced_at for incremental scheduler runs."""
-    report: dict = {}
-    if report_path.is_file():
-        try:
-            report = json.loads(report_path.read_text(encoding="utf-8"))
-        except (json.JSONDecodeError, OSError):
-            report = {}
+    """Pick campaign(s) least recently attempted for incremental scheduler runs."""
+    data_dir = report_path.parent
+    report = load_sync_report(report_path)
     by_advert = {int(c["wb_campaign_id"]): c for c in report.get("campaigns") or [] if c.get("wb_campaign_id")}
-    global_ts = report.get("synced_at") or ""
-
-    def sort_key(sku) -> str:
-        row = by_advert.get(sku.wb_campaign_search) or {}
-        return row.get("synced_at") or global_ts or ""
-
-    ordered = sorted(ready, key=sort_key)
+    ordered = sorted(
+        ready,
+        key=lambda sku: campaign_rotate_at(sku.wb_campaign_search, by_advert.get(sku.wb_campaign_search), data_dir),
+    )
     return ordered[: max(limit, 1)]
 
 
@@ -98,18 +112,15 @@ def should_fetch_fullstats(advert_id: int, report_path: Path, *, min_hours: int 
     if not sync_cfg.get("fullstats_enabled", config.get("token_type") == "personal"):
         return False
     min_hours = int(sync_cfg.get("fullstats_min_hours") or 24)
-    if not report_path.is_file():
-        return True
-    try:
-        data = json.loads(report_path.read_text(encoding="utf-8"))
-    except (json.JSONDecodeError, OSError):
+    data = load_sync_report(report_path)
+    if not data:
         return True
     for row in data.get("campaigns") or []:
         if int(row.get("wb_campaign_id") or 0) != advert_id:
             continue
         if not row.get("fullstats_ok"):
             return True
-        ts = row.get("fullstats_at") or row.get("synced_at")
+        ts = row.get("fullstats_at") or campaign_keywords_synced_at(advert_id, report_path.parent)
         if not ts:
             return True
         try:
