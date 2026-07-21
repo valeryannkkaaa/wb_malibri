@@ -28,6 +28,20 @@ from wb_advert.sync.worker import SyncWorker  # noqa: E402
 
 DEFAULT_PAUSE_SEC = 25.0
 
+_ATTEMPT_FIELDS = ("wb_campaign_id", "nm_id", "keywords", "errors")
+
+
+def merge_campaign_row(prev_row: dict, attempt_row: dict, *, now: str) -> dict:
+    """Merge one campaign row: success replaces all; failure updates only the attempt."""
+    if attempt_row.get("keywords", 0) > 0:
+        return {**prev_row, **attempt_row, "last_attempt_at": now, "synced_at": now}
+    merged = dict(prev_row)
+    for key in _ATTEMPT_FIELDS:
+        if key in attempt_row:
+            merged[key] = attempt_row[key]
+    merged["last_attempt_at"] = now
+    return merged
+
 
 def _has_429(errors: list[str]) -> bool:
     return any("429" in e for e in errors)
@@ -66,12 +80,7 @@ def merge_report(report_path: Path, new_campaigns: list[dict]) -> dict:
     for row in new_campaigns:
         cid = int(row["wb_campaign_id"])
         prev_row = by_id.get(cid, {})
-        row["last_attempt_at"] = now
-        if row.get("keywords", 0) > 0:
-            row["synced_at"] = now
-        elif prev_row.get("synced_at"):
-            row["synced_at"] = prev_row["synced_at"]
-        by_id[cid] = row
+        by_id[cid] = merge_campaign_row(prev_row, row, now=now)
     keywords_map = dict(prev.get("primary_keywords") or {})
     for row in by_id.values():
         if row.get("top_keyword"):
