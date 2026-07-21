@@ -33,13 +33,34 @@ def _has_429(errors: list[str]) -> bool:
     return any("429" in e for e in errors)
 
 
-def load_synced_from_report(report_path: Path) -> dict[int, dict]:
+def load_sync_report(report_path: Path) -> dict:
     if not report_path.is_file():
         return {}
     try:
         data = json.loads(report_path.read_text(encoding="utf-8"))
     except (json.JSONDecodeError, OSError):
         return {}
+    sync_dir = report_path.parent / "sync"
+    for row in data.get("campaigns") or []:
+        if row.get("synced_at"):
+            continue
+        aid = row.get("wb_campaign_id")
+        if not aid:
+            continue
+        kw_path = sync_dir / f"keywords_{aid}.json"
+        if not kw_path.is_file():
+            continue
+        try:
+            kw = json.loads(kw_path.read_text(encoding="utf-8"))
+        except (json.JSONDecodeError, OSError):
+            continue
+        if kw.get("synced_at"):
+            row["synced_at"] = kw["synced_at"]
+    return data
+
+
+def load_synced_from_report(report_path: Path) -> dict[int, dict]:
+    data = load_sync_report(report_path)
     out: dict[int, dict] = {}
     for row in data.get("campaigns") or []:
         aid = row.get("wb_campaign_id")
@@ -50,15 +71,11 @@ def load_synced_from_report(report_path: Path) -> dict[int, dict]:
 
 def merge_report(report_path: Path, new_campaigns: list[dict]) -> dict:
     now = datetime.now(timezone.utc).isoformat()
-    prev = {}
-    if report_path.is_file():
-        try:
-            prev = json.loads(report_path.read_text(encoding="utf-8"))
-        except (json.JSONDecodeError, OSError):
-            prev = {}
+    prev = load_sync_report(report_path)
     by_id = {int(c["wb_campaign_id"]): c for c in prev.get("campaigns") or [] if c.get("wb_campaign_id")}
     for row in new_campaigns:
-        row.setdefault("synced_at", now)
+        if row.get("keywords", 0) > 0:
+            row["synced_at"] = now
         by_id[int(row["wb_campaign_id"])] = row
     keywords_map = dict(prev.get("primary_keywords") or {})
     for row in by_id.values():
@@ -73,18 +90,12 @@ def merge_report(report_path: Path, new_campaigns: list[dict]) -> dict:
 
 def pick_rotate_skus(ready: list, report_path: Path, limit: int = 1) -> list:
     """Pick campaign(s) with oldest synced_at for incremental scheduler runs."""
-    report: dict = {}
-    if report_path.is_file():
-        try:
-            report = json.loads(report_path.read_text(encoding="utf-8"))
-        except (json.JSONDecodeError, OSError):
-            report = {}
+    report = load_sync_report(report_path)
     by_advert = {int(c["wb_campaign_id"]): c for c in report.get("campaigns") or [] if c.get("wb_campaign_id")}
-    global_ts = report.get("synced_at") or ""
 
     def sort_key(sku) -> str:
         row = by_advert.get(sku.wb_campaign_search) or {}
-        return row.get("synced_at") or global_ts or ""
+        return row.get("synced_at") or ""
 
     ordered = sorted(ready, key=sort_key)
     return ordered[: max(limit, 1)]
@@ -98,11 +109,8 @@ def should_fetch_fullstats(advert_id: int, report_path: Path, *, min_hours: int 
     if not sync_cfg.get("fullstats_enabled", config.get("token_type") == "personal"):
         return False
     min_hours = int(sync_cfg.get("fullstats_min_hours") or 24)
-    if not report_path.is_file():
-        return True
-    try:
-        data = json.loads(report_path.read_text(encoding="utf-8"))
-    except (json.JSONDecodeError, OSError):
+    data = load_sync_report(report_path)
+    if not data:
         return True
     for row in data.get("campaigns") or []:
         if int(row.get("wb_campaign_id") or 0) != advert_id:

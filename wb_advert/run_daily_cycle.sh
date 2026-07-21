@@ -22,8 +22,8 @@ PARSE_LIMIT="${PARSE_LIMIT:-0}"
 echo "=== WB Advert daily cycle ==="
 
 if [ "${SKIP_SYNC:-0}" != "1" ]; then
-    echo; echo "[1/5] Sync rotate (1 campaign + fullstats if due)..."
-    python -m scripts.sync_pilot --rotate --pause "$SYNC_PAUSE" --limit 1
+    echo; echo "[1/5] Sync rotate (3 campaigns + fullstats if due)..."
+    python -m scripts.sync_pilot --rotate --pause "$SYNC_PAUSE" --limit 3
 fi
 
 echo; echo "[2/5] Optimizer (suggest-only)..."
