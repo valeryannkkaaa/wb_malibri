@@ -623,7 +623,7 @@ def test_pilot_ceilings_match_smoothing_formula_on_real_data() -> None:
     """Acceptance: build_product_rows ceilings follow the two-level prior formula on pilot data."""
     from wb_advert.import_data.csv_loader import load_pilot_skus
     from wb_advert.storage.keywords_store import load_keywords
-    from wb_advert.storage.pilot_store import get_pilot_global_cr_prior, load_unit_economics
+    from wb_advert.storage.pilot_store import get_pilot_global_cr_prior, load_unit_economics, resolve_product_retail_price
 
     data_dir = Path("data/pilot")
     global_cr = get_pilot_global_cr_prior(data_dir)
@@ -646,6 +646,7 @@ def test_pilot_ceilings_match_smoothing_formula_on_real_data() -> None:
             primary_kw,
             campaign_totals,
             global_cr,
+            resolved_price=resolve_product_retail_price(sku.nm_id, economics.get(sku.nm_id, {}), data_dir),
         )
         assert expected_kopecks is not None, sku.wb_campaign_search
         assert by_advert[sku.wb_campaign_search] == pytest.approx(expected_kopecks / 100, abs=0.01)
