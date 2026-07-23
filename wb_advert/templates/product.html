@@ -26,8 +26,17 @@
     <div class="card"><span class="label">Остаток</span><span class="value">{{ p.stock_quantity }}</span></div>
   </section>
 
-  {% if p.margin_pct or p.retail_price_rub %}
-  <p class="muted">Цена {{ p.retail_price_rub or '—' }} ₽ · маржа {{ p.margin_pct or '—' }}% · DRR макс. {{ p.max_drr_pct }}%</p>
+  {% if p.price_rub or p.retail_price_rub or p.margin_pct %}
+  <p class="muted">
+    Цена для лимита:
+    {% if p.price_rub %}{{ p.price_rub }} ₽{% else %}—{% endif %}
+    {% if p.price_source %}({{ p.price_source|price_source_ru }}){% endif %}
+    {% if p.buyout_percent %}· выкуп {{ p.buyout_percent }}%{% endif %}
+    {% if p.retail_price_rub and p.price_source != 'csv' %}
+      · CSV {{ p.retail_price_rub }} ₽
+    {% endif %}
+    · маржа {{ p.margin_pct or '—' }}% · DRR макс. {{ p.max_drr_pct }}%
+  </p>
   {% endif %}
 
   {% if pos_chart_json and ctr_chart_json %}

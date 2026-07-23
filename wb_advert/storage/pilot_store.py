@@ -6,6 +6,11 @@ from pathlib import Path
 from wb_advert.config import settings
 from wb_advert.constants import PENDING_NM_PREFIX
 from wb_advert.import_data.csv_loader import load_pilot_skus
+from wb_advert.optimizer.retail_price import (
+    ResolvedRetailPrice,
+    price_source_label,
+    resolve_retail_price,
+)
 from wb_advert.optimizer.rules import (
     CPC_PRIOR_ESTIMATE,
     calc_keyword_max_cpc_kopecks,
@@ -13,8 +18,10 @@ from wb_advert.optimizer.rules import (
 )
 from wb_advert.optimizer.summary import summarize_campaign
 from wb_advert.storage.config_store import get_parser_settings, load_config
+from wb_advert.storage.funnel_store import load_funnel
 from wb_advert.storage.keywords_store import load_keywords
 from wb_advert.storage.positions_store import count_positions_for_region, load_latest_positions
+from wb_advert.storage.search_report_store import load_search_report
 
 
 def pilot_data_dir() -> Path:
@@ -131,6 +138,16 @@ def get_pilot_global_cr_prior(data_dir: Path | None = None) -> float | None:
     return global_cr_prior_from_totals(total_clicks, total_orders)
 
 
+def resolve_product_retail_price(
+    nm_id: str,
+    econ: dict,
+    data_dir: Path | None = None,
+) -> ResolvedRetailPrice | None:
+    funnel = load_funnel(nm_id, data_dir)
+    search_report = load_search_report(int(nm_id), data_dir)
+    return resolve_retail_price(econ, funnel=funnel, search_report=search_report)
+
+
 def build_product_rows(data_dir: Path | None = None, *, region_key: str | None = None) -> list[dict]:
     rows, _ = build_product_rows_with_prior(data_dir, region_key=region_key)
     return rows
@@ -191,6 +208,7 @@ def build_product_rows_with_prior(
                 "top_stats": top or None,
                 "sync_errors": sync_row.get("errors") or [],
                 "econ": econ,
+                "resolved_price": resolve_product_retail_price(sku.nm_id, econ, data_dir),
                 "primary_cpc": primary_cpc,
                 "primary_kw": primary_kw,
                 "campaign_totals": campaign_totals,
@@ -203,12 +221,14 @@ def build_product_rows_with_prior(
     rows: list[dict] = []
     for item in pending:
         econ = item["econ"]
+        resolved_price = item["resolved_price"]
         kw_for_ceiling = item["primary_kw"] if item["primary_kw"] is not None else {}
         max_cpc, prior_alert = calc_keyword_max_cpc_kopecks(
             econ,
             kw_for_ceiling,
             item["campaign_totals"],
             global_cr_prior,
+            resolved_price=resolved_price,
         )
         max_cpc_is_prior = prior_alert == CPC_PRIOR_ESTIMATE
         stock = item["stock"]
@@ -226,9 +246,17 @@ def build_product_rows_with_prior(
                 "keywords_saved": item["keywords_saved"],
                 "top_stats": item["top_stats"],
                 "sync_errors": item["sync_errors"],
-                "has_economics": _economics_complete(econ),
+                "has_economics": _economics_complete(econ) or resolved_price is not None,
                 "has_retail_price": bool(econ.get("retail_price_rub")),
                 "retail_price_rub": econ.get("retail_price_rub"),
+                "price_rub": round(resolved_price.value_rub, 2) if resolved_price else None,
+                "price_source": resolved_price.source if resolved_price else None,
+                "price_source_label": price_source_label(resolved_price.source if resolved_price else None),
+                "buyout_percent": (
+                    round(resolved_price.buyout_percent, 1)
+                    if resolved_price and resolved_price.buyout_percent is not None
+                    else None
+                ),
                 "margin_pct": econ.get("margin_pct"),
                 "max_cpc_rub": round(max_cpc / 100, 2) if max_cpc else None,
                 "max_cpc_is_prior": max_cpc_is_prior,

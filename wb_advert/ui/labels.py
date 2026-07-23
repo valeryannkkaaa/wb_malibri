@@ -67,3 +67,9 @@ def alert_ru(code: str | None) -> str:
     if not code:
         return "—"
     return ALERT_RU.get(code, code.replace("_", " "))
+
+
+def price_source_ru(code: str | None) -> str:
+    from wb_advert.optimizer.retail_price import price_source_label
+
+    return price_source_label(code)

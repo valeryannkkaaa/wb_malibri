@@ -1,6 +1,7 @@
 from __future__ import annotations
 
 from wb_advert.constants import MIN_SHOWS_FOR_MANAGED
+from wb_advert.optimizer.retail_price import ResolvedRetailPrice, resolve_retail_price
 from wb_advert.schemas.optimizer import DecisionSuggestion
 
 KEYWORD_CR_MIN_CLICKS = 30
@@ -70,10 +71,15 @@ def calc_max_cpc_kopecks(
     retail_price_rub: float,
     max_drr_pct: float,
     cr_fact: float,
+    *,
+    buyout_percent: float | None = None,
 ) -> int | None:
     if retail_price_rub <= 0 or max_drr_pct <= 0 or cr_fact <= 0:
         return None
-    return int(retail_price_rub * (max_drr_pct / 100) * cr_fact * 100)
+    revenue_factor = 1.0
+    if buyout_percent is not None and buyout_percent > 0:
+        revenue_factor = buyout_percent / 100
+    return int(retail_price_rub * revenue_factor * (max_drr_pct / 100) * cr_fact * 100)
 
 
 def calc_keyword_max_cpc_kopecks(
@@ -81,9 +87,11 @@ def calc_keyword_max_cpc_kopecks(
     kw: dict,
     campaign_totals: tuple[int, int],
     global_cr_prior: float | None,
+    *,
+    resolved_price: ResolvedRetailPrice | None = None,
 ) -> tuple[int | None, str | None]:
-    retail = econ.get("retail_price_rub")
-    if not retail:
+    price = resolved_price or resolve_retail_price(econ)
+    if not price:
         return None, None
 
     if global_cr_prior is None:
@@ -103,7 +111,15 @@ def calc_keyword_max_cpc_kopecks(
     alert = prior_estimate_alert_reason(kw_clicks)
 
     max_drr = float(econ.get("max_drr_pct") or 15)
-    return calc_max_cpc_kopecks(float(retail), max_drr, cr_fact), alert
+    return (
+        calc_max_cpc_kopecks(
+            price.value_rub,
+            max_drr,
+            cr_fact,
+            buyout_percent=price.buyout_percent,
+        ),
+        alert,
+    )
 
 
 def suggest_keyword_action(

@@ -21,6 +21,7 @@ from wb_advert.storage.pilot_store import (
     load_unit_economics,
     pilot_data_dir,
     primary_keyword_for_advert,
+    resolve_product_retail_price,
 )
 
 
@@ -53,7 +54,8 @@ def optimize_product(
     suggestions: list[DecisionSuggestion] = []
 
     econ_row = load_unit_economics(data_dir).get(nm_id, {})
-    if not econ_row.get("retail_price_rub"):
+    resolved_price = resolve_product_retail_price(nm_id, econ_row, data_dir)
+    if not resolved_price:
         alerts.append("unit_economics не заполнена — CPC-лимиты не считаются")
 
     if not keywords:
@@ -72,6 +74,7 @@ def optimize_product(
             kw,
             campaign_totals,
             global_cr_prior,
+            resolved_price=resolved_price,
         )
         if limit_alert == CPC_PRIOR_ESTIMATE:
             prior_estimate_count += 1
