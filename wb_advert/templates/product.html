@@ -68,6 +68,125 @@
   </table>
   {% endif %}
 
+  {% set blocks = product_extra_blocks(p.nm_id) %}
+
+  <h2>Соседи по выдаче</h2>
+  {% if blocks.competitors.available %}
+  {% if blocks.competitors.keyword %}
+  <p class="muted">Запрос «{{ blocks.competitors.keyword }}»{% if blocks.competitors.parsed_at %} · {{ blocks.competitors.parsed_at|dt_msk }}{% endif %}</p>
+  {% endif %}
+  {% if blocks.competitors.price_summary %}
+  <p{% if not blocks.competitors.our_in_slice %} class="warn"{% endif %}>{{ blocks.competitors.price_summary }}</p>
+  {% endif %}
+  <table class="table compact">
+    <thead>
+      <tr><th>Поз.</th><th>Бренд</th><th>Цена, ₽</th><th>Рейтинг</th><th>Отзывов</th></tr>
+    </thead>
+    <tbody>
+      {% for row in blocks.competitors.rows %}
+      <tr{% if row.is_ours %} class="row-primary"{% endif %}>
+        <td>{{ row.position or '—' }}</td>
+        <td>{{ row.brand or '—' }}</td>
+        <td>{% if row.price_rub is not none %}{{ row.price_rub }}{% else %}—{% endif %}</td>
+        <td>{% if row.rating is not none %}{{ row.rating }}{% else %}—{% endif %}</td>
+        <td>{% if row.feedbacks is not none %}{{ row.feedbacks }}{% else %}—{% endif %}</td>
+      </tr>
+      {% endfor %}
+    </tbody>
+  </table>
+  {% else %}
+  <p class="muted">Данных по соседям в выдаче пока нет — срез появится после парсинга позиций.</p>
+  {% endif %}
+
+  <h2>Поисковые запросы</h2>
+  {% if blocks.search_report.available %}
+  {% if blocks.search_report.synced_at %}
+  <p class="muted">Обновлено {{ blocks.search_report.synced_at|dt_msk }} · топ-20 по частоте</p>
+  {% endif %}
+  <table class="table compact">
+    <thead>
+      <tr>
+        <th>Ключ</th>
+        <th>Частота/нед</th>
+        <th>Медиана поз.</th>
+        <th>Видимость</th>
+        <th>Заказы</th>
+        <th>Конв. в заказ</th>
+        <th>Перцентиль</th>
+      </tr>
+    </thead>
+    <tbody>
+      {% for item in blocks.search_report.keywords %}
+      <tr>
+        <td>{{ item.text }}</td>
+        <td>{{ item.week_frequency or '—' }}</td>
+        <td>{{ item.median_position or '—' }}</td>
+        <td>{{ item.visibility or '—' }}</td>
+        <td>{{ item.orders or '—' }}</td>
+        <td>{% if item.cart_to_order is not none %}{{ item.cart_to_order }}%{% else %}—{% endif %}</td>
+        <td><span class="{{ item.orders_percentile|percentile_class }}">{% if item.orders_percentile is not none %}{{ item.orders_percentile }}{% else %}—{% endif %}</span></td>
+      </tr>
+      {% endfor %}
+    </tbody>
+  </table>
+  {% else %}
+  <p class="muted">Поисковый отчёт для этой карточки ещё не загружен — данные подтягиваются по ротации.</p>
+  {% endif %}
+
+  <h2>Динамика продаж</h2>
+  {% if blocks.funnel.available %}
+  {% if blocks.funnel.synced_at %}
+  <p class="muted">Обновлено {{ blocks.funnel.synced_at|dt_msk }}</p>
+  {% endif %}
+  <section class="cards">
+    {% for label, summary in [('7 дней', blocks.funnel.summary_7d), ('30 дней', blocks.funnel.summary_30d)] %}
+    <div class="card">
+      <span class="label">Сводка · {{ label }}</span>
+      {% if summary %}
+      <span class="value small" style="display:block;line-height:1.5;font-size:0.9rem;">
+        Заказы {{ summary.orders }} · выручка {{ summary.revenue }} ₽
+        {% if summary.avg_check is not none %} · ср. чек {{ summary.avg_check }} ₽{% endif %}
+        {% if summary.add_to_cart_conversion is not none %} · в корзину {{ summary.add_to_cart_conversion }}%{% endif %}
+        {% if summary.cart_to_order_conversion is not none %} · в заказ {{ summary.cart_to_order_conversion }}%{% endif %}
+        {% if summary.buyout_percent is not none %} · выкуп {{ summary.buyout_percent }}%{% endif %}
+        {% if summary.days < 7 and label == '7 дней' %} <span class="muted">(дней: {{ summary.days }})</span>{% elif summary.days < 30 and label == '30 дней' %} <span class="muted">(дней: {{ summary.days }})</span>{% endif %}
+      </span>
+      {% else %}
+      <span class="value small muted">—</span>
+      {% endif %}
+    </div>
+    {% endfor %}
+  </section>
+  <table class="table compact">
+    <thead>
+      <tr>
+        <th>Дата</th>
+        <th>Заказы</th>
+        <th>Выручка, ₽</th>
+        <th>Выкупы</th>
+        <th>Выкуп, %</th>
+        <th>В корзину, %</th>
+        <th>В заказ, %</th>
+      </tr>
+    </thead>
+    <tbody>
+      {% for row in blocks.funnel.recent_rows %}
+      <tr>
+        <td>{{ row.dt }}</td>
+        <td>{{ row.orders_count or 0 }}</td>
+        <td>{{ row.orders_sum_rub or 0 }}</td>
+        <td>{{ row.buyouts_count or 0 }}</td>
+        <td>{% if row.buyout_percent is not none %}{{ row.buyout_percent }}{% else %}—{% endif %}</td>
+        <td>{% if row.add_to_cart_conversion is not none %}{{ row.add_to_cart_conversion }}{% else %}—{% endif %}</td>
+        <td>{% if row.cart_to_order_conversion is not none %}{{ row.cart_to_order_conversion }}{% else %}—{% endif %}</td>
+      </tr>
+      {% endfor %}
+    </tbody>
+  </table>
+  {% else %}
+  <p class="muted">История воронки для этой карточки ещё не загружена — данные подтягиваются по ротации.</p>
+  {% endif %}
+
   {% if opt.alerts %}
   <ul class="alerts">
     {% for a in opt.alerts %}<li class="warn">{{ a }}</li>{% endfor %}

@@ -5,7 +5,12 @@ from __future__ import annotations
 import json
 from pathlib import Path
 
-from wb_advert.storage.competitors_store import append_competitors_snapshot, competitors_dir
+from wb_advert.storage.competitors_store import (
+    append_competitors_snapshot,
+    build_competitors_display,
+    competitors_dir,
+    load_latest_competitors_snapshot,
+)
 
 
 def _sample_entry(**overrides) -> dict:
@@ -92,3 +97,61 @@ def test_append_competitors_snapshot_saves_not_in_slice(tmp_path: Path) -> None:
     assert row["our_in_slice"] is False
     assert row["found"] is False
     assert all(not item["is_ours"] for item in row["competitors_slice"])
+
+
+def test_load_latest_competitors_snapshot_uses_newest_file_and_last_row(tmp_path: Path) -> None:
+    older = competitors_dir(tmp_path) / "competitors_2026-07-22.jsonl"
+    newer = competitors_dir(tmp_path) / "competitors_2026-07-23.jsonl"
+    older.write_text(
+        "\n".join(
+            [
+                json.dumps(_sample_entry(nm_id=624468743, keyword="old"), ensure_ascii=False),
+                json.dumps(_sample_entry(nm_id=999), ensure_ascii=False),
+            ]
+        )
+        + "\n",
+        encoding="utf-8",
+    )
+    newer.write_text(
+        "\n".join(
+            [
+                json.dumps(_sample_entry(nm_id=624468743, keyword="first"), ensure_ascii=False),
+                json.dumps(_sample_entry(nm_id=624468743, keyword="latest"), ensure_ascii=False),
+            ]
+        )
+        + "\n",
+        encoding="utf-8",
+    )
+
+    row = load_latest_competitors_snapshot(624468743, tmp_path)
+
+    assert row is not None
+    assert row["keyword"] == "latest"
+
+
+def test_load_latest_competitors_snapshot_returns_none_without_files(tmp_path: Path) -> None:
+    assert load_latest_competitors_snapshot(624468743, tmp_path) is None
+
+
+def test_build_competitors_display_marks_missing_our_row(tmp_path: Path) -> None:
+    entry = _sample_entry(
+        found=False,
+        position=None,
+        our_in_slice=False,
+        competitors_slice=[
+            {
+                "nm_id": 111,
+                "position": 1,
+                "brand": "Other",
+                "price_rub": 99.0,
+                "rating": 4.5,
+                "feedbacks": 10,
+                "is_ours": False,
+            }
+        ],
+    )
+    display = build_competitors_display(entry)
+
+    assert display["available"] is True
+    assert display["our_in_slice"] is False
+    assert display["price_summary"] == "Нас нет в текущем срезе выдачи"
