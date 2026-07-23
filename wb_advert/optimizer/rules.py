@@ -3,39 +3,45 @@ from __future__ import annotations
 from wb_advert.constants import MIN_SHOWS_FOR_MANAGED
 from wb_advert.schemas.optimizer import DecisionSuggestion
 
+KEYWORD_CR_MIN_CLICKS = 30
+CAMPAIGN_CR_MIN_CLICKS = 100
+CPC_LIMIT_INSUFFICIENT_DATA = "недостаточно данных для лимита CPC"
+
+
+def keyword_campaign_totals(keywords: list[dict]) -> tuple[int, int]:
+    clicks = 0
+    orders = 0
+    for kw in keywords:
+        clicks += int(kw.get("clicks") or 0)
+        orders += int(kw.get("orders") or 0)
+    return clicks, orders
+
+
+def resolve_cr_fact(
+    kw_clicks: int,
+    kw_orders: int,
+    campaign_clicks: int,
+    campaign_orders: int,
+) -> float | None:
+    if kw_clicks >= KEYWORD_CR_MIN_CLICKS:
+        if kw_clicks <= 0:
+            return None
+        return kw_orders / kw_clicks
+    if campaign_clicks >= CAMPAIGN_CR_MIN_CLICKS:
+        if campaign_clicks <= 0:
+            return None
+        return campaign_orders / campaign_clicks
+    return None
+
 
 def calc_max_cpc_kopecks(
     retail_price_rub: float,
-    cost_price_rub: float,
-    logistics_rub: float,
-    commission_pct: float,
     max_drr_pct: float,
-    *,
-    expected_cr: float = 0.05,
+    cr_fact: float,
 ) -> int | None:
-    if retail_price_rub <= 0 or expected_cr <= 0:
+    if retail_price_rub <= 0 or max_drr_pct <= 0 or cr_fact <= 0:
         return None
-    commission = retail_price_rub * (commission_pct / 100)
-    margin_pool = retail_price_rub - cost_price_rub - logistics_rub - commission
-    if margin_pool <= 0:
-        return None
-    max_spend_per_order = margin_pool * (max_drr_pct / 100)
-    return int(max_spend_per_order / expected_cr * 100)
-
-
-def calc_max_cpc_from_margin(
-    retail_price_rub: float,
-    margin_pct: float,
-    max_drr_pct: float,
-    *,
-    expected_cr: float = 0.05,
-) -> int | None:
-    """CPC cap when only retail + margin_pct known (manager workflow from call 12.06)."""
-    if retail_price_rub <= 0 or margin_pct <= 0 or expected_cr <= 0:
-        return None
-    margin_pool = retail_price_rub * (margin_pct / 100)
-    max_spend_per_order = margin_pool * (max_drr_pct / 100)
-    return int(max_spend_per_order / expected_cr * 100)
+    return int(retail_price_rub * (max_drr_pct / 100) * cr_fact * 100)
 
 
 def suggest_keyword_action(

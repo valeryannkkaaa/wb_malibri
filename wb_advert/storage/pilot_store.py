@@ -6,7 +6,7 @@ from pathlib import Path
 from wb_advert.config import settings
 from wb_advert.constants import PENDING_NM_PREFIX
 from wb_advert.import_data.csv_loader import load_pilot_skus
-from wb_advert.optimizer.rules import calc_max_cpc_from_margin, calc_max_cpc_kopecks
+from wb_advert.optimizer.rules import calc_max_cpc_kopecks, resolve_cr_fact
 from wb_advert.optimizer.summary import summarize_campaign
 from wb_advert.storage.config_store import get_parser_settings, load_config
 from wb_advert.storage.keywords_store import load_keywords
@@ -37,24 +37,22 @@ def _economics_complete(econ: dict) -> bool:
     return bool(econ.get("cost_price_rub") or econ.get("margin_pct"))
 
 
-def _max_cpc_kopecks(econ: dict) -> int | None:
+def _max_cpc_kopecks(
+    econ: dict,
+    *,
+    kw_clicks: int = 0,
+    kw_orders: int = 0,
+    campaign_clicks: int = 0,
+    campaign_orders: int = 0,
+) -> int | None:
     retail = econ.get("retail_price_rub")
     if not retail:
         return None
+    cr_fact = resolve_cr_fact(kw_clicks, kw_orders, campaign_clicks, campaign_orders)
+    if cr_fact is None:
+        return None
     max_drr = float(econ.get("max_drr_pct") or 15)
-    cost = econ.get("cost_price_rub")
-    margin_pct = econ.get("margin_pct")
-    if cost:
-        return calc_max_cpc_kopecks(
-            float(retail),
-            float(cost),
-            float(econ.get("logistics_rub") or 0),
-            float(econ.get("wb_commission_pct") or 15),
-            max_drr,
-        )
-    if margin_pct:
-        return calc_max_cpc_from_margin(float(retail), float(margin_pct), max_drr)
-    return None
+    return calc_max_cpc_kopecks(float(retail), max_drr, cr_fact)
 
 
 def load_stocks_by_nm(data_dir: Path | None = None) -> dict[str, dict]:
@@ -119,19 +117,32 @@ def build_product_rows(data_dir: Path | None = None, *, region_key: str | None =
         advert_id = sku.wb_campaign_search
         sync_row = by_advert.get(advert_id, {})
         kw_file = load_keywords(advert_id, data_dir)
-        keyword_count = len(kw_file.get("keywords") or []) if kw_file else sync_row.get("keywords", 0)
+        keywords = kw_file.get("keywords") or [] if kw_file else []
+        keyword_count = len(keywords) if kw_file else sync_row.get("keywords", 0)
         econ = economics.get(sku.nm_id, {})
         pos = positions.get(sku.nm_id, {})
-        max_cpc = _max_cpc_kopecks(econ)
+        campaign_clicks = sum(int(k.get("clicks") or 0) for k in keywords)
+        campaign_orders = sum(int(k.get("orders") or 0) for k in keywords)
         top = sync_row.get("top_stats") or {}
         stock = stocks.get(sku.nm_id, {})
         primary_cpc: int | None = None
+        primary_kw_clicks = 0
+        primary_kw_orders = 0
         if kw_file:
             primary_kw = (sku.primary_keyword or sync_row.get("top_keyword") or "").strip().lower()
-            for k in kw_file.get("keywords") or []:
+            for k in keywords:
                 if (k.get("keyword") or "").strip().lower() == primary_kw:
                     primary_cpc = k.get("cpc_calculated_kopecks")
+                    primary_kw_clicks = int(k.get("clicks") or 0)
+                    primary_kw_orders = int(k.get("orders") or 0)
                     break
+        max_cpc = _max_cpc_kopecks(
+            econ,
+            kw_clicks=primary_kw_clicks,
+            kw_orders=primary_kw_orders,
+            campaign_clicks=campaign_clicks,
+            campaign_orders=campaign_orders,
+        )
         rows.append(
             {
                 "advert_id": advert_id,
