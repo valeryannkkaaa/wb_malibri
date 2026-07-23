@@ -16,6 +16,7 @@ from wb_advert.import_data.csv_loader import load_pilot_skus  # noqa: E402
 from wb_advert.parser.regions import PARSER_REGION_OPTIONS, region_config_label  # noqa: E402
 from wb_advert.parser.search import WbSearchParser  # noqa: E402
 from wb_advert.storage.pilot_store import load_config, pilot_data_dir  # noqa: E402
+from wb_advert.storage.competitors_store import append_competitors_snapshot  # noqa: E402
 from wb_advert.storage.positions_store import (  # noqa: E402
     append_position_snapshot,
     is_position_fresh,
@@ -190,6 +191,7 @@ def main() -> int:
 
                 if not args.dry_run:
                     append_position_snapshot(result, data_dir)
+                    append_competitors_snapshot(result, data_dir)
 
     if not args.dry_run and entries:
         write_positions_summary(entries, data_dir)
