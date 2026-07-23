@@ -105,7 +105,7 @@
     </thead>
     <tbody>
       {% for d in dash.recommendations %}
-      <tr{% if d.action not in ('keep', 'skip') %} class="row-actionable"{% endif %}>
+      <tr{% if d.needs_attention %} class="row-actionable"{% endif %}>
         <td data-sort-value="{{ d.advert_id }}"><a href="/advert/products/{{ d.advert_id }}">{{ d.advert_id }}</a></td>
         <td>{{ d.keyword }}</td>
         <td data-sort-value="{{ d.action }}"><span class="action action-{{ d.action }}">{{ d.action|action_ru }}</span></td>
@@ -136,7 +136,7 @@
     </thead>
     <tbody>
       {% for p in dash.products %}
-      <tr{% if p.alert_severity %} class="row-alert row-alert-{{ p.alert_severity }}"{% endif %}>
+      <tr{% if p.alert_severity %} class="row-alert row-alert-{{ p.alert_severity }}"{% elif p.recommendation and p.recommendation.needs_attention %} class="row-actionable"{% endif %}>
         <td data-sort-value="{{ p.advert_id }}"><a href="/advert/products/{{ p.advert_id }}">{{ p.advert_id }}</a></td>
         <td data-sort-value="{{ p.nm_id }}">{{ p.nm_id }}</td>
         <td class="kw">{{ p.primary_keyword or '—' }}</td>
@@ -144,13 +144,13 @@
         <td data-sort-value="{{ p.top_stats.orders if p.top_stats else '' }}">{{ p.top_stats.orders if p.top_stats else '—' }}</td>
         <td data-sort-value="{{ p.top_stats.ctr if p.top_stats else '' }}">{{ p.top_stats.ctr if p.top_stats else '—' }}</td>
         <td data-sort-value="{{ p.primary_cpc_rub or '' }}">{% if p.primary_cpc_rub %}{% if p.cpc_over_limit %}<span class="warn">{{ p.primary_cpc_rub }}</span>{% else %}{{ p.primary_cpc_rub }}{% endif %}{% else %}—{% endif %}</td>
-        <td data-sort-value="{{ p.max_cpc_rub or '' }}">{% if p.max_cpc_rub %}{{ p.max_cpc_rub }}{% else %}—{% endif %}</td>
+        <td data-sort-value="{{ p.max_cpc_rub or '' }}">{% if p.max_cpc_rub %}{{ p.max_cpc_rub }}{% if p.max_cpc_is_prior %}<span class="warn" title="потолок оценён по приору, мало собственных данных"> ~</span>{% endif %}{% else %}—{% endif %}</td>
         <td data-sort-value="{{ p.parsed_position or '' }}">
           {% if p.parsed_position %}
-            <span class="pos-ok">{{ p.parsed_position }}</span>
+            <span class="pos-ok">{{ p.parsed_position }}</span>{% set goal_met = p.target_grade|position_meets_target(p.parsed_position) %}{% if goal_met is sameas true %}<span class="pos-ok" title="цель {{ p.target_grade|grade_ru }}, факт {{ p.parsed_position }}"> ✓</span>{% elif goal_met is sameas false %}<span class="warn" title="цель {{ p.target_grade|grade_ru }}, факт {{ p.parsed_position }}"> ✗</span>{% endif %}
           {% elif p.position_error %}
             <span class="warn" title="{{ p.position_error }}">—</span>
-          {% else %}—{% endif %}
+          {% else %}<span class="muted" title="позиция не известна">—</span>{% endif %}
         </td>
         <td data-sort-value="{{ p.recommendation.action if p.recommendation else '' }}">
           {% if p.recommendation %}

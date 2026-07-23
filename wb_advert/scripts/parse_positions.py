@@ -16,6 +16,7 @@ from wb_advert.import_data.csv_loader import load_pilot_skus  # noqa: E402
 from wb_advert.parser.regions import PARSER_REGION_OPTIONS, region_config_label  # noqa: E402
 from wb_advert.parser.search import WbSearchParser  # noqa: E402
 from wb_advert.storage.pilot_store import load_config, pilot_data_dir  # noqa: E402
+from wb_advert.storage.competitors_store import append_competitors_snapshot  # noqa: E402
 from wb_advert.storage.positions_store import (  # noqa: E402
     append_position_snapshot,
     is_position_fresh,
@@ -33,9 +34,9 @@ def _region_plans(
     args_dest: str | None,
 ) -> list[tuple[str, str | None, str]]:
     if all_regions:
-        return [(opt["key"], opt["dest"], opt["label"]) for opt in PARSER_REGION_OPTIONS]
+        return [(opt["key"], None, opt["label"]) for opt in PARSER_REGION_OPTIONS]
     region_val = args_region if args_region is not None else parser_cfg.get("region")
-    dest_val = args_dest if args_dest is not None else parser_cfg.get("dest")
+    dest_val = args_dest
     from wb_advert.parser.regions import normalize_region_key
 
     rk = normalize_region_key(str(region_val) if region_val else None)
@@ -96,14 +97,14 @@ def main() -> int:
         print("No pilot SKUs with primary_keyword", flush=True)
         return 1
 
-    pause = float(parser_cfg.get("pause_sec") or 3.0)
+    pause = float(parser_cfg.get("pause_sec") or 0.4)
     max_pages = args.max_pages or int(parser_cfg.get("max_pages") or 5)
     pause_regions = args.pause_between_regions
     if pause_regions is None:
         pause_regions = float(parser_cfg.get("pause_between_regions_sec") or 8.0)
     pause_queries = args.pause_between_queries
     if pause_queries is None:
-        pause_queries = float(parser_cfg.get("pause_between_queries_sec") or 3.0)
+        pause_queries = float(parser_cfg.get("pause_between_queries_sec") or 0.5)
 
     min_age_min = 0.0
     if args.skip_fresh and not args.force:
@@ -190,6 +191,7 @@ def main() -> int:
 
                 if not args.dry_run:
                     append_position_snapshot(result, data_dir)
+                    append_competitors_snapshot(result, data_dir)
 
     if not args.dry_run and entries:
         write_positions_summary(entries, data_dir)
@@ -204,7 +206,9 @@ def main() -> int:
         print("Tip: WB rate-limits search API — retry in 10–30 min or use --skip-fresh", flush=True)
     if parsed == 0 and skipped_fresh > 0:
         return 0
-    return 0 if ok > 0 or parsed == 0 else 1
+    if failures and ok == 0:
+        print("Parse completed with errors (best-effort; daily cycle continues)", flush=True)
+    return 0
 
 
 if __name__ == "__main__":
