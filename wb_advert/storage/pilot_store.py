@@ -6,7 +6,11 @@ from pathlib import Path
 from wb_advert.config import settings
 from wb_advert.constants import PENDING_NM_PREFIX
 from wb_advert.import_data.csv_loader import load_pilot_skus
-from wb_advert.optimizer.rules import calc_keyword_max_cpc_kopecks, keyword_campaign_totals
+from wb_advert.optimizer.rules import (
+    CPC_PRIOR_ESTIMATE,
+    calc_keyword_max_cpc_kopecks,
+    keyword_campaign_totals,
+)
 from wb_advert.optimizer.summary import summarize_campaign
 from wb_advert.storage.config_store import get_parser_settings, load_config
 from wb_advert.storage.keywords_store import load_keywords
@@ -200,12 +204,13 @@ def build_product_rows_with_prior(
     for item in pending:
         econ = item["econ"]
         kw_for_ceiling = item["primary_kw"] if item["primary_kw"] is not None else {}
-        max_cpc, _ = calc_keyword_max_cpc_kopecks(
+        max_cpc, prior_alert = calc_keyword_max_cpc_kopecks(
             econ,
             kw_for_ceiling,
             item["campaign_totals"],
             global_cr_prior,
         )
+        max_cpc_is_prior = prior_alert == CPC_PRIOR_ESTIMATE
         stock = item["stock"]
         pos = item["pos"]
         primary_cpc = item["primary_cpc"]
@@ -226,6 +231,7 @@ def build_product_rows_with_prior(
                 "retail_price_rub": econ.get("retail_price_rub"),
                 "margin_pct": econ.get("margin_pct"),
                 "max_cpc_rub": round(max_cpc / 100, 2) if max_cpc else None,
+                "max_cpc_is_prior": max_cpc_is_prior,
                 "primary_cpc_rub": round(primary_cpc / 100, 2) if primary_cpc else None,
                 "cpc_over_limit": bool(max_cpc and primary_cpc and primary_cpc > max_cpc),
                 "max_drr_pct": econ.get("max_drr_pct") or "15",
@@ -365,6 +371,15 @@ def build_dashboard(data_dir: Path | None = None) -> dict:
 
     products = _attach_recommendation_summaries(products, latest_by_advert)
     recommendations = load_dashboard_recommendations(limit=5, data_dir=data_dir)
+    attention_by_advert = {
+        int(p["advert_id"]): p["recommendation"]
+        for p in products
+        if p.get("recommendation")
+    }
+    for rec in recommendations:
+        campaign_rec = attention_by_advert.get(int(rec["advert_id"] or 0), {})
+        rec["actionable_count"] = campaign_rec.get("actionable_count", 0)
+        rec["needs_attention"] = campaign_rec.get("needs_attention", False)
     from wb_advert.storage.dashboard_alerts import (
         attach_alert_flags,
         build_dashboard_alerts,

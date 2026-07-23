@@ -2,6 +2,8 @@
 
 from __future__ import annotations
 
+from wb_advert.ui.labels import action_ru
+
 ACTION_PRIORITY: dict[str, int] = {
     "exclude_keyword": 0,
     "lower_bid": 1,
@@ -17,7 +19,7 @@ def _rank(suggestion: dict, *, primary_keyword: str) -> tuple[int, int]:
     kw = (suggestion.get("keyword") or "").strip().lower()
     primary = primary_keyword.strip().lower()
     is_primary = bool(primary and kw == primary)
-    return (ACTION_PRIORITY.get(action, 99), 0 if is_primary else 1)
+    return (0 if is_primary else 1, ACTION_PRIORITY.get(action, 99))
 
 
 def pick_display_suggestion(
@@ -32,6 +34,36 @@ def pick_display_suggestion(
         if s.get("action") not in ("skip",):
             return s
     return ranked[0]
+
+
+def _extra_actions_phrase(count: int) -> str:
+    if count % 10 == 1 and count % 100 != 11:
+        word = "действие"
+    elif count % 10 in (2, 3, 4) and count % 100 not in (12, 13, 14):
+        word = "действия"
+    else:
+        word = "действий"
+    return f"ещё {count} {word}"
+
+
+def _remaining_actionable_count(action: str, actionable_count: int) -> int:
+    if action in ("keep", "skip"):
+        return actionable_count
+    return max(actionable_count - 1, 0)
+
+
+def recommendation_needs_attention(recommendation: dict) -> bool:
+    return int(recommendation.get("actionable_count") or 0) > 0
+
+
+def _build_summary(action: str, reason: str, remaining: int) -> str:
+    if remaining > 0:
+        return f"{action_ru(action)} · {_extra_actions_phrase(remaining)}"
+    if action == "keep":
+        return "В норме"
+    if action == "skip":
+        return reason or "Недостаточно данных"
+    return reason
 
 
 def summarize_campaign(
@@ -74,15 +106,9 @@ def summarize_campaign(
     action = display.get("action") or "skip"
     keyword = display.get("keyword") or primary or "—"
     reason = display.get("reason_text") or ""
-
-    if len(actionable) > 1:
-        summary = f"{len(actionable)} действия"
-    elif action == "keep":
-        summary = "В норме"
-    elif action == "skip":
-        summary = reason or "Недостаточно данных"
-    else:
-        summary = reason
+    actionable_count = len(actionable)
+    remaining = _remaining_actionable_count(action, actionable_count)
+    summary = _build_summary(action, reason, remaining)
 
     return {
         "advert_id": advert_id,
@@ -91,7 +117,8 @@ def summarize_campaign(
         "action": action,
         "reason_text": reason,
         "summary": summary,
-        "actionable_count": len(actionable),
+        "actionable_count": actionable_count,
+        "needs_attention": recommendation_needs_attention({"actionable_count": actionable_count}),
         "decided_at": decided_at,
     }
 
