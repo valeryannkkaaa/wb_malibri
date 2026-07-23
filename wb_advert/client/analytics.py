@@ -59,6 +59,55 @@ class AnalyticsClient:
             json_body=body,
         )
 
+    def nm_report_create_download(
+        self,
+        download_id: str,
+        nm_ids: list[int],
+        start: date,
+        end: date,
+        *,
+        report_name: str = "funnel_detail_history",
+        timezone: str = "Europe/Moscow",
+    ) -> HttpResult:
+        body: dict[str, Any] = {
+            "id": download_id,
+            "reportType": "DETAIL_HISTORY_REPORT",
+            "userReportName": report_name,
+            "params": {
+                "nmIDs": nm_ids,
+                "subjectIDs": [],
+                "brandNames": [],
+                "tagIDs": [],
+                "startDate": start.isoformat(),
+                "endDate": end.isoformat(),
+                "timezone": timezone,
+                "aggregationLevel": "day",
+                "skipDeletedNm": False,
+            },
+        }
+        return self.http.request(
+            self.base,
+            "POST",
+            "/api/v2/nm-report/downloads",
+            json_body=body,
+        )
+
+    def nm_report_download_status(self, download_ids: list[str]) -> HttpResult:
+        params = {"filter[downloadIds]": ",".join(download_ids)}
+        return self.http.request(
+            self.base,
+            "GET",
+            "/api/v2/nm-report/downloads",
+            params=params,
+        )
+
+    def nm_report_download_file(self, download_id: str) -> tuple[int | None, bytes, str | None]:
+        return self.http.request_bytes(
+            self.base,
+            "GET",
+            f"/api/v2/nm-report/downloads/file/{download_id}",
+        )
+
     def stocks_report_wb_warehouses(
         self,
         begin: date,
