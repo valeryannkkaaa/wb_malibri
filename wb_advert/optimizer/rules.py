@@ -5,8 +5,12 @@ from wb_advert.schemas.optimizer import DecisionSuggestion
 
 KEYWORD_CR_MIN_CLICKS = 30
 CAMPAIGN_CR_MIN_CLICKS = 100
+# Prior strength in clicks: equivalent sample size blended into CR estimate.
+CR_PRIOR_STRENGTH_CLICKS = 50
+# Cap keyword CR at this multiple of campaign CR to limit attribution noise (orders > clicks).
+CR_WINSOR_CAMPAIGN_MULTIPLIER = 2.0
 CPC_LIMIT_INSUFFICIENT_DATA = "недостаточно данных для лимита CPC"
-CPC_ZERO_CONVERSION = "конверсия 0% — лимит CPC не считается"
+CPC_PRIOR_ESTIMATE = "потолок оценён по приору, мало собственных данных"
 
 
 def keyword_campaign_totals(keywords: list[dict] | None) -> tuple[int, int]:
@@ -18,21 +22,32 @@ def keyword_campaign_totals(keywords: list[dict] | None) -> tuple[int, int]:
     return clicks, orders
 
 
-def resolve_cr_fact(
+def smooth_cr(
+    orders: int,
+    clicks: int,
+    prior_cr: float,
+    *,
+    prior_strength: int = CR_PRIOR_STRENGTH_CLICKS,
+) -> float:
+    return (orders + prior_strength * prior_cr) / (clicks + prior_strength)
+
+
+def resolve_cr_smoothed(
     kw_clicks: int,
     kw_orders: int,
     campaign_clicks: int,
     campaign_orders: int,
-) -> tuple[float | None, str | None]:
-    if kw_clicks >= KEYWORD_CR_MIN_CLICKS:
-        if kw_orders <= 0:
-            return None, CPC_ZERO_CONVERSION
-        return kw_orders / kw_clicks, None
-    if campaign_clicks >= CAMPAIGN_CR_MIN_CLICKS:
-        if campaign_orders <= 0:
-            return None, CPC_ZERO_CONVERSION
-        return campaign_orders / campaign_clicks, None
-    return None, CPC_LIMIT_INSUFFICIENT_DATA
+    global_cr_prior: float,
+) -> float:
+    campaign_cr = smooth_cr(campaign_orders, campaign_clicks, global_cr_prior)
+    keyword_cr = smooth_cr(kw_orders, kw_clicks, campaign_cr)
+    return min(keyword_cr, CR_WINSOR_CAMPAIGN_MULTIPLIER * campaign_cr)
+
+
+def prior_estimate_alert_reason(kw_clicks: int) -> str | None:
+    if kw_clicks < KEYWORD_CR_MIN_CLICKS:
+        return CPC_PRIOR_ESTIMATE
+    return None
 
 
 def calc_max_cpc_kopecks(
@@ -49,21 +64,30 @@ def calc_keyword_max_cpc_kopecks(
     econ: dict,
     kw: dict,
     campaign_totals: tuple[int, int],
+    global_cr_prior: float | None,
 ) -> tuple[int | None, str | None]:
     retail = econ.get("retail_price_rub")
     if not retail:
         return None, None
 
+    if global_cr_prior is None:
+        return None, CPC_LIMIT_INSUFFICIENT_DATA
+
     kw_clicks = int(kw.get("clicks") or 0)
     kw_orders = int(kw.get("orders") or 0)
     campaign_clicks, campaign_orders = campaign_totals
 
-    cr_fact, reason = resolve_cr_fact(kw_clicks, kw_orders, campaign_clicks, campaign_orders)
-    if reason is not None:
-        return None, reason
+    cr_fact = resolve_cr_smoothed(
+        kw_clicks,
+        kw_orders,
+        campaign_clicks,
+        campaign_orders,
+        global_cr_prior,
+    )
+    alert = prior_estimate_alert_reason(kw_clicks)
 
     max_drr = float(econ.get("max_drr_pct") or 15)
-    return calc_max_cpc_kopecks(float(retail), max_drr, cr_fact), None
+    return calc_max_cpc_kopecks(float(retail), max_drr, cr_fact), alert
 
 
 def suggest_keyword_action(
