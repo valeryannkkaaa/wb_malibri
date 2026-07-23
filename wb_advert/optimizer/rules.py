@@ -6,12 +6,13 @@ from wb_advert.schemas.optimizer import DecisionSuggestion
 KEYWORD_CR_MIN_CLICKS = 30
 CAMPAIGN_CR_MIN_CLICKS = 100
 CPC_LIMIT_INSUFFICIENT_DATA = "недостаточно данных для лимита CPC"
+CPC_ZERO_CONVERSION = "конверсия 0% — лимит CPC не считается"
 
 
-def keyword_campaign_totals(keywords: list[dict]) -> tuple[int, int]:
+def keyword_campaign_totals(keywords: list[dict] | None) -> tuple[int, int]:
     clicks = 0
     orders = 0
-    for kw in keywords:
+    for kw in keywords or []:
         clicks += int(kw.get("clicks") or 0)
         orders += int(kw.get("orders") or 0)
     return clicks, orders
@@ -22,16 +23,16 @@ def resolve_cr_fact(
     kw_orders: int,
     campaign_clicks: int,
     campaign_orders: int,
-) -> float | None:
+) -> tuple[float | None, str | None]:
     if kw_clicks >= KEYWORD_CR_MIN_CLICKS:
-        if kw_clicks <= 0:
-            return None
-        return kw_orders / kw_clicks
+        if kw_orders <= 0:
+            return None, CPC_ZERO_CONVERSION
+        return kw_orders / kw_clicks, None
     if campaign_clicks >= CAMPAIGN_CR_MIN_CLICKS:
-        if campaign_clicks <= 0:
-            return None
-        return campaign_orders / campaign_clicks
-    return None
+        if campaign_orders <= 0:
+            return None, CPC_ZERO_CONVERSION
+        return campaign_orders / campaign_clicks, None
+    return None, CPC_LIMIT_INSUFFICIENT_DATA
 
 
 def calc_max_cpc_kopecks(
@@ -42,6 +43,27 @@ def calc_max_cpc_kopecks(
     if retail_price_rub <= 0 or max_drr_pct <= 0 or cr_fact <= 0:
         return None
     return int(retail_price_rub * (max_drr_pct / 100) * cr_fact * 100)
+
+
+def calc_keyword_max_cpc_kopecks(
+    econ: dict,
+    kw: dict,
+    campaign_totals: tuple[int, int],
+) -> tuple[int | None, str | None]:
+    retail = econ.get("retail_price_rub")
+    if not retail:
+        return None, None
+
+    kw_clicks = int(kw.get("clicks") or 0)
+    kw_orders = int(kw.get("orders") or 0)
+    campaign_clicks, campaign_orders = campaign_totals
+
+    cr_fact, reason = resolve_cr_fact(kw_clicks, kw_orders, campaign_clicks, campaign_orders)
+    if reason is not None:
+        return None, reason
+
+    max_drr = float(econ.get("max_drr_pct") or 15)
+    return calc_max_cpc_kopecks(float(retail), max_drr, cr_fact), None
 
 
 def suggest_keyword_action(
