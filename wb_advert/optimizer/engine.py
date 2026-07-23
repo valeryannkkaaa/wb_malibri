@@ -4,7 +4,13 @@ from datetime import datetime, timezone
 
 from wb_advert.constants import PENDING_NM_PREFIX
 from wb_advert.import_data.csv_loader import load_pilot_skus
-from wb_advert.optimizer.rules import calc_keyword_max_cpc_kopecks, keyword_campaign_totals, suggest_keyword_action
+from wb_advert.optimizer.rules import (
+    CPC_PRIOR_ESTIMATE,
+    calc_keyword_max_cpc_kopecks,
+    format_prior_estimate_campaign_alert,
+    keyword_campaign_totals,
+    suggest_keyword_action,
+)
 from wb_advert.schemas.optimizer import DecisionSuggestion, OptimizeResult
 from wb_advert.storage.keywords_store import load_keywords
 from wb_advert.storage.pilot_store import (
@@ -56,6 +62,7 @@ def optimize_product(
     if global_cr_prior is None:
         global_cr_prior = get_pilot_global_cr_prior(data_dir)
 
+    prior_estimate_count = 0
     for kw in keywords:
         is_primary = (kw.get("keyword") or "").strip().lower() == primary if primary else False
         max_cpc, limit_alert = calc_keyword_max_cpc_kopecks(
@@ -64,9 +71,8 @@ def optimize_product(
             campaign_totals,
             global_cr_prior,
         )
-        if limit_alert:
-            keyword_label = (kw.get("keyword") or "—").strip()
-            alerts.append(f"{keyword_label}: {limit_alert}")
+        if limit_alert == CPC_PRIOR_ESTIMATE:
+            prior_estimate_count += 1
         suggestion = suggest_keyword_action(
             kw,
             is_primary=is_primary,
@@ -74,6 +80,9 @@ def optimize_product(
         )
         if suggestion and suggestion.action != "skip":
             suggestions.append(suggestion)
+
+    if prior_estimate_count:
+        alerts.append(format_prior_estimate_campaign_alert(prior_estimate_count, len(keywords)))
 
     return OptimizeResult(
         advert_id=advert_id,
