@@ -41,7 +41,7 @@ def _write_funnel(
     data_dir: Path,
     nm_id: str | int,
     *,
-    days: list[dict],
+    rows: list[dict],
 ) -> None:
     sync_dir = data_dir / "sync"
     sync_dir.mkdir(parents=True, exist_ok=True)
@@ -50,7 +50,7 @@ def _write_funnel(
             {
                 "nm_id": int(nm_id),
                 "synced_at": "2026-07-23T10:00:00+00:00",
-                "days": days,
+                "rows": rows,
             },
             ensure_ascii=False,
             indent=2,
@@ -85,27 +85,27 @@ def _write_search_report(
     )
 
 
-def _gloves_funnel_days() -> list[dict]:
+def _gloves_funnel_rows() -> list[dict]:
     return [
         {
             "dt": "2026-07-16",
-            "ordersCount": 181,
-            "ordersSumRub": 38915,
-            "buyoutsSumRub": 30745,
-            "buyoutPercent": 95,
+            "orders_count": 181,
+            "orders_sum_rub": 38915,
+            "buyouts_sum_rub": 30745,
+            "buyout_percent": 95,
         },
         {
             "dt": "2026-07-17",
-            "ordersCount": 163,
-            "ordersSumRub": 35045,
-            "buyoutsSumRub": 25370,
-            "buyoutPercent": 97,
+            "orders_count": 163,
+            "orders_sum_rub": 35045,
+            "buyouts_sum_rub": 25370,
+            "buyout_percent": 97,
         },
     ]
 
 
 def test_funnel_price_overrides_csv() -> None:
-    funnel = {"days": _gloves_funnel_days()}
+    funnel = {"rows": _gloves_funnel_rows()}
     econ = {"retail_price_rub": "179", "max_drr_pct": "15"}
 
     resolved = resolve_retail_price(econ, funnel=funnel)
@@ -152,8 +152,8 @@ def test_buyout_percent_applied_to_ceiling() -> None:
 
 def test_buyout_not_invented_when_missing() -> None:
     funnel = {
-        "days": [
-            {"ordersCount": 10, "ordersSumRub": 2000},
+        "rows": [
+            {"orders_count": 10, "orders_sum_rub": 2000},
         ]
     }
     econ = {"retail_price_rub": "179", "max_drr_pct": "15"}
@@ -170,7 +170,7 @@ def test_buyout_not_invented_when_missing() -> None:
 
 
 def test_extract_funnel_metrics_from_issue_sample() -> None:
-    funnel = {"days": _gloves_funnel_days()}
+    funnel = {"rows": _gloves_funnel_rows()}
 
     assert extract_funnel_avg_order_rub(funnel) == pytest.approx(215, abs=0.5)
     assert extract_funnel_buyout_percent(funnel) == pytest.approx(95, abs=1)
@@ -286,7 +286,7 @@ def test_gloves_ceiling_with_api_data(
     assert baseline["price_source"] == PRICE_SOURCE_CSV
     baseline_ceiling = baseline["max_cpc_rub"]
 
-    _write_funnel(tmp_path, GLOVES_NM_ID, days=_gloves_funnel_days())
+    _write_funnel(tmp_path, GLOVES_NM_ID, rows=_gloves_funnel_rows())
     with_api = next(r for r in build_product_rows(tmp_path) if r["advert_id"] == GLOVES_ADVERT_ID)
 
     sku = next(s for s in load_pilot_skus(tmp_path / "pilot_skus.csv") if s.wb_campaign_search == GLOVES_ADVERT_ID)
@@ -331,7 +331,7 @@ def test_engine_and_dashboard_share_resolved_price_ceiling(
     ]
     extra = [(900_002, [_managed_keyword(keyword="filler", clicks=500, orders=100, cpc_kopecks=300)])]
     _write_pilot_fixture(tmp_path, keywords=keywords, extra_campaigns=extra, retail_price_rub="179")
-    _write_funnel(tmp_path, NM_ID, days=_gloves_funnel_days())
+    _write_funnel(tmp_path, NM_ID, rows=_gloves_funnel_rows())
     _patch_pilot_data_dir(monkeypatch, tmp_path)
 
     row = build_product_rows(tmp_path)[0]
@@ -392,7 +392,7 @@ def test_build_product_rows_exposes_price_source_fields(
     keywords = [_managed_keyword(keyword=PRIMARY_KEYWORD, clicks=40, orders=10, cpc_kopecks=500)]
     extra = [(900_002, [_managed_keyword(keyword="filler", clicks=500, orders=100, cpc_kopecks=300)])]
     _write_pilot_fixture(tmp_path, keywords=keywords, extra_campaigns=extra, retail_price_rub="179")
-    _write_funnel(tmp_path, NM_ID, days=_gloves_funnel_days())
+    _write_funnel(tmp_path, NM_ID, rows=_gloves_funnel_rows())
     _patch_pilot_data_dir(monkeypatch, tmp_path)
 
     row = build_product_rows(tmp_path)[0]
@@ -404,7 +404,7 @@ def test_build_product_rows_exposes_price_source_fields(
 
 def test_resolve_product_retail_price_loads_files(tmp_path: Path) -> None:
     econ = {"retail_price_rub": "179", "max_drr_pct": "15"}
-    _write_funnel(tmp_path, GLOVES_NM_ID, days=_gloves_funnel_days())
+    _write_funnel(tmp_path, GLOVES_NM_ID, rows=_gloves_funnel_rows())
 
     resolved = resolve_product_retail_price(GLOVES_NM_ID, econ, tmp_path)
 

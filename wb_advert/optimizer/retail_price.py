@@ -49,7 +49,7 @@ def _safe_int(value: Any) -> int | None:
 def _funnel_rows(funnel: dict | None) -> list[dict]:
     if not funnel:
         return []
-    rows = funnel.get("days") or funnel.get("items") or []
+    rows = funnel.get("rows") or []
     return [row for row in rows if isinstance(row, dict)]
 
 
@@ -57,8 +57,8 @@ def extract_funnel_avg_order_rub(funnel: dict | None) -> float | None:
     total_orders = 0
     total_sum = 0.0
     for row in _funnel_rows(funnel):
-        orders = _safe_int(row.get("ordersCount"))
-        order_sum = _safe_float(row.get("ordersSumRub"))
+        orders = _safe_int(row.get("orders_count"))
+        order_sum = _safe_float(row.get("orders_sum_rub"))
         if orders is None or order_sum is None:
             continue
         total_orders += orders
@@ -73,8 +73,8 @@ def extract_funnel_buyout_percent(funnel: dict | None) -> float | None:
     weighted_orders = 0
 
     for row in _funnel_rows(funnel):
-        buyout_pct = _safe_float(row.get("buyoutPercent"))
-        orders = _safe_int(row.get("ordersCount"))
+        buyout_pct = _safe_float(row.get("buyout_percent"))
+        orders = _safe_int(row.get("orders_count"))
         if buyout_pct is not None and orders is not None and orders > 0:
             weighted_buyout += buyout_pct * orders
             weighted_orders += orders
@@ -85,8 +85,8 @@ def extract_funnel_buyout_percent(funnel: dict | None) -> float | None:
     total_orders_sum = 0.0
     total_buyouts_sum = 0.0
     for row in _funnel_rows(funnel):
-        orders_sum = _safe_float(row.get("ordersSumRub"))
-        buyouts_sum = _safe_float(row.get("buyoutsSumRub"))
+        orders_sum = _safe_float(row.get("orders_sum_rub"))
+        buyouts_sum = _safe_float(row.get("buyouts_sum_rub"))
         if orders_sum is not None and buyouts_sum is not None:
             total_orders_sum += orders_sum
             total_buyouts_sum += buyouts_sum
