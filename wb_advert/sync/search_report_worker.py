@@ -5,8 +5,14 @@ from datetime import date
 from wb_advert.client.analytics import AnalyticsClient
 from wb_advert.sync.search_report_mappers import extract_search_text_items, map_search_text_item
 
-PAGE_SIZE = 50
-MAX_PAGES = 10
+SEARCH_LIMIT = 100
+TRUNCATION_WARNING = (
+    "search-texts: warning: received {count} keywords (limit={limit}); list may be truncated"
+)
+
+
+def is_blocking_error(error: str) -> bool:
+    return ": warning:" not in error
 
 
 class SearchReportWorker:
@@ -22,37 +28,28 @@ class SearchReportWorker:
         end: date,
     ) -> tuple[list[dict], list[str]]:
         errors: list[str] = []
-        all_items: list[dict] = []
-        offset = 0
-        page = 0
 
-        while page < MAX_PAGES:
-            print(f"  -> search-texts (nm_id={nm_id}, offset={offset})...", flush=True)
-            result = self.analytics.search_report_product_search_texts(
-                begin,
-                end,
-                [nm_id],
-                limit=PAGE_SIZE,
-                offset=offset,
-            )
-            if not result.ok:
-                detail = result.error or result.body[:120]
-                errors.append(f"search-texts: HTTP {result.status} {detail}")
-                return [], errors
-            print(f"     HTTP {result.status}", flush=True)
+        print(f"  -> search-texts (nm_id={nm_id}, limit={SEARCH_LIMIT})...", flush=True)
+        result = self.analytics.search_report_product_search_texts(
+            begin,
+            end,
+            [nm_id],
+            limit=SEARCH_LIMIT,
+        )
+        if not result.ok:
+            detail = result.error or result.body[:120]
+            errors.append(f"search-texts: HTTP {result.status} {detail}")
+            return [], errors
+        print(f"     HTTP {result.status}", flush=True)
 
-            batch = extract_search_text_items(result.json())
-            all_items.extend(map_search_text_item(row) for row in batch)
-            page += 1
-            if len(batch) < PAGE_SIZE:
-                break
-            offset += PAGE_SIZE
-        else:
+        batch = extract_search_text_items(result.json())
+        items = [map_search_text_item(row) for row in batch]
+
+        if len(batch) == SEARCH_LIMIT:
             errors.append(
-                f"search-texts: pagination stopped after {MAX_PAGES} pages "
-                f"({MAX_PAGES * PAGE_SIZE} keywords max)"
+                TRUNCATION_WARNING.format(count=len(batch), limit=SEARCH_LIMIT),
             )
 
-        if not errors and not all_items:
+        if not items:
             errors.append("search-texts: HTTP 200 but 0 keywords in period")
-        return all_items, errors
+        return items, errors

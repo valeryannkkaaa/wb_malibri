@@ -39,8 +39,7 @@ class AnalyticsClient:
         end: date,
         nm_ids: list[int],
         *,
-        limit: int = 50,
-        offset: int = 0,
+        limit: int = 100,
         top_order_by: str = "openCard",
         order_field: str = "openCard",
         order_mode: str = "desc",
@@ -51,7 +50,7 @@ class AnalyticsClient:
             "topOrderBy": top_order_by,
             "orderBy": {"field": order_field, "mode": order_mode},
             "limit": limit,
-            "offset": offset,
+            "offset": 0,
         }
         return self.http.request(
             self.base,
