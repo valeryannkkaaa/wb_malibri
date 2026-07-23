@@ -26,6 +26,40 @@ class AnalyticsClient:
         }
         if nm_ids:
             body["nmIds"] = nm_ids
+        return self.http.request(
+            self.base,
+            "POST",
+            "/api/analytics/v3/sales-funnel/products",
+            json_body=body,
+        )
+
+    def search_report_product_search_texts(
+        self,
+        begin: date,
+        end: date,
+        nm_ids: list[int],
+        *,
+        limit: int = 50,
+        offset: int = 0,
+        top_order_by: str = "openCard",
+        order_field: str = "openCard",
+        order_mode: str = "desc",
+    ) -> HttpResult:
+        body: dict[str, Any] = {
+            "currentPeriod": {"start": begin.isoformat(), "end": end.isoformat()},
+            "nmIds": nm_ids,
+            "topOrderBy": top_order_by,
+            "orderBy": {"field": order_field, "mode": order_mode},
+            "limit": limit,
+            "offset": offset,
+        }
+        return self.http.request(
+            self.base,
+            "POST",
+            "/api/v2/search-report/product/search-texts",
+            json_body=body,
+        )
+
     def stocks_report_wb_warehouses(
         self,
         begin: date,

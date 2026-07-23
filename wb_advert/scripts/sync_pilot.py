@@ -24,6 +24,7 @@ from wb_advert.import_data.csv_loader import (  # noqa: E402
 )
 from wb_advert.storage.keywords_store import campaign_keywords_synced_at, save_keywords  # noqa: E402
 from wb_advert.sync.metrics import pick_primary_keyword  # noqa: E402
+from wb_advert.sync.rotate import pick_rotate_batch  # noqa: E402
 from wb_advert.sync.worker import SyncWorker  # noqa: E402
 
 DEFAULT_PAUSE_SEC = 25.0
@@ -54,13 +55,6 @@ def load_sync_report(report_path: Path) -> dict:
         return json.loads(report_path.read_text(encoding="utf-8"))
     except (json.JSONDecodeError, OSError):
         return {}
-
-
-def campaign_rotate_at(advert_id: int, report_row: dict | None, data_dir: Path) -> str:
-    """Rotation sort key: last attempt from report, else legacy keywords file timestamp."""
-    if report_row and report_row.get("last_attempt_at"):
-        return str(report_row["last_attempt_at"])
-    return campaign_keywords_synced_at(advert_id, data_dir) or ""
 
 
 def load_synced_from_report(report_path: Path) -> dict[int, dict]:
@@ -97,11 +91,13 @@ def pick_rotate_skus(ready: list, report_path: Path, limit: int = 1) -> list:
     data_dir = report_path.parent
     report = load_sync_report(report_path)
     by_advert = {int(c["wb_campaign_id"]): c for c in report.get("campaigns") or [] if c.get("wb_campaign_id")}
-    ordered = sorted(
+    return pick_rotate_batch(
         ready,
-        key=lambda sku: campaign_rotate_at(sku.wb_campaign_search, by_advert.get(sku.wb_campaign_search), data_dir),
+        entity_id=lambda sku: sku.wb_campaign_search,
+        report_by_id=by_advert,
+        canonical_synced_at=lambda advert_id: campaign_keywords_synced_at(advert_id, data_dir),
+        limit=limit,
     )
-    return ordered[: max(limit, 1)]
 
 
 def should_fetch_fullstats(advert_id: int, report_path: Path, *, min_hours: int = 24) -> bool:
