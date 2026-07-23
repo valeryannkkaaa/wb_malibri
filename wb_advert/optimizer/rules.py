@@ -11,6 +11,8 @@ CR_PRIOR_STRENGTH_CLICKS = 50
 CR_WINSOR_CAMPAIGN_MULTIPLIER = 2.0
 CPC_LIMIT_INSUFFICIENT_DATA = "недостаточно данных для лимита CPC"
 CPC_PRIOR_ESTIMATE = "потолок оценён по приору, мало собственных данных"
+# Raise bid only when CPC is at least 20% below the ceiling (recommended buffer vs target).
+BID_GROWTH_HEADROOM_FACTOR = 0.8
 
 
 def keyword_campaign_totals(keywords: list[dict] | None) -> tuple[int, int]:
@@ -54,6 +56,13 @@ def format_prior_estimate_campaign_alert(low_trust_count: int, keyword_count: in
     return (
         f"{low_trust_count} из {keyword_count} ключей: "
         "потолок оценён по приору (мало собственных данных)"
+    )
+
+
+def format_missing_bid_campaign_alert(missing_count: int, keyword_count: int) -> str:
+    return (
+        f"у {missing_count} из {keyword_count} ключей нет ставки в данных WB — "
+        "рекомендации по ставке недоступны"
     )
 
 
@@ -102,6 +111,7 @@ def suggest_keyword_action(
     *,
     is_primary: bool,
     max_cpc_kopecks: int | None,
+    cpc_prior_estimate: bool = False,
     max_bid_kopecks: int = 150_000,
 ) -> DecisionSuggestion | None:
     keyword = kw.get("keyword") or ""
@@ -147,29 +157,6 @@ def suggest_keyword_action(
             after_state={**base, "status": "excluded"},
         )
 
-    if cpc and max_cpc_kopecks and cpc > max_cpc_kopecks and clicks >= 5:
-        new_bid = bid
-        if bid:
-            new_bid = max(int(bid * 0.9), int(bid - 500))
-        return DecisionSuggestion(
-            keyword=keyword,
-            action="lower_bid",
-            reason_code="OVERPAYING_CPC",
-            reason_text=f"CPC {cpc/100:.2f}₽ выше max {max_cpc_kopecks/100:.2f}₽",
-            before_state=base,
-            after_state={**base, "bid_kopecks": new_bid},
-        )
-
-    if is_primary and orders >= 3 and ctr and ctr >= 5:
-        return DecisionSuggestion(
-            keyword=keyword,
-            action="keep",
-            reason_code="PRIMARY_PERFORMING",
-            reason_text="Primary ключ с заказами и нормальным CTR",
-            before_state=base,
-            after_state=base,
-        )
-
     if is_primary and shows >= 200 and orders == 0 and ctr and ctr < 2:
         return DecisionSuggestion(
             keyword=keyword,
@@ -190,17 +177,50 @@ def suggest_keyword_action(
             after_state={**base, "status": "excluded", "retest_after": "+30d"},
         )
 
-    if is_primary and bid and orders >= 5 and cpc and max_cpc_kopecks and cpc < max_cpc_kopecks * 0.7:
-        new_bid = min(int(bid * 1.05), max_bid_kopecks)
-        if new_bid > bid:
+    if cpc and max_cpc_kopecks and clicks >= 5:
+        growth_threshold = max_cpc_kopecks * BID_GROWTH_HEADROOM_FACTOR
+
+        if cpc > max_cpc_kopecks:
+            new_bid = bid
+            if bid:
+                new_bid = max(int(bid * 0.9), int(bid - 500))
             return DecisionSuggestion(
                 keyword=keyword,
-                action="raise_bid",
-                reason_code="ROOM_TO_GROW",
-                reason_text="Primary окупается — можно +5% ставки",
+                action="lower_bid",
+                reason_code="OVERPAYING_CPC",
+                reason_text=f"CPC {cpc/100:.2f}₽ выше max {max_cpc_kopecks/100:.2f}₽",
                 before_state=base,
                 after_state={**base, "bid_kopecks": new_bid},
             )
+
+        if is_primary:
+            in_buffer_zone = cpc >= growth_threshold
+            if (
+                not in_buffer_zone
+                and orders >= 5
+                and bid
+                and not cpc_prior_estimate
+            ):
+                new_bid = min(int(bid * 1.05), max_bid_kopecks)
+                if new_bid > bid:
+                    return DecisionSuggestion(
+                        keyword=keyword,
+                        action="raise_bid",
+                        reason_code="ROOM_TO_GROW",
+                        reason_text="Primary окупается — можно +5% ставки",
+                        before_state=base,
+                        after_state={**base, "bid_kopecks": new_bid},
+                    )
+
+            if in_buffer_zone or orders >= 5:
+                return DecisionSuggestion(
+                    keyword=keyword,
+                    action="keep",
+                    reason_code="PRIMARY_PERFORMING",
+                    reason_text="в норме, повышать ставку некуда",
+                    before_state=base,
+                    after_state=base,
+                )
 
     return DecisionSuggestion(
         keyword=keyword,

@@ -140,7 +140,7 @@ def _managed_keyword(
     cpc_kopecks: int,
     shows: int = 1000,
     ctr: float = 10.0,
-    bid_kopecks: int = 2000,
+    bid_kopecks: int | None = 2000,
 ) -> dict:
     return {
         "keyword": keyword,
@@ -793,6 +793,419 @@ def test_primary_keyword_falls_back_to_sync_report(
     assert primary_keyword_for_advert(ADVERT_ID, tmp_path) == sync_primary
 
     result = optimize_product(ADVERT_ID)
-    performing = [s for s in result.suggestions if s.reason_code == "PRIMARY_PERFORMING"]
-    assert len(performing) == 1
-    assert performing[0].keyword == sync_primary
+    raise_bid = [s for s in result.suggestions if s.reason_code == "ROOM_TO_GROW"]
+    assert len(raise_bid) == 1
+    assert raise_bid[0].keyword == sync_primary
+
+
+def test_optimize_product_raises_bid_for_primary_below_growth_threshold(
+    tmp_path: Path,
+    monkeypatch: pytest.MonkeyPatch,
+) -> None:
+    keywords = [
+        _managed_keyword(
+            keyword=PRIMARY_KEYWORD,
+            clicks=40,
+            orders=10,
+            cpc_kopecks=500,
+        ),
+    ]
+    extra = [(900_002, [_managed_keyword(keyword="filler", clicks=500, orders=100, cpc_kopecks=300)])]
+    _write_pilot_fixture(tmp_path, keywords=keywords, extra_campaigns=extra)
+    _patch_pilot_data_dir(monkeypatch, tmp_path)
+
+    result = optimize_product(ADVERT_ID)
+
+    raise_suggestions = [s for s in result.suggestions if s.action == "raise_bid"]
+    assert len(raise_suggestions) == 1
+    assert raise_suggestions[0].keyword == PRIMARY_KEYWORD
+    assert raise_suggestions[0].reason_code == "ROOM_TO_GROW"
+    assert not any(s.reason_code == "PRIMARY_PERFORMING" for s in result.suggestions)
+
+
+def test_optimize_product_keeps_primary_in_buffer_zone(
+    tmp_path: Path,
+    monkeypatch: pytest.MonkeyPatch,
+) -> None:
+    keywords = [
+        _managed_keyword(
+            keyword=PRIMARY_KEYWORD,
+            clicks=40,
+            orders=10,
+            cpc_kopecks=500,
+        ),
+    ]
+    extra = [(900_002, [_managed_keyword(keyword="filler", clicks=500, orders=100, cpc_kopecks=300)])]
+    _write_pilot_fixture(tmp_path, keywords=keywords, extra_campaigns=extra)
+    _patch_pilot_data_dir(monkeypatch, tmp_path)
+
+    row = build_product_rows(tmp_path)[0]
+    ceiling_kopecks = int(float(row["max_cpc_rub"]) * 100)
+    buffer_cpc = int(ceiling_kopecks * 0.9)
+
+    keywords_data = load_keywords(ADVERT_ID, tmp_path)["keywords"]
+    keywords_data[0]["cpc_calculated_kopecks"] = buffer_cpc
+    (tmp_path / "sync" / f"keywords_{ADVERT_ID}.json").write_text(
+        json.dumps(
+            {
+                "wb_campaign_id": ADVERT_ID,
+                "nm_id": int(NM_ID),
+                "synced_at": "2026-07-06T11:41:17+00:00",
+                "keywords": keywords_data,
+            },
+            ensure_ascii=False,
+            indent=2,
+        ),
+        encoding="utf-8",
+    )
+
+    result = optimize_product(ADVERT_ID)
+
+    keep = [s for s in result.suggestions if s.reason_code == "PRIMARY_PERFORMING"]
+    assert len(keep) == 1
+    assert keep[0].keyword == PRIMARY_KEYWORD
+    assert keep[0].reason_text == "в норме, повышать ставку некуда"
+    assert not any(s.action == "raise_bid" for s in result.suggestions)
+
+
+def test_optimize_product_blocks_raise_for_prior_estimate(
+    tmp_path: Path,
+    monkeypatch: pytest.MonkeyPatch,
+) -> None:
+    keywords = [
+        _managed_keyword(
+            keyword=PRIMARY_KEYWORD,
+            clicks=15,
+            orders=10,
+            cpc_kopecks=300,
+        ),
+        _managed_keyword(
+            keyword="filler",
+            clicks=320,
+            orders=80,
+            cpc_kopecks=500,
+        ),
+    ]
+    _write_pilot_fixture(tmp_path, keywords=keywords)
+    _patch_pilot_data_dir(monkeypatch, tmp_path)
+
+    result = optimize_product(ADVERT_ID)
+
+    assert not any(s.action == "raise_bid" for s in result.suggestions)
+    keep = [s for s in result.suggestions if s.keyword == PRIMARY_KEYWORD and s.action == "keep"]
+    assert len(keep) == 1
+
+
+def test_optimize_product_aggregates_missing_bid_alert(
+    tmp_path: Path,
+    monkeypatch: pytest.MonkeyPatch,
+) -> None:
+    keywords = [
+        _managed_keyword(
+            keyword=PRIMARY_KEYWORD,
+            clicks=40,
+            orders=10,
+            cpc_kopecks=500,
+            bid_kopecks=None,
+        ),
+        _managed_keyword(
+            keyword="other",
+            clicks=40,
+            orders=10,
+            cpc_kopecks=500,
+        ),
+    ]
+    extra = [(900_002, [_managed_keyword(keyword="filler", clicks=500, orders=100, cpc_kopecks=300)])]
+    _write_pilot_fixture(tmp_path, keywords=keywords, extra_campaigns=extra)
+    _patch_pilot_data_dir(monkeypatch, tmp_path)
+
+    result = optimize_product(ADVERT_ID)
+
+    assert not any(
+        s.action == "raise_bid" and s.keyword == PRIMARY_KEYWORD for s in result.suggestions
+    )
+    bid_alerts = [a for a in result.alerts if "нет ставки в данных WB" in a]
+    assert len(bid_alerts) == 1
+    assert (
+        bid_alerts[0]
+        == "у 1 из 2 ключей нет ставки в данных WB — рекомендации по ставке недоступны"
+    )
+
+
+def test_optimize_product_lowers_bid_despite_prior_estimate(
+    tmp_path: Path,
+    monkeypatch: pytest.MonkeyPatch,
+) -> None:
+    keywords = [
+        _managed_keyword(
+            keyword=PRIMARY_KEYWORD,
+            clicks=15,
+            orders=10,
+            cpc_kopecks=1500,
+        ),
+        _managed_keyword(
+            keyword="filler",
+            clicks=320,
+            orders=80,
+            cpc_kopecks=300,
+        ),
+    ]
+    _write_pilot_fixture(tmp_path, keywords=keywords)
+    _patch_pilot_data_dir(monkeypatch, tmp_path)
+
+    result = optimize_product(ADVERT_ID)
+
+    lower = [
+        s
+        for s in result.suggestions
+        if s.reason_code == "OVERPAYING_CPC" and s.keyword == PRIMARY_KEYWORD
+    ]
+    assert len(lower) == 1
+
+
+def test_optimize_product_excludes_primary_low_ctr_before_price_zones(
+    tmp_path: Path,
+    monkeypatch: pytest.MonkeyPatch,
+) -> None:
+    keywords = [
+        _managed_keyword(
+            keyword=PRIMARY_KEYWORD,
+            shows=500,
+            clicks=50,
+            orders=0,
+            ctr=1.5,
+            cpc_kopecks=900,
+        ),
+        _managed_keyword(keyword="filler", clicks=320, orders=80, cpc_kopecks=300),
+    ]
+    extra = [(900_002, [_managed_keyword(keyword="global filler", clicks=500, orders=100, cpc_kopecks=300)])]
+    _write_pilot_fixture(tmp_path, keywords=keywords, extra_campaigns=extra)
+    _patch_pilot_data_dir(monkeypatch, tmp_path)
+
+    row = build_product_rows(tmp_path)[0]
+    ceiling_kopecks = int(float(row["max_cpc_rub"]) * 100)
+    buffer_cpc = int(ceiling_kopecks * 0.9)
+
+    keywords_data = load_keywords(ADVERT_ID, tmp_path)["keywords"]
+    keywords_data[0]["shows"] = 500
+    keywords_data[0]["clicks"] = 50
+    keywords_data[0]["orders"] = 0
+    keywords_data[0]["ctr_calculated"] = 1.5
+    keywords_data[0]["cpc_calculated_kopecks"] = buffer_cpc
+    (tmp_path / "sync" / f"keywords_{ADVERT_ID}.json").write_text(
+        json.dumps(
+            {
+                "wb_campaign_id": ADVERT_ID,
+                "nm_id": int(NM_ID),
+                "synced_at": "2026-07-06T11:41:17+00:00",
+                "keywords": keywords_data,
+            },
+            ensure_ascii=False,
+            indent=2,
+        ),
+        encoding="utf-8",
+    )
+
+    result = optimize_product(ADVERT_ID)
+
+    excluded = [s for s in result.suggestions if s.reason_code == "PRIMARY_LOW_CTR"]
+    assert len(excluded) == 1
+    assert excluded[0].keyword == PRIMARY_KEYWORD
+    assert not any(s.reason_code == "PRIMARY_PERFORMING" for s in result.suggestions)
+
+
+def test_optimize_product_excludes_secondary_weak_before_price_zones(
+    tmp_path: Path,
+    monkeypatch: pytest.MonkeyPatch,
+) -> None:
+    keywords = [
+        _managed_keyword(
+            keyword=PRIMARY_KEYWORD,
+            clicks=40,
+            orders=10,
+            cpc_kopecks=500,
+        ),
+        _managed_keyword(
+            keyword="weak secondary",
+            shows=300,
+            clicks=50,
+            orders=0,
+            ctr=0.5,
+            cpc_kopecks=900,
+        ),
+    ]
+    extra = [(900_002, [_managed_keyword(keyword="filler", clicks=500, orders=100, cpc_kopecks=300)])]
+    _write_pilot_fixture(tmp_path, keywords=keywords, extra_campaigns=extra)
+    _patch_pilot_data_dir(monkeypatch, tmp_path)
+
+    row = build_product_rows(tmp_path)[0]
+    ceiling_kopecks = int(float(row["max_cpc_rub"]) * 100)
+    buffer_cpc = int(ceiling_kopecks * 0.9)
+
+    keywords_data = load_keywords(ADVERT_ID, tmp_path)["keywords"]
+    weak = next(k for k in keywords_data if k["keyword"] == "weak secondary")
+    weak["shows"] = 300
+    weak["clicks"] = 50
+    weak["orders"] = 0
+    weak["ctr_calculated"] = 0.5
+    weak["cpc_calculated_kopecks"] = buffer_cpc
+    (tmp_path / "sync" / f"keywords_{ADVERT_ID}.json").write_text(
+        json.dumps(
+            {
+                "wb_campaign_id": ADVERT_ID,
+                "nm_id": int(NM_ID),
+                "synced_at": "2026-07-06T11:41:17+00:00",
+                "keywords": keywords_data,
+            },
+            ensure_ascii=False,
+            indent=2,
+        ),
+        encoding="utf-8",
+    )
+
+    result = optimize_product(ADVERT_ID)
+
+    excluded = [s for s in result.suggestions if s.reason_code == "SECONDARY_WEAK"]
+    assert len(excluded) == 1
+    assert excluded[0].keyword == "weak secondary"
+    assert not any(
+        s.keyword == "weak secondary" and s.reason_code == "PRIMARY_PERFORMING"
+        for s in result.suggestions
+    )
+
+
+def test_optimize_product_excludes_zero_ctr(
+    tmp_path: Path,
+    monkeypatch: pytest.MonkeyPatch,
+) -> None:
+    keywords = [
+        {
+            "keyword": "dead keyword",
+            "shows": 350,
+            "clicks": 0,
+            "orders": 0,
+            "spend_kopecks": 0,
+            "ctr_calculated": 0.0,
+            "cpc_calculated_kopecks": None,
+            "current_bid_kopecks": 2000,
+            "status": "managed",
+        },
+        _managed_keyword(keyword=PRIMARY_KEYWORD, clicks=40, orders=10, cpc_kopecks=500),
+    ]
+    extra = [(900_002, [_managed_keyword(keyword="filler", clicks=500, orders=100, cpc_kopecks=300)])]
+    _write_pilot_fixture(tmp_path, keywords=keywords, extra_campaigns=extra)
+    _patch_pilot_data_dir(monkeypatch, tmp_path)
+
+    result = optimize_product(ADVERT_ID)
+
+    excluded = [s for s in result.suggestions if s.reason_code == "ZERO_CTR"]
+    assert len(excluded) == 1
+    assert excluded[0].keyword == "dead keyword"
+
+
+def test_optimize_product_skips_non_primary_in_buffer_zone(
+    tmp_path: Path,
+    monkeypatch: pytest.MonkeyPatch,
+) -> None:
+    keywords = [
+        _managed_keyword(
+            keyword=PRIMARY_KEYWORD,
+            clicks=40,
+            orders=10,
+            cpc_kopecks=500,
+        ),
+        _managed_keyword(
+            keyword="healthy secondary",
+            clicks=40,
+            orders=3,
+            ctr=5.0,
+            cpc_kopecks=500,
+        ),
+    ]
+    extra = [(900_002, [_managed_keyword(keyword="filler", clicks=500, orders=100, cpc_kopecks=300)])]
+    _write_pilot_fixture(tmp_path, keywords=keywords, extra_campaigns=extra)
+    _patch_pilot_data_dir(monkeypatch, tmp_path)
+
+    row = build_product_rows(tmp_path)[0]
+    global_cr = get_pilot_global_cr_prior(tmp_path)
+    keywords_data = load_keywords(ADVERT_ID, tmp_path)["keywords"]
+    secondary = next(k for k in keywords_data if k["keyword"] == "healthy secondary")
+    campaign_totals = keyword_campaign_totals(keywords_data)
+    secondary_ceiling, _ = calc_keyword_max_cpc_kopecks(
+        {"retail_price_rub": "200", "max_drr_pct": "15.0"},
+        secondary,
+        campaign_totals,
+        global_cr,
+    )
+    assert secondary_ceiling is not None
+    buffer_cpc = int(secondary_ceiling * 0.9)
+    secondary["cpc_calculated_kopecks"] = buffer_cpc
+    (tmp_path / "sync" / f"keywords_{ADVERT_ID}.json").write_text(
+        json.dumps(
+            {
+                "wb_campaign_id": ADVERT_ID,
+                "nm_id": int(NM_ID),
+                "synced_at": "2026-07-06T11:41:17+00:00",
+                "keywords": keywords_data,
+            },
+            ensure_ascii=False,
+            indent=2,
+        ),
+        encoding="utf-8",
+    )
+
+    result = optimize_product(ADVERT_ID)
+
+    assert not any(s.keyword == "healthy secondary" for s in result.suggestions)
+
+
+def test_optimize_product_excludes_overpaying_garbage_instead_of_lowering_bid(
+    tmp_path: Path,
+    monkeypatch: pytest.MonkeyPatch,
+) -> None:
+    keywords = [
+        _managed_keyword(
+            keyword=PRIMARY_KEYWORD,
+            clicks=40,
+            orders=10,
+            cpc_kopecks=500,
+        ),
+        _managed_keyword(
+            keyword="weak secondary",
+            shows=300,
+            clicks=50,
+            orders=0,
+            ctr=0.5,
+            cpc_kopecks=1500,
+        ),
+    ]
+    extra = [(900_002, [_managed_keyword(keyword="filler", clicks=500, orders=100, cpc_kopecks=300)])]
+    _write_pilot_fixture(tmp_path, keywords=keywords, extra_campaigns=extra)
+    _patch_pilot_data_dir(monkeypatch, tmp_path)
+
+    row = build_product_rows(tmp_path)[0]
+    ceiling_kopecks = int(float(row["max_cpc_rub"]) * 100)
+
+    keywords_data = load_keywords(ADVERT_ID, tmp_path)["keywords"]
+    weak = next(k for k in keywords_data if k["keyword"] == "weak secondary")
+    weak["cpc_calculated_kopecks"] = ceiling_kopecks + 100
+    (tmp_path / "sync" / f"keywords_{ADVERT_ID}.json").write_text(
+        json.dumps(
+            {
+                "wb_campaign_id": ADVERT_ID,
+                "nm_id": int(NM_ID),
+                "synced_at": "2026-07-06T11:41:17+00:00",
+                "keywords": keywords_data,
+            },
+            ensure_ascii=False,
+            indent=2,
+        ),
+        encoding="utf-8",
+    )
+
+    result = optimize_product(ADVERT_ID)
+
+    weak_suggestions = [s for s in result.suggestions if s.keyword == "weak secondary"]
+    assert len(weak_suggestions) == 1
+    assert weak_suggestions[0].reason_code == "SECONDARY_WEAK"
+    assert weak_suggestions[0].action == "exclude_keyword"
