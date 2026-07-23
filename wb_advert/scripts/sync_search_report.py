@@ -14,7 +14,7 @@ ROOT = Path(__file__).resolve().parents[1]
 sys.path.insert(0, str(ROOT.parent))
 
 from wb_advert.client.analytics import AnalyticsClient  # noqa: E402
-from wb_advert.client.base import WbHttpClient  # noqa: E402
+from wb_advert.client.base import RETRY_429_BASE_SEC, WbHttpClient  # noqa: E402
 from wb_advert.config import env_file_used, require_token, settings  # noqa: E402
 from wb_advert.constants import PENDING_NM_PREFIX  # noqa: E402
 from wb_advert.import_data.csv_loader import load_pilot_skus  # noqa: E402
@@ -24,9 +24,11 @@ from wb_advert.storage.search_report_store import (  # noqa: E402
     search_report_synced_at,
 )
 from wb_advert.sync.rotate import pick_rotate_batch  # noqa: E402
-from wb_advert.sync.search_report_worker import SearchReportWorker  # noqa: E402
+from wb_advert.sync.search_report_worker import SearchReportWorker, is_blocking_error  # noqa: E402
 
-DEFAULT_PAUSE_SEC = 25.0
+# One search-texts call may wait ~20s on 429 retry before succeeding.
+MIN_CARD_PAUSE_SEC = RETRY_429_BASE_SEC + 5
+DEFAULT_PAUSE_SEC = MIN_CARD_PAUSE_SEC
 _ATTEMPT_FIELDS = ("nm_id", "items", "errors")
 
 
@@ -81,7 +83,7 @@ def pick_rotate_nm_ids(ready: list, report_path: Path, limit: int = 1) -> list:
 def effective_pause_sec(requested: float, data_dir: Path) -> float:
     sync_cfg = load_config(data_dir).get("sync") or {}
     min_pause = float(sync_cfg.get("rate_limit_pause_sec") or 0)
-    return max(requested, min_pause)
+    return max(requested, min_pause, MIN_CARD_PAUSE_SEC)
 
 
 def _has_429(errors: list[str]) -> bool:
@@ -159,9 +161,13 @@ def main() -> int:
             "items": len(items),
             "errors": errors,
         }
-        if items and not errors:
+        hard_errors = [e for e in errors if is_blocking_error(e)]
+        if items and not hard_errors:
             save_search_report(nm_id, period=period, items=items, data_dir=data_dir)
-            print(f"  -> {len(items)} keywords (saved JSON)", flush=True)
+            if errors:
+                print(f"  -> {len(items)} keywords (saved JSON, with warnings)", flush=True)
+            else:
+                print(f"  -> {len(items)} keywords (saved JSON)", flush=True)
         else:
             failures += 1
             print("  -> FAILED (previous snapshot kept)", flush=True)

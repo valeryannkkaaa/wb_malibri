@@ -6,8 +6,6 @@ import json
 from datetime import date
 from pathlib import Path
 
-import pytest
-
 from wb_advert.client.base import HttpResult
 from wb_advert.schemas.wb_api import PilotSkuRow
 from wb_advert.scripts.sync_search_report import (
@@ -20,7 +18,7 @@ from wb_advert.storage.search_report_store import (
     search_report_path,
 )
 from wb_advert.sync.search_report_mappers import map_search_text_item
-from wb_advert.sync.search_report_worker import MAX_PAGES, PAGE_SIZE, SearchReportWorker
+from wb_advert.sync.search_report_worker import SEARCH_LIMIT, SearchReportWorker
 
 
 def _sample_wb_row() -> dict:
@@ -168,16 +166,13 @@ def test_empty_response_does_not_erase_saved_search_report(tmp_path: Path) -> No
     assert search_report_path(624468743, tmp_path).read_text(encoding="utf-8") == before_mtime
 
 
-def test_fetch_nm_search_texts_paginates_with_offset(monkeypatch: pytest.MonkeyPatch) -> None:
-    calls: list[int] = []
+def test_fetch_nm_search_texts_makes_single_request_per_card() -> None:
+    calls: list[tuple[int, list[int]]] = []
 
     class FakeAnalytics:
-        def search_report_product_search_texts(self, begin, end, nm_ids, *, limit=50, offset=0, **kwargs):
-            calls.append(offset)
-            if offset == 0:
-                payload = {"data": {"items": [{"text": f"kw{i}"} for i in range(50)]}}
-            else:
-                payload = {"data": {"items": [{"text": "extra keyword"}]}}
+        def search_report_product_search_texts(self, begin, end, nm_ids, *, limit=100, **kwargs):
+            calls.append((limit, nm_ids))
+            payload = {"data": {"items": [{"text": f"kw{i}"} for i in range(12)]}}
             return HttpResult(200, json.dumps(payload))
 
     worker = SearchReportWorker(analytics=FakeAnalytics())
@@ -187,17 +182,34 @@ def test_fetch_nm_search_texts_paginates_with_offset(monkeypatch: pytest.MonkeyP
         date(2026, 7, 22),
     )
 
+    assert len(calls) == 1
+    assert calls[0] == (SEARCH_LIMIT, [624468743])
+    assert len(items) == 12
     assert errors == []
-    assert len(items) == 51
-    assert calls == [0, 50]
 
 
-def test_fetch_nm_search_texts_http_error_does_not_return_partial_data() -> None:
+def test_fetch_nm_search_texts_warns_when_response_hits_limit() -> None:
     class FakeAnalytics:
-        def search_report_product_search_texts(self, begin, end, nm_ids, *, limit=50, offset=0, **kwargs):
-            if offset == 0:
-                payload = {"data": {"items": [{"text": f"kw{i}"} for i in range(50)]}}
-                return HttpResult(200, json.dumps(payload))
+        def search_report_product_search_texts(self, begin, end, nm_ids, *, limit=100, **kwargs):
+            payload = {"data": {"items": [{"text": f"kw{i}"} for i in range(SEARCH_LIMIT)]}}
+            return HttpResult(200, json.dumps(payload))
+
+    worker = SearchReportWorker(analytics=FakeAnalytics())
+    items, errors = worker.fetch_nm_search_texts(
+        624468743,
+        date(2026, 7, 16),
+        date(2026, 7, 22),
+    )
+
+    assert len(items) == SEARCH_LIMIT
+    assert errors
+    assert "warning" in errors[0]
+    assert "truncated" in errors[0]
+
+
+def test_fetch_nm_search_texts_http_error_returns_empty_items() -> None:
+    class FakeAnalytics:
+        def search_report_product_search_texts(self, begin, end, nm_ids, *, limit=100, **kwargs):
             return HttpResult(500, "server error")
 
     worker = SearchReportWorker(analytics=FakeAnalytics())
@@ -209,25 +221,3 @@ def test_fetch_nm_search_texts_http_error_does_not_return_partial_data() -> None
 
     assert items == []
     assert errors and "HTTP 500" in errors[0]
-
-
-def test_fetch_nm_search_texts_stops_at_max_pages_when_api_never_short_pages() -> None:
-    calls: list[int] = []
-
-    class FakeAnalytics:
-        def search_report_product_search_texts(self, begin, end, nm_ids, *, limit=50, offset=0, **kwargs):
-            calls.append(offset)
-            payload = {"data": {"items": [{"text": f"kw{offset}-{i}"} for i in range(PAGE_SIZE)]}}
-            return HttpResult(200, json.dumps(payload))
-
-    worker = SearchReportWorker(analytics=FakeAnalytics())
-    items, errors = worker.fetch_nm_search_texts(
-        624468743,
-        date(2026, 7, 16),
-        date(2026, 7, 22),
-    )
-
-    assert len(calls) == MAX_PAGES
-    assert len(items) == MAX_PAGES * PAGE_SIZE
-    assert errors
-    assert "pagination stopped" in errors[0]
