@@ -50,6 +50,13 @@ def prior_estimate_alert_reason(kw_clicks: int) -> str | None:
     return None
 
 
+def format_prior_estimate_campaign_alert(low_trust_count: int, keyword_count: int) -> str:
+    return (
+        f"{low_trust_count} из {keyword_count} ключей: "
+        "потолок оценён по приору (мало собственных данных)"
+    )
+
+
 def calc_max_cpc_kopecks(
     retail_price_rub: float,
     max_drr_pct: float,

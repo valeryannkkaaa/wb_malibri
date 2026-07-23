@@ -440,8 +440,9 @@ def test_optimize_product_alerts_on_prior_estimate_keywords(
 
     result = optimize_product(ADVERT_ID)
 
-    assert any("low-trust" in alert and CPC_PRIOR_ESTIMATE in alert for alert in result.alerts)
-    assert not any("trusted:" in alert for alert in result.alerts)
+    prior_alerts = [a for a in result.alerts if "из 2 ключей" in a]
+    assert len(prior_alerts) == 1
+    assert prior_alerts[0] == "1 из 2 ключей: потолок оценён по приору (мало собственных данных)"
 
 
 def test_optimize_product_alerts_prior_estimate_in_large_campaign(
@@ -467,8 +468,28 @@ def test_optimize_product_alerts_prior_estimate_in_large_campaign(
 
     result = optimize_product(ADVERT_ID)
 
-    assert any("sparse primary" in alert and CPC_PRIOR_ESTIMATE in alert for alert in result.alerts)
-    assert not any("filler:" in alert for alert in result.alerts)
+    prior_alerts = [a for a in result.alerts if "из 2 ключей" in a]
+    assert len(prior_alerts) == 1
+    assert prior_alerts[0] == "1 из 2 ключей: потолок оценён по приору (мало собственных данных)"
+
+
+def test_optimize_product_aggregates_prior_estimate_alert_per_campaign(
+    tmp_path: Path,
+    monkeypatch: pytest.MonkeyPatch,
+) -> None:
+    keywords = [
+        _managed_keyword(keyword="low-a", clicks=5, orders=0, cpc_kopecks=500),
+        _managed_keyword(keyword="low-b", clicks=10, orders=1, cpc_kopecks=400),
+        _managed_keyword(keyword="trusted", clicks=KEYWORD_CR_MIN_CLICKS, orders=3, cpc_kopecks=300),
+    ]
+    _write_pilot_fixture(tmp_path, keywords=keywords, primary_keyword="trusted")
+    _patch_pilot_data_dir(monkeypatch, tmp_path)
+
+    result = optimize_product(ADVERT_ID)
+
+    prior_alerts = [a for a in result.alerts if "потолок оценён по приору" in a]
+    assert len(prior_alerts) == 1
+    assert prior_alerts[0] == "2 из 3 ключей: потолок оценён по приору (мало собственных данных)"
 
 
 def test_optimize_product_and_dashboard_share_primary_ceiling(
