@@ -11,6 +11,7 @@ from wb_advert.parser.regions import normalize_region_key, resolve_dest
 
 SEARCH_URL = "https://u-search.wb.ru/exactmatch/ru/common/v18/search"
 PRODUCTS_PER_PAGE = 100
+COMPETITORS_SLICE_SIZE = 10
 DEFAULT_PAUSE_SEC = 0.4
 
 DEFAULT_HEADERS = {
@@ -21,6 +22,78 @@ DEFAULT_HEADERS = {
     "Referer": "https://www.wildberries.ru/",
     "Accept": "*/*",
 }
+
+
+def _product_nm_id(product: dict) -> int | None:
+    pid = product.get("id") or product.get("nmId") or product.get("nm_id")
+    if pid is None:
+        return None
+    try:
+        return int(pid)
+    except (TypeError, ValueError):
+        return None
+
+
+def _price_rub_from_product(product: dict) -> float | None:
+    sizes = product.get("sizes")
+    if not isinstance(sizes, list) or not sizes:
+        return None
+    first_size = sizes[0]
+    if not isinstance(first_size, dict):
+        return None
+    price = first_size.get("price")
+    if not isinstance(price, dict):
+        return None
+    product_kopecks = price.get("product")
+    if product_kopecks is None:
+        return None
+    try:
+        return int(product_kopecks) / 100
+    except (TypeError, ValueError):
+        return None
+
+
+def build_competitors_slice(
+    products: list[dict],
+    nm_id: int,
+    *,
+    limit: int = COMPETITORS_SLICE_SIZE,
+) -> dict[str, Any]:
+    """Top-N competitors from an already-fetched search page (no extra network)."""
+    items: list[dict[str, Any]] = []
+    our_in_slice = False
+    for idx, product in enumerate(products[:limit], start=1):
+        pid = _product_nm_id(product)
+        is_ours = pid is not None and pid == int(nm_id)
+        if is_ours:
+            our_in_slice = True
+        items.append(
+            {
+                "nm_id": pid,
+                "position": idx,
+                "brand": product.get("brand"),
+                "price_rub": _price_rub_from_product(product),
+                "rating": product.get("reviewRating"),
+                "feedbacks": product.get("feedbacks"),
+                "is_ours": is_ours,
+            }
+        )
+    return {
+        "competitors_slice": items,
+        "our_in_slice": our_in_slice,
+    }
+
+
+def _attach_competitors_slice(
+    result: dict[str, Any],
+    page1_products: list[dict] | None,
+    nm_id: int,
+) -> None:
+    if page1_products is None:
+        result["competitors_slice"] = []
+        result["our_in_slice"] = False
+        return
+    result.update(build_competitors_slice(page1_products, nm_id))
 
 
 def _extract_products(data: Any) -> list[dict]:
@@ -127,10 +200,13 @@ class WbSearchParser:
             }
 
         scanned = 0
+        page1_products: list[dict] | None = None
         for page in range(1, self.max_pages + 1):
             _status, products, err = self._fetch_page(query, page)
+            if page == 1 and not err:
+                page1_products = products
             if err:
-                return {
+                result = {
                     "found": False,
                     "position": None,
                     "error": err,
@@ -141,6 +217,8 @@ class WbSearchParser:
                     "region_key": self.region_key,
                     "scanned": scanned,
                 }
+                _attach_competitors_slice(result, page1_products, nm_id)
+                return result
             if not products:
                 break
             for idx, product in enumerate(products, start=1):
@@ -148,7 +226,7 @@ class WbSearchParser:
                 pid = product.get("id") or product.get("nmId") or product.get("nm_id")
                 if pid is not None and int(pid) == int(nm_id):
                     position = (page - 1) * PRODUCTS_PER_PAGE + idx
-                    return {
+                    result = {
                         "found": True,
                         "position": position,
                         "error": None,
@@ -159,8 +237,10 @@ class WbSearchParser:
                         "region_key": self.region_key,
                         "scanned": scanned,
                     }
+                    _attach_competitors_slice(result, page1_products, nm_id)
+                    return result
 
-        return {
+        result = {
             "found": False,
             "position": None,
             "error": f"not in top {scanned or self.max_pages * PRODUCTS_PER_PAGE}",
@@ -170,6 +250,8 @@ class WbSearchParser:
             "region_key": self.region_key,
             "scanned": scanned,
         }
+        _attach_competitors_slice(result, page1_products, nm_id)
+        return result
 
 
 def find_nm_position(
