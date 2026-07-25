@@ -1,0 +1,11 @@
+{
+  "stats": [
+    {
+      "nm_id": 624468743,
+      "stats": [
+        {"norm_query": "перчатки", "views": 100, "clicks": 10, "orders": 2, "cpc": 5.5},
+        {"norm_query": "уборка", "views": 50, "clicks": 5, "orders": 1, "cpc": 4.0}
+      ]
+    }
+  ]
+}

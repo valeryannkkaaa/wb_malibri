@@ -1,0 +1,20 @@
+[
+  {
+    "advertId": 31275686,
+    "days": [
+      {
+        "date": "2026-07-24T00:00:00Z",
+        "hours": [
+          {"hour": 9, "views": 120, "clicks": 12, "sum": 45.5, "orders": 2},
+          {"hour": 10, "views": 80, "clicks": 8, "sum": 30.0, "orders": 1}
+        ]
+      },
+      {
+        "date": "2026-07-25T00:00:00Z",
+        "hours": [
+          {"hour": 8, "views": 50, "clicks": 5, "sum": 18.2, "orders": 0}
+        ]
+      }
+    ]
+  }
+]
