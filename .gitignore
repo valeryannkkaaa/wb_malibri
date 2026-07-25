@@ -10,3 +10,6 @@ venv/
 data/pilot/logs/
 **/cycle_*.log
 data/pilot/*.wav
+# Файлы без расширения вида Untitled — так в репо однажды утёк WB-токен
+Untitled
+Untitled*
