@@ -19,8 +19,10 @@
    новый токен в `/opt/wb-advert/.env` на germany и рестарт `wb-advert`.
 2. **issue #10** — портальная шапка живёт на germany незакоммиченной (`app.py`, `advert.css`,
    `_nav.html`, `_portal_nav.html`). Любой `git pull` мимо нас её снесёт, бэкап в `/root/backups/`.
-3. **issue #20** — зонд свежести данных ВБ, спека в `docs/PROBE_FRESHNESS.md`. Первая версия
-   написана (ветка `nic0p01/probe-freshness`), ревью выявило три блокера, идёт доработка.
+3. **Зонд свежести (issue #20 закрыт)** — работает на germany по `/etc/cron.d/wb-advert-probe`
+   каждые 10 минут с 25.07 22:00 UTC. Набирает 7 суток, ретеншн 14. Данные в
+   `/opt/wb_malibri/data/probe/` (в git не попадают). Анализ собранного — отдельная задача,
+   ставить после 01.08. Остановить: `rm /etc/cron.d/wb-advert-probe`.
 4. **Расход в проде занижен.** `wb_advert/sync/mappers.py:37` достраивает `spend_kopecks` как
    `cpc × clicks` и теряет весь расход по ключам с нулём кликов. Проверено на живом ответе
    `normquery/stats` 25.07: ВБ отдаёт настоящее поле `spend`, и в 6 строках из 16 расход был при
