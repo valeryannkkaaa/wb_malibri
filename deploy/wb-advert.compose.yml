@@ -1,0 +1,24 @@
+# Server layout: /opt/wb_malibri (git clone) + /opt/wb-advert/.env (secrets).
+# Usage on germany:
+#   docker compose -f /opt/wb_malibri/deploy/wb-advert.compose.yml up -d --build
+
+services:
+  wb-advert:
+    build:
+      context: /opt/wb_malibri
+      dockerfile: wb_advert/Dockerfile
+    image: wb-advert:latest
+    container_name: wb-advert
+    restart: unless-stopped
+    ports:
+      - "127.0.0.1:8081:8081"
+    env_file:
+      - /opt/wb-advert/.env
+    volumes:
+      - /opt/wb_malibri/data/pilot:/app/data/pilot
+    healthcheck:
+      test: ["CMD", "curl", "-f", "http://127.0.0.1:8081/api/advert/health"]
+      interval: 30s
+      timeout: 5s
+      retries: 3
+      start_period: 15s

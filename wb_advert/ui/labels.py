@@ -20,6 +20,7 @@ STATUS_RU: dict[str, str] = {
 
 GRADE_RU: dict[str, str] = {
     "top_1_3": "топ 1–3",
+    "pos_4_10": "поз. 4–10",
     "pos_10_20": "поз. 10–20",
 }
 
@@ -66,3 +67,9 @@ def alert_ru(code: str | None) -> str:
     if not code:
         return "—"
     return ALERT_RU.get(code, code.replace("_", " "))
+
+
+def price_source_ru(code: str | None) -> str:
+    from wb_advert.optimizer.retail_price import price_source_label
+
+    return price_source_label(code)

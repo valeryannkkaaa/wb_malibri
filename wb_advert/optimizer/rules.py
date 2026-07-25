@@ -1,41 +1,125 @@
 from __future__ import annotations
 
 from wb_advert.constants import MIN_SHOWS_FOR_MANAGED
+from wb_advert.optimizer.retail_price import ResolvedRetailPrice, resolve_retail_price
 from wb_advert.schemas.optimizer import DecisionSuggestion
+
+KEYWORD_CR_MIN_CLICKS = 30
+CAMPAIGN_CR_MIN_CLICKS = 100
+# Prior strength in clicks: equivalent sample size blended into CR estimate.
+CR_PRIOR_STRENGTH_CLICKS = 50
+# Cap keyword CR at this multiple of campaign CR to limit attribution noise (orders > clicks).
+CR_WINSOR_CAMPAIGN_MULTIPLIER = 2.0
+CPC_LIMIT_INSUFFICIENT_DATA = "недостаточно данных для лимита CPC"
+CPC_PRIOR_ESTIMATE = "потолок оценён по приору, мало собственных данных"
+# Raise bid only when CPC is at least 20% below the ceiling (recommended buffer vs target).
+BID_GROWTH_HEADROOM_FACTOR = 0.8
+
+
+def keyword_campaign_totals(keywords: list[dict] | None) -> tuple[int, int]:
+    clicks = 0
+    orders = 0
+    for kw in keywords or []:
+        clicks += int(kw.get("clicks") or 0)
+        orders += int(kw.get("orders") or 0)
+    return clicks, orders
+
+
+def smooth_cr(
+    orders: int,
+    clicks: int,
+    prior_cr: float,
+    *,
+    prior_strength: int = CR_PRIOR_STRENGTH_CLICKS,
+) -> float:
+    return (orders + prior_strength * prior_cr) / (clicks + prior_strength)
+
+
+def resolve_cr_smoothed(
+    kw_clicks: int,
+    kw_orders: int,
+    campaign_clicks: int,
+    campaign_orders: int,
+    global_cr_prior: float,
+) -> float:
+    campaign_cr = smooth_cr(campaign_orders, campaign_clicks, global_cr_prior)
+    keyword_cr = smooth_cr(kw_orders, kw_clicks, campaign_cr)
+    return min(keyword_cr, CR_WINSOR_CAMPAIGN_MULTIPLIER * campaign_cr)
+
+
+def prior_estimate_alert_reason(kw_clicks: int) -> str | None:
+    if kw_clicks < KEYWORD_CR_MIN_CLICKS:
+        return CPC_PRIOR_ESTIMATE
+    return None
+
+
+def format_prior_estimate_campaign_alert(low_trust_count: int, keyword_count: int) -> str:
+    return (
+        f"{low_trust_count} из {keyword_count} ключей: "
+        "потолок оценён по приору (мало собственных данных)"
+    )
+
+
+def format_missing_bid_campaign_alert(missing_count: int, keyword_count: int) -> str:
+    return (
+        f"у {missing_count} из {keyword_count} ключей нет ставки в данных WB — "
+        "рекомендации по ставке недоступны"
+    )
 
 
 def calc_max_cpc_kopecks(
     retail_price_rub: float,
-    cost_price_rub: float,
-    logistics_rub: float,
-    commission_pct: float,
     max_drr_pct: float,
+    cr_fact: float,
     *,
-    expected_cr: float = 0.05,
+    buyout_percent: float | None = None,
 ) -> int | None:
-    if retail_price_rub <= 0 or expected_cr <= 0:
+    if retail_price_rub <= 0 or max_drr_pct <= 0 or cr_fact <= 0:
         return None
-    commission = retail_price_rub * (commission_pct / 100)
-    margin_pool = retail_price_rub - cost_price_rub - logistics_rub - commission
-    if margin_pool <= 0:
-        return None
-    max_spend_per_order = margin_pool * (max_drr_pct / 100)
-    return int(max_spend_per_order / expected_cr * 100)
+    revenue_factor = 1.0
+    if buyout_percent is not None and buyout_percent > 0:
+        revenue_factor = buyout_percent / 100
+    return int(retail_price_rub * revenue_factor * (max_drr_pct / 100) * cr_fact * 100)
 
 
-def calc_max_cpc_from_margin(
-    retail_price_rub: float,
-    margin_pct: float,
-    max_drr_pct: float,
+def calc_keyword_max_cpc_kopecks(
+    econ: dict,
+    kw: dict,
+    campaign_totals: tuple[int, int],
+    global_cr_prior: float | None,
     *,
-    expected_cr: float = 0.05,
-) -> int | None:
-    """CPC cap when only retail + margin_pct known (manager workflow from call 12.06)."""
-    if retail_price_rub <= 0 or margin_pct <= 0 or expected_cr <= 0:
-        return None
-    margin_pool = retail_price_rub * (margin_pct / 100)
-    max_spend_per_order = margin_pool * (max_drr_pct / 100)
-    return int(max_spend_per_order / expected_cr * 100)
+    resolved_price: ResolvedRetailPrice | None = None,
+) -> tuple[int | None, str | None]:
+    price = resolved_price or resolve_retail_price(econ)
+    if not price:
+        return None, None
+
+    if global_cr_prior is None:
+        return None, CPC_LIMIT_INSUFFICIENT_DATA
+
+    kw_clicks = int(kw.get("clicks") or 0)
+    kw_orders = int(kw.get("orders") or 0)
+    campaign_clicks, campaign_orders = campaign_totals
+
+    cr_fact = resolve_cr_smoothed(
+        kw_clicks,
+        kw_orders,
+        campaign_clicks,
+        campaign_orders,
+        global_cr_prior,
+    )
+    alert = prior_estimate_alert_reason(kw_clicks)
+
+    max_drr = float(econ.get("max_drr_pct") or 15)
+    return (
+        calc_max_cpc_kopecks(
+            price.value_rub,
+            max_drr,
+            cr_fact,
+            buyout_percent=price.buyout_percent,
+        ),
+        alert,
+    )
 
 
 def suggest_keyword_action(
@@ -43,6 +127,7 @@ def suggest_keyword_action(
     *,
     is_primary: bool,
     max_cpc_kopecks: int | None,
+    cpc_prior_estimate: bool = False,
     max_bid_kopecks: int = 150_000,
 ) -> DecisionSuggestion | None:
     keyword = kw.get("keyword") or ""
@@ -88,29 +173,6 @@ def suggest_keyword_action(
             after_state={**base, "status": "excluded"},
         )
 
-    if cpc and max_cpc_kopecks and cpc > max_cpc_kopecks and clicks >= 5:
-        new_bid = bid
-        if bid:
-            new_bid = max(int(bid * 0.9), int(bid - 500))
-        return DecisionSuggestion(
-            keyword=keyword,
-            action="lower_bid",
-            reason_code="OVERPAYING_CPC",
-            reason_text=f"CPC {cpc/100:.2f}₽ выше max {max_cpc_kopecks/100:.2f}₽",
-            before_state=base,
-            after_state={**base, "bid_kopecks": new_bid},
-        )
-
-    if is_primary and orders >= 3 and ctr and ctr >= 5:
-        return DecisionSuggestion(
-            keyword=keyword,
-            action="keep",
-            reason_code="PRIMARY_PERFORMING",
-            reason_text="Primary ключ с заказами и нормальным CTR",
-            before_state=base,
-            after_state=base,
-        )
-
     if is_primary and shows >= 200 and orders == 0 and ctr and ctr < 2:
         return DecisionSuggestion(
             keyword=keyword,
@@ -131,17 +193,50 @@ def suggest_keyword_action(
             after_state={**base, "status": "excluded", "retest_after": "+30d"},
         )
 
-    if is_primary and bid and orders >= 5 and cpc and max_cpc_kopecks and cpc < max_cpc_kopecks * 0.7:
-        new_bid = min(int(bid * 1.05), max_bid_kopecks)
-        if new_bid > bid:
+    if cpc and max_cpc_kopecks and clicks >= 5:
+        growth_threshold = max_cpc_kopecks * BID_GROWTH_HEADROOM_FACTOR
+
+        if cpc > max_cpc_kopecks:
+            new_bid = bid
+            if bid:
+                new_bid = max(int(bid * 0.9), int(bid - 500))
             return DecisionSuggestion(
                 keyword=keyword,
-                action="raise_bid",
-                reason_code="ROOM_TO_GROW",
-                reason_text="Primary окупается — можно +5% ставки",
+                action="lower_bid",
+                reason_code="OVERPAYING_CPC",
+                reason_text=f"CPC {cpc/100:.2f}₽ выше max {max_cpc_kopecks/100:.2f}₽",
                 before_state=base,
                 after_state={**base, "bid_kopecks": new_bid},
             )
+
+        if is_primary:
+            in_buffer_zone = cpc >= growth_threshold
+            if (
+                not in_buffer_zone
+                and orders >= 5
+                and bid
+                and not cpc_prior_estimate
+            ):
+                new_bid = min(int(bid * 1.05), max_bid_kopecks)
+                if new_bid > bid:
+                    return DecisionSuggestion(
+                        keyword=keyword,
+                        action="raise_bid",
+                        reason_code="ROOM_TO_GROW",
+                        reason_text="Primary окупается — можно +5% ставки",
+                        before_state=base,
+                        after_state={**base, "bid_kopecks": new_bid},
+                    )
+
+            if in_buffer_zone or orders >= 5:
+                return DecisionSuggestion(
+                    keyword=keyword,
+                    action="keep",
+                    reason_code="PRIMARY_PERFORMING",
+                    reason_text="в норме, повышать ставку некуда",
+                    before_state=base,
+                    after_state=base,
+                )
 
     return DecisionSuggestion(
         keyword=keyword,

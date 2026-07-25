@@ -1,0 +1,6 @@
+# WB Advert freshness probe every 10 minutes (germany server).
+# Install: cp deploy/wb-advert-probe.cron /etc/cron.d/wb-advert-probe && chmod 644 /etc/cron.d/wb-advert-probe
+SHELL=/bin/bash
+PATH=/usr/local/sbin:/usr/local/bin:/sbin:/bin:/usr/sbin:/usr/bin
+
+*/10 * * * * root flock -n /tmp/wb-advert-probe.lock /usr/bin/python3.12 /opt/wb_malibri/probe/freshness_probe.py >>/opt/wb_malibri/data/probe/logs/probe.log 2>&1

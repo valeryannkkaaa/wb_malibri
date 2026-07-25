@@ -6,11 +6,22 @@ from pathlib import Path
 from wb_advert.config import settings
 from wb_advert.constants import PENDING_NM_PREFIX
 from wb_advert.import_data.csv_loader import load_pilot_skus
-from wb_advert.optimizer.rules import calc_max_cpc_from_margin, calc_max_cpc_kopecks
+from wb_advert.optimizer.retail_price import (
+    ResolvedRetailPrice,
+    price_source_label,
+    resolve_retail_price,
+)
+from wb_advert.optimizer.rules import (
+    CPC_PRIOR_ESTIMATE,
+    calc_keyword_max_cpc_kopecks,
+    keyword_campaign_totals,
+)
 from wb_advert.optimizer.summary import summarize_campaign
 from wb_advert.storage.config_store import get_parser_settings, load_config
+from wb_advert.storage.funnel_store import load_funnel
 from wb_advert.storage.keywords_store import load_keywords
 from wb_advert.storage.positions_store import count_positions_for_region, load_latest_positions
+from wb_advert.storage.search_report_store import load_search_report
 
 
 def pilot_data_dir() -> Path:
@@ -32,29 +43,7 @@ def load_sync_report(data_dir: Path | None = None) -> dict:
 
 
 def _economics_complete(econ: dict) -> bool:
-    if not econ.get("retail_price_rub"):
-        return False
-    return bool(econ.get("cost_price_rub") or econ.get("margin_pct"))
-
-
-def _max_cpc_kopecks(econ: dict) -> int | None:
-    retail = econ.get("retail_price_rub")
-    if not retail:
-        return None
-    max_drr = float(econ.get("max_drr_pct") or 15)
-    cost = econ.get("cost_price_rub")
-    margin_pct = econ.get("margin_pct")
-    if cost:
-        return calc_max_cpc_kopecks(
-            float(retail),
-            float(cost),
-            float(econ.get("logistics_rub") or 0),
-            float(econ.get("wb_commission_pct") or 15),
-            max_drr,
-        )
-    if margin_pct:
-        return calc_max_cpc_from_margin(float(retail), float(margin_pct), max_drr)
-    return None
+    return bool(econ.get("retail_price_rub"))
 
 
 def load_stocks_by_nm(data_dir: Path | None = None) -> dict[str, dict]:
@@ -102,7 +91,73 @@ def load_unit_economics(data_dir: Path | None = None) -> dict[str, dict]:
     return out
 
 
+def global_cr_prior_from_totals(total_clicks: int, total_orders: int) -> float | None:
+    if total_clicks <= 0:
+        return None
+    return total_orders / total_clicks
+
+
+def find_pilot_sku_by_advert(advert_id: int, data_dir: Path | None = None):
+    data_dir = data_dir or pilot_data_dir()
+    for sku in load_pilot_skus(data_dir / "pilot_skus.csv"):
+        if sku.wb_campaign_search == advert_id:
+            if (sku.nm_id or "").startswith(PENDING_NM_PREFIX):
+                return None
+            return sku
+    return None
+
+
+def resolve_pilot_primary_keyword(sku, sync_row: dict) -> str | None:
+    return sku.primary_keyword or sync_row.get("top_keyword") or None
+
+
+def primary_keyword_for_advert(advert_id: int, data_dir: Path | None = None) -> str | None:
+    data_dir = data_dir or pilot_data_dir()
+    sku = find_pilot_sku_by_advert(advert_id, data_dir)
+    if not sku:
+        return None
+    report = load_sync_report(data_dir)
+    by_advert = {
+        int(c["wb_campaign_id"]): c for c in report.get("campaigns") or [] if c.get("wb_campaign_id")
+    }
+    return resolve_pilot_primary_keyword(sku, by_advert.get(advert_id, {}))
+
+
+def get_pilot_global_cr_prior(data_dir: Path | None = None) -> float | None:
+    data_dir = data_dir or pilot_data_dir()
+    total_clicks = 0
+    total_orders = 0
+    for sku in load_pilot_skus(data_dir / "pilot_skus.csv"):
+        if (sku.nm_id or "").startswith(PENDING_NM_PREFIX):
+            continue
+        kw_file = load_keywords(sku.wb_campaign_search, data_dir)
+        keywords = (kw_file.get("keywords") if kw_file else None) or []
+        clicks, orders = keyword_campaign_totals(keywords)
+        total_clicks += clicks
+        total_orders += orders
+    return global_cr_prior_from_totals(total_clicks, total_orders)
+
+
+def resolve_product_retail_price(
+    nm_id: str,
+    econ: dict,
+    data_dir: Path | None = None,
+) -> ResolvedRetailPrice | None:
+    funnel = load_funnel(nm_id, data_dir)
+    search_report = load_search_report(int(nm_id), data_dir)
+    return resolve_retail_price(econ, funnel=funnel, search_report=search_report)
+
+
 def build_product_rows(data_dir: Path | None = None, *, region_key: str | None = None) -> list[dict]:
+    rows, _ = build_product_rows_with_prior(data_dir, region_key=region_key)
+    return rows
+
+
+def build_product_rows_with_prior(
+    data_dir: Path | None = None,
+    *,
+    region_key: str | None = None,
+) -> tuple[list[dict], float | None]:
     data_dir = data_dir or pilot_data_dir()
     if region_key is None:
         region_key = get_parser_settings(data_dir)["region_key"]
@@ -111,7 +166,9 @@ def build_product_rows(data_dir: Path | None = None, *, region_key: str | None =
     economics = load_unit_economics(data_dir)
     positions = load_latest_positions(data_dir, region_key=region_key)
     stocks = load_stocks_by_nm(data_dir)
-    rows: list[dict] = []
+    pending: list[dict] = []
+    global_clicks = 0
+    global_orders = 0
 
     for sku in load_pilot_skus(data_dir / "pilot_skus.csv"):
         if (sku.nm_id or "").startswith(PENDING_NM_PREFIX):
@@ -119,24 +176,30 @@ def build_product_rows(data_dir: Path | None = None, *, region_key: str | None =
         advert_id = sku.wb_campaign_search
         sync_row = by_advert.get(advert_id, {})
         kw_file = load_keywords(advert_id, data_dir)
-        keyword_count = len(kw_file.get("keywords") or []) if kw_file else sync_row.get("keywords", 0)
+        keywords = (kw_file.get("keywords") if kw_file else None) or []
+        keyword_count = len(keywords) if kw_file else sync_row.get("keywords", 0)
         econ = economics.get(sku.nm_id, {})
         pos = positions.get(sku.nm_id, {})
-        max_cpc = _max_cpc_kopecks(econ)
+        campaign_totals = keyword_campaign_totals(keywords)
+        global_clicks += campaign_totals[0]
+        global_orders += campaign_totals[1]
         top = sync_row.get("top_stats") or {}
         stock = stocks.get(sku.nm_id, {})
         primary_cpc: int | None = None
+        primary_kw: dict | None = None
+        primary_display = resolve_pilot_primary_keyword(sku, sync_row)
+        primary_label = (primary_display or "").strip().lower()
         if kw_file:
-            primary_kw = (sku.primary_keyword or sync_row.get("top_keyword") or "").strip().lower()
-            for k in kw_file.get("keywords") or []:
-                if (k.get("keyword") or "").strip().lower() == primary_kw:
+            for k in keywords:
+                if (k.get("keyword") or "").strip().lower() == primary_label:
                     primary_cpc = k.get("cpc_calculated_kopecks")
+                    primary_kw = k
                     break
-        rows.append(
+        pending.append(
             {
                 "advert_id": advert_id,
                 "nm_id": sku.nm_id,
-                "primary_keyword": sku.primary_keyword or sync_row.get("top_keyword"),
+                "primary_keyword": primary_display,
                 "target_grade": sku.target_grade,
                 "schedule": sku.schedule,
                 "notes": sku.notes,
@@ -144,11 +207,59 @@ def build_product_rows(data_dir: Path | None = None, *, region_key: str | None =
                 "keywords_saved": kw_file is not None,
                 "top_stats": top or None,
                 "sync_errors": sync_row.get("errors") or [],
-                "has_economics": _economics_complete(econ),
+                "econ": econ,
+                "resolved_price": resolve_product_retail_price(sku.nm_id, econ, data_dir),
+                "primary_cpc": primary_cpc,
+                "primary_kw": primary_kw,
+                "campaign_totals": campaign_totals,
+                "stock": stock,
+                "pos": pos,
+            }
+        )
+
+    global_cr_prior = global_cr_prior_from_totals(global_clicks, global_orders)
+    rows: list[dict] = []
+    for item in pending:
+        econ = item["econ"]
+        resolved_price = item["resolved_price"]
+        kw_for_ceiling = item["primary_kw"] if item["primary_kw"] is not None else {}
+        max_cpc, prior_alert = calc_keyword_max_cpc_kopecks(
+            econ,
+            kw_for_ceiling,
+            item["campaign_totals"],
+            global_cr_prior,
+            resolved_price=resolved_price,
+        )
+        max_cpc_is_prior = prior_alert == CPC_PRIOR_ESTIMATE
+        stock = item["stock"]
+        pos = item["pos"]
+        primary_cpc = item["primary_cpc"]
+        rows.append(
+            {
+                "advert_id": item["advert_id"],
+                "nm_id": item["nm_id"],
+                "primary_keyword": item["primary_keyword"],
+                "target_grade": item["target_grade"],
+                "schedule": item["schedule"],
+                "notes": item["notes"],
+                "keyword_count": item["keyword_count"],
+                "keywords_saved": item["keywords_saved"],
+                "top_stats": item["top_stats"],
+                "sync_errors": item["sync_errors"],
+                "has_economics": _economics_complete(econ) or resolved_price is not None,
                 "has_retail_price": bool(econ.get("retail_price_rub")),
                 "retail_price_rub": econ.get("retail_price_rub"),
+                "price_rub": round(resolved_price.value_rub, 2) if resolved_price else None,
+                "price_source": resolved_price.source if resolved_price else None,
+                "price_source_label": price_source_label(resolved_price.source if resolved_price else None),
+                "buyout_percent": (
+                    round(resolved_price.buyout_percent, 1)
+                    if resolved_price and resolved_price.buyout_percent is not None
+                    else None
+                ),
                 "margin_pct": econ.get("margin_pct"),
                 "max_cpc_rub": round(max_cpc / 100, 2) if max_cpc else None,
+                "max_cpc_is_prior": max_cpc_is_prior,
                 "primary_cpc_rub": round(primary_cpc / 100, 2) if primary_cpc else None,
                 "cpc_over_limit": bool(max_cpc and primary_cpc and primary_cpc > max_cpc),
                 "max_drr_pct": econ.get("max_drr_pct") or "15",
@@ -159,7 +270,7 @@ def build_product_rows(data_dir: Path | None = None, *, region_key: str | None =
                 "position_error": None if pos.get("found") else pos.get("error"),
             }
         )
-    return sorted(rows, key=lambda r: r["advert_id"])
+    return sorted(rows, key=lambda r: r["advert_id"]), global_cr_prior
 
 
 def load_dashboard_recommendations(limit: int = 5, data_dir: Path | None = None) -> list[dict]:
@@ -273,7 +384,7 @@ def build_dashboard(data_dir: Path | None = None) -> dict:
     config = load_config(data_dir)
     from wb_advert.storage.decisions_store import load_latest_optimize_by_advert
 
-    products = build_product_rows(data_dir)
+    products, global_cr_prior = build_product_rows_with_prior(data_dir)
     latest_by_advert = load_latest_optimize_by_advert(data_dir)
     missing = [int(p["advert_id"]) for p in products if int(p["advert_id"]) not in latest_by_advert]
     if missing:
@@ -281,13 +392,22 @@ def build_dashboard(data_dir: Path | None = None) -> dict:
         from wb_advert.storage.decisions_store import append_decisions
 
         for advert_id in missing:
-            result = optimize_product(advert_id)
+            result = optimize_product(advert_id, global_cr_prior=global_cr_prior)
             if result.suggestions or result.alerts:
                 append_decisions(result, data_dir)
             latest_by_advert[advert_id] = result.model_dump(mode="json")
 
     products = _attach_recommendation_summaries(products, latest_by_advert)
     recommendations = load_dashboard_recommendations(limit=5, data_dir=data_dir)
+    attention_by_advert = {
+        int(p["advert_id"]): p["recommendation"]
+        for p in products
+        if p.get("recommendation")
+    }
+    for rec in recommendations:
+        campaign_rec = attention_by_advert.get(int(rec["advert_id"] or 0), {})
+        rec["actionable_count"] = campaign_rec.get("actionable_count", 0)
+        rec["needs_attention"] = campaign_rec.get("needs_attention", False)
     from wb_advert.storage.dashboard_alerts import (
         attach_alert_flags,
         build_dashboard_alerts,

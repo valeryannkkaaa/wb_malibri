@@ -51,6 +51,15 @@ def load_keywords(advert_id: int, data_dir: Path | None = None) -> dict | None:
         return None
 
 
+def campaign_keywords_synced_at(advert_id: int, data_dir: Path | None = None) -> str | None:
+    """When keywords were last saved successfully (one file, one campaign)."""
+    data = load_keywords(advert_id, data_dir)
+    if not data:
+        return None
+    ts = data.get("synced_at")
+    return str(ts) if ts else None
+
+
 def list_saved_campaign_ids(data_dir: Path | None = None) -> list[int]:
     d = sync_dir(data_dir)
     ids: list[int] = []

@@ -1,6 +1,7 @@
 from pathlib import Path
 
 from dotenv import load_dotenv
+from pydantic import AliasChoices, Field
 from pydantic_settings import BaseSettings, SettingsConfigDict
 
 _PKG_ROOT = Path(__file__).resolve().parent
@@ -37,8 +38,18 @@ class Settings(BaseSettings):
     database_url: str = ""
     sync_interval_min: int = 15
     request_pause_sec: float = 2.0
-    pilot_config_path: str = "../data/pilot/config.yaml"
-    pilot_data_path: str = "../data/pilot"
+    pilot_config_path: str = Field(
+        default="../data/pilot/config.yaml",
+        validation_alias=AliasChoices("WB_ADVERT_PILOT_CONFIG", "pilot_config_path"),
+    )
+    pilot_data_path: str = Field(
+        default="../data/pilot",
+        validation_alias=AliasChoices("WB_ADVERT_PILOT_DATA", "pilot_data_path"),
+    )
+    portal_session_secret: str = Field(
+        default="",
+        validation_alias=AliasChoices("PORTAL_SESSION_SECRET", "portal_session_secret"),
+    )
 
     promotion_base: str = "https://advert-api.wildberries.ru"
     analytics_base: str = "https://seller-analytics-api.wildberries.ru"

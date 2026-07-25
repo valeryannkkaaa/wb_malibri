@@ -1,0 +1,6 @@
+# WB Advert: full pilot cycle every 4 hours (germany server).
+# Install: cp deploy/wb-advert.cron /etc/cron.d/wb-advert && chmod 644 /etc/cron.d/wb-advert
+SHELL=/bin/bash
+PATH=/usr/local/sbin:/usr/local/bin:/sbin:/bin:/usr/sbin:/usr/bin
+
+0 */4 * * * root flock -n /tmp/wb-advert-cycle.lock /opt/wb_malibri/deploy/wb-advert-cycle-cron.sh

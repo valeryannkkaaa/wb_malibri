@@ -66,6 +66,55 @@ class WbHttpClient:
     def _headers(self) -> dict[str, str]:
         return {"Authorization": self.token, "Content-Type": "application/json"}
 
+    def request_bytes(
+        self,
+        base_url: str,
+        method: str,
+        path: str,
+        *,
+        params: dict | None = None,
+    ) -> tuple[int | None, bytes, str | None]:
+        """Download binary body (e.g. nm-report zip). Returns (status, body, error)."""
+        url = base_url.rstrip("/") + path
+        if params:
+            url = f"{url}?{urlencode(params, doseq=True)}"
+        last_status: int | None = None
+        last_error: str | None = None
+        for attempt in range(self.max_retries):
+            try:
+                resp = self._httpx.request(
+                    method,
+                    url,
+                    headers={"Authorization": self.token},
+                    params=None,
+                )
+                last_status = resp.status_code
+                if not _is_retryable_status(last_status):
+                    time.sleep(self.pause_sec)
+                    return last_status, resp.content, None
+                if last_status == 429:
+                    wait = min(RETRY_429_BASE_SEC * (attempt + 1), 90)
+                    label = "429 rate limit"
+                else:
+                    wait = min(RETRY_5XX_BASE_SEC * (attempt + 1), 30)
+                    label = f"HTTP {last_status} server error"
+                print(
+                    f"  [WB] {label} on {method} {path} - wait {wait}s "
+                    f"(retry {attempt + 1}/{self.max_retries})",
+                    flush=True,
+                )
+                time.sleep(wait)
+            except httpx.HTTPError as exc:
+                last_error = str(exc)
+                wait = min(RETRY_TRANSPORT_BASE_SEC * (attempt + 1), 60)
+                print(
+                    f"  [WB] transport error on {method} {path} - wait {wait}s "
+                    f"({last_error[:80]}) (retry {attempt + 1}/{self.max_retries})",
+                    flush=True,
+                )
+                time.sleep(wait)
+        return last_status, b"", last_error
+
     def request(
         self,
         base_url: str,
