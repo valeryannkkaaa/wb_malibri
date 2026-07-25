@@ -22,8 +22,10 @@ python3.12 probe/freshness_probe.py
 | `WB_ENV_PATH` | `/opt/wb-advert/.env` |
 | `WB_PROD_LOCK` | `/tmp/wb-advert-cycle.lock` |
 
-Перед API-запросами скрипт берёт `flock -n` на боевой лок. Если продовый цикл уже
+Перед API-запросами скрипт проверяет боевой лок (не удерживает его). Если продовый цикл уже
 работает — такт пропускается (exit 0, строка в CSV с `skipped_tact=1`).
+
+За цикл: **1** `fullstats` на обе кампании (`ids=31275686,31314341`) + **2** `normquery/stats`.
 
 ## Cron
 
@@ -36,12 +38,16 @@ sudo chmod 644 /etc/cron.d/wb-advert-probe
 
 Шаг `*/10`, свой lock-файл `/tmp/wb-advert-probe.lock` (чтобы подвисший такт не наслаивался).
 
+Зонд **не удерживает** боевой лок `/tmp/wb-advert-cycle.lock` — только проверяет, занят ли он,
+и сразу отпускает. Если занят — такт пропускается.
+
 ## Куда пишутся данные
 
 ```
 data/probe/
-  raw/<UTC-дата>/<HHMM>_<advert_id>_<endpoint>.json.gz   # сырой ответ API
-  flat/probe_<UTC-дата>.csv                               # плоский CSV
+  raw/<UTC-дата>/<HHMM>_fullstats.json.gz                         # обе кампании
+  raw/<UTC-дата>/<HHMM>_<advert_id>_normquery_stats.json.gz
+  flat/probe_<UTC-дата>.csv   # по строке на дневную корзину (вчера + сегодня на кампанию)
   logs/                                                   # stderr из cron (если настроен)
 ```
 

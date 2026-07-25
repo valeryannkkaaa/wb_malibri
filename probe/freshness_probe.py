@@ -20,7 +20,6 @@ import requests
 
 MSK = ZoneInfo("Europe/Moscow")
 API_BASE = "https://advert-api.wildberries.ru"
-FULLSTATS_PAUSE_SEC = 7.0
 PROMOTION_PAUSE_SEC = 1.2
 RETENTION_DAYS = 14
 
@@ -39,7 +38,6 @@ CSV_COLUMNS = [
     "advert_id",
     "nm_id",
     "bucket_date",
-    "bucket_hour",
     "fs_views",
     "fs_clicks",
     "fs_sum",
@@ -48,6 +46,7 @@ CSV_COLUMNS = [
     "nq_clicks",
     "nq_orders",
     "nq_cpc",
+    "nq_spend",
     "nq_cpc_x_clicks",
     "http_status",
     "duration_ms",
@@ -98,36 +97,33 @@ def _fullstats_campaigns(data: Any) -> list[dict[str, Any]]:
     return []
 
 
-def parse_fullstats_hours(data: Any) -> list[dict[str, Any]]:
-    """Return one dict per hourly bucket from days[].hours[]."""
+def _campaign_advert_id(campaign: dict[str, Any]) -> int | None:
+    raw = campaign.get("advertId") or campaign.get("advert_id")
+    return int(raw) if raw is not None else None
+
+
+def parse_fullstats_days(data: Any, advert_id: int) -> list[dict[str, Any]]:
+    """Return one dict per daily bucket from days[] for a campaign."""
     rows: list[dict[str, Any]] = []
     for campaign in _fullstats_campaigns(data):
+        cid = _campaign_advert_id(campaign)
+        if cid is not None and cid != advert_id:
+            continue
         days = campaign.get("days")
         if not days:
             continue
         for day in days:
             if not isinstance(day, dict):
                 continue
-            bucket_date = str(day.get("date") or "")[:10]
-            hours = day.get("hours")
-            if not hours:
-                continue
-            for hour_row in hours:
-                if not isinstance(hour_row, dict):
-                    continue
-                bucket_hour = hour_row.get("hour")
-                if bucket_hour is None:
-                    bucket_hour = hour_row.get("time") or hour_row.get("dt")
-                rows.append(
-                    {
-                        "bucket_date": bucket_date,
-                        "bucket_hour": bucket_hour,
-                        "views": hour_row.get("views"),
-                        "clicks": hour_row.get("clicks"),
-                        "sum": hour_row.get("sum"),
-                        "orders": hour_row.get("orders"),
-                    }
-                )
+            rows.append(
+                {
+                    "bucket_date": str(day.get("date") or "")[:10],
+                    "views": day.get("views"),
+                    "clicks": day.get("clicks"),
+                    "sum": day.get("sum"),
+                    "orders": day.get("orders"),
+                }
+            )
     return rows
 
 
@@ -137,6 +133,7 @@ def parse_normquery_totals(data: Any, nm_id: int) -> dict[str, Any]:
         "views": 0,
         "clicks": 0,
         "orders": 0,
+        "spend": 0.0,
         "cpc": None,
         "cpc_x_clicks": 0.0,
     }
@@ -160,9 +157,11 @@ def parse_normquery_totals(data: Any, nm_id: int) -> dict[str, Any]:
             clicks = int(item.get("clicks") or 0)
             orders = int(item.get("orders") or 0)
             cpc = float(item.get("cpc") or 0)
+            spend = float(item.get("spend") or 0)
             totals["views"] += views
             totals["clicks"] += clicks
             totals["orders"] += orders
+            totals["spend"] += spend
             if clicks and cpc:
                 totals["cpc_x_clicks"] += cpc * clicks
 
@@ -208,7 +207,22 @@ def _rm_tree(path: Path) -> None:
         path.unlink(missing_ok=True)
 
 
+def prod_cycle_running(lock_path: Path) -> bool:
+    """Non-blocking check: True if prod holds the lock. Never keeps the lock."""
+    fd = os.open(lock_path, os.O_CREAT | os.O_RDWR, 0o666)
+    try:
+        try:
+            fcntl.flock(fd, fcntl.LOCK_EX | fcntl.LOCK_NB)
+            fcntl.flock(fd, fcntl.LOCK_UN)
+            return False
+        except BlockingIOError:
+            return True
+    finally:
+        os.close(fd)
+
+
 def try_acquire_prod_lock(lock_path: Path) -> int | None:
+    """Test helper: acquire lock if free."""
     fd = os.open(lock_path, os.O_CREAT | os.O_RDWR, 0o666)
     try:
         fcntl.flock(fd, fcntl.LOCK_EX | fcntl.LOCK_NB)
@@ -264,7 +278,6 @@ def _blank_row(
         "advert_id": advert_id,
         "nm_id": nm_id,
         "bucket_date": "",
-        "bucket_hour": "",
         "fs_views": "",
         "fs_clicks": "",
         "fs_sum": "",
@@ -273,6 +286,7 @@ def _blank_row(
         "nq_clicks": "",
         "nq_orders": "",
         "nq_cpc": "",
+        "nq_spend": "",
         "nq_cpc_x_clicks": "",
         "http_status": http_status if http_status is not None else "",
         "duration_ms": duration_ms if duration_ms is not None else "",
@@ -281,11 +295,11 @@ def _blank_row(
     }
 
 
-def build_hour_rows(
+def build_day_rows(
     probed_at: str,
     advert_id: int,
     nm_id: int,
-    hour_buckets: list[dict[str, Any]],
+    day_buckets: list[dict[str, Any]],
     normquery: dict[str, Any],
     *,
     http_status: int,
@@ -297,25 +311,32 @@ def build_hour_rows(
         "nq_clicks": normquery.get("clicks", 0),
         "nq_orders": normquery.get("orders", 0),
         "nq_cpc": normquery.get("cpc") if normquery.get("cpc") is not None else "",
+        "nq_spend": normquery.get("spend", 0),
         "nq_cpc_x_clicks": normquery.get("cpc_x_clicks", 0),
         "http_status": http_status,
         "duration_ms": duration_ms,
         "is_429": int(is_429),
         "skipped_tact": 0,
     }
-    if not hour_buckets:
-        row = _blank_row(probed_at, advert_id, nm_id, http_status=http_status, duration_ms=duration_ms, is_429=is_429)
+    if not day_buckets:
+        row = _blank_row(
+            probed_at,
+            advert_id,
+            nm_id,
+            http_status=http_status,
+            duration_ms=duration_ms,
+            is_429=is_429,
+        )
         row.update(base_nq)
         return [row]
 
     rows: list[dict[str, Any]] = []
-    for bucket in hour_buckets:
+    for bucket in day_buckets:
         row = {
             "probed_at_utc": probed_at,
             "advert_id": advert_id,
             "nm_id": nm_id,
             "bucket_date": bucket.get("bucket_date", ""),
-            "bucket_hour": bucket.get("bucket_hour", ""),
             "fs_views": bucket.get("views", ""),
             "fs_clicks": bucket.get("clicks", ""),
             "fs_sum": bucket.get("sum", ""),
@@ -329,7 +350,7 @@ def build_hour_rows(
 def api_get_fullstats(
     session: requests.Session,
     token: str,
-    advert_id: int,
+    advert_ids: list[int],
     begin: date,
     end: date,
 ) -> tuple[int, bytes, float]:
@@ -338,7 +359,7 @@ def api_get_fullstats(
         f"{API_BASE}/adv/v3/fullstats",
         headers={"Authorization": token},
         params={
-            "ids": str(advert_id),
+            "ids": ",".join(str(i) for i in advert_ids),
             "beginDate": begin.isoformat(),
             "endDate": end.isoformat(),
         },
@@ -388,8 +409,7 @@ def run_probe_cycle(
 
     apply_retention(data_dir, now=now)
 
-    lock_fd = try_acquire_prod_lock(prod_lock_path)
-    if lock_fd is None:
+    if prod_cycle_running(prod_lock_path):
         log.info("skipped: prod cycle running")
         rows = [
             _blank_row(probed_at, advert_id, nm_id, skipped_tact=True)
@@ -407,40 +427,26 @@ def run_probe_cycle(
         begin, end = msk_date_window(now.astimezone(MSK))
         raw_root = data_dir / "raw" / utc_day.isoformat()
         all_rows: list[dict[str, Any]] = []
-        got_429 = False
+        advert_ids = [a for a, _ in CAMPAIGNS]
+
+        fs_status, fs_body, fs_elapsed = api_get_fullstats(session, token, advert_ids, begin, end)
+        save_raw_gzip(raw_root / f"{tick}_fullstats.json.gz", fs_body)
+
+        fs_parsed: dict[int, list[dict[str, Any]]] = {}
+        if fs_status == 200:
+            try:
+                fs_data = json.loads(fs_body.decode("utf-8"))
+                for advert_id, _ in CAMPAIGNS:
+                    fs_parsed[advert_id] = parse_fullstats_days(fs_data, advert_id)
+            except (json.JSONDecodeError, UnicodeDecodeError):
+                log.exception("fullstats JSON decode failed")
+        elif fs_status == 429:
+            log.warning("fullstats batch: HTTP 429")
 
         for idx, (advert_id, nm_id) in enumerate(CAMPAIGNS):
             if idx > 0:
-                time.sleep(FULLSTATS_PAUSE_SEC)
+                time.sleep(PROMOTION_PAUSE_SEC)
 
-            status, body, elapsed = api_get_fullstats(session, token, advert_id, begin, end)
-            save_raw_gzip(
-                raw_root / f"{tick}_{advert_id}_fullstats.json.gz",
-                body,
-            )
-            if status == 429:
-                log.warning("fullstats advert_id=%s: HTTP 429, stopping cycle", advert_id)
-                all_rows.append(
-                    _blank_row(
-                        probed_at,
-                        advert_id,
-                        nm_id,
-                        http_status=status,
-                        duration_ms=int(elapsed * 1000),
-                        is_429=True,
-                    )
-                )
-                got_429 = True
-                break
-
-            parsed_hours: list[dict[str, Any]] = []
-            if status == 200:
-                try:
-                    parsed_hours = parse_fullstats_hours(json.loads(body.decode("utf-8")))
-                except (json.JSONDecodeError, UnicodeDecodeError):
-                    log.exception("fullstats JSON decode failed advert_id=%s", advert_id)
-
-            time.sleep(PROMOTION_PAUSE_SEC)
             nq_status, nq_body, nq_elapsed = api_post_normquery_stats(
                 session, token, advert_id, nm_id, begin, end
             )
@@ -448,50 +454,46 @@ def run_probe_cycle(
                 raw_root / f"{tick}_{advert_id}_normquery_stats.json.gz",
                 nq_body,
             )
-            if nq_status == 429:
-                log.warning("normquery advert_id=%s: HTTP 429, stopping cycle", advert_id)
-                all_rows.append(
-                    _blank_row(
-                        probed_at,
-                        advert_id,
-                        nm_id,
-                        http_status=nq_status,
-                        duration_ms=int(nq_elapsed * 1000),
-                        is_429=True,
-                    )
-                )
-                got_429 = True
-                break
 
-            normquery = {"views": 0, "clicks": 0, "orders": 0, "cpc": None, "cpc_x_clicks": 0.0}
+            is_429 = fs_status == 429 or nq_status == 429
+            http_status = nq_status if nq_status == 429 else (fs_status if fs_status == 429 else nq_status)
+            duration_ms = int(nq_elapsed * 1000)
+
+            if nq_status == 429:
+                log.warning("normquery advert_id=%s: HTTP 429", advert_id)
+
+            normquery = {
+                "views": 0,
+                "clicks": 0,
+                "orders": 0,
+                "spend": 0.0,
+                "cpc": None,
+                "cpc_x_clicks": 0.0,
+            }
             if nq_status == 200:
                 try:
                     normquery = parse_normquery_totals(json.loads(nq_body.decode("utf-8")), nm_id)
                 except (json.JSONDecodeError, UnicodeDecodeError):
                     log.exception("normquery JSON decode failed advert_id=%s", advert_id)
 
+            day_buckets = fs_parsed.get(advert_id, []) if fs_status == 200 else []
             all_rows.extend(
-                build_hour_rows(
+                build_day_rows(
                     probed_at,
                     advert_id,
                     nm_id,
-                    parsed_hours,
+                    day_buckets,
                     normquery,
-                    http_status=status,
-                    duration_ms=int(elapsed * 1000),
+                    http_status=http_status,
+                    duration_ms=duration_ms,
+                    is_429=is_429,
                 )
             )
 
-            if idx < len(CAMPAIGNS) - 1:
-                time.sleep(PROMOTION_PAUSE_SEC)
-
         append_csv_rows(csv_path, all_rows)
-        if got_429:
-            return 0
         log.info("probe cycle done: %s rows, raw in %s", len(all_rows), raw_root)
         return 0
     finally:
-        release_lock(lock_fd)
         if own_session and session is not None:
             session.close()
 

@@ -4,16 +4,36 @@
     "days": [
       {
         "date": "2026-07-24T00:00:00Z",
-        "hours": [
-          {"hour": 9, "views": 120, "clicks": 12, "sum": 45.5, "orders": 2},
-          {"hour": 10, "views": 80, "clicks": 8, "sum": 30.0, "orders": 1}
-        ]
+        "views": 1200,
+        "clicks": 120,
+        "sum": 455.5,
+        "orders": 20
       },
       {
         "date": "2026-07-25T00:00:00Z",
-        "hours": [
-          {"hour": 8, "views": 50, "clicks": 5, "sum": 18.2, "orders": 0}
-        ]
+        "views": 800,
+        "clicks": 80,
+        "sum": 300.0,
+        "orders": 10
+      }
+    ]
+  },
+  {
+    "advertId": 31314341,
+    "days": [
+      {
+        "date": "2026-07-24T00:00:00Z",
+        "views": 500,
+        "clicks": 50,
+        "sum": 150.0,
+        "orders": 5
+      },
+      {
+        "date": "2026-07-25T00:00:00Z",
+        "views": 300,
+        "clicks": 30,
+        "sum": 90.0,
+        "orders": 2
       }
     ]
   }

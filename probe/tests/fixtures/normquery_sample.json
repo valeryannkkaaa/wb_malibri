@@ -3,8 +3,9 @@
     {
       "nm_id": 624468743,
       "stats": [
-        {"norm_query": "перчатки", "views": 100, "clicks": 10, "orders": 2, "cpc": 5.5},
-        {"norm_query": "уборка", "views": 50, "clicks": 5, "orders": 1, "cpc": 4.0}
+        {"norm_query": "перчатки", "views": 100, "clicks": 10, "orders": 2, "cpc": 5.5, "spend": 55.0},
+        {"norm_query": "уборка", "views": 50, "clicks": 5, "orders": 1, "cpc": 4.0, "spend": 20.0},
+        {"norm_query": "cpm only", "views": 20, "clicks": 0, "orders": 0, "cpc": 0, "spend": 0.5, "cpm": 500}
       ]
     }
   ]

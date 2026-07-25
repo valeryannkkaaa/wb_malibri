@@ -4,9 +4,9 @@
     "days": [
       {
         "date": "2026-07-25T00:00:00Z",
-        "hours": [
-          {"hour": 11, "views": 10, "clicks": 1, "orders": 0}
-        ]
+        "views": 10,
+        "clicks": 1,
+        "orders": 0
       }
     ]
   }
