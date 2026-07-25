@@ -27,7 +27,6 @@ from probe.freshness_probe import (  # noqa: E402
     parse_fullstats_days,
     parse_normquery_totals,
     prod_cycle_running,
-    rotate_csv_if_header_mismatch,
     run_probe_cycle,
 )
 
@@ -145,23 +144,55 @@ def test_retention_deletes_old_keeps_fresh(tmp_path: Path) -> None:
     assert flat_fresh.exists()
 
 
-def test_append_csv_rotates_on_header_mismatch(tmp_path: Path) -> None:
+def test_append_csv_rows_wires_header_rotation(tmp_path: Path) -> None:
     csv_path = tmp_path / "probe_2026-07-25.csv"
-    csv_path.write_text("probed_at_utc,advert_id,nm_id,bucket_date,bucket_hour\nold\n", encoding="utf-8")
-    fixed_now = datetime(2026, 7, 25, 10, 0, tzinfo=timezone.utc)
-
-    legacy = rotate_csv_if_header_mismatch(csv_path, now=fixed_now)
-    assert legacy is not None
-    assert legacy.exists()
-    assert "bucket_hour" in legacy.read_text(encoding="utf-8")
-    assert not csv_path.exists()
-
-    append_csv_rows(
-        csv_path,
-        [{"probed_at_utc": "t", "advert_id": 1, "nm_id": 2, "skipped_tact": 0}],
-        now=fixed_now,
+    csv_path.write_text(
+        "probed_at_utc,advert_id,nm_id,bucket_date,bucket_hour,fs_views\nstale-row\n",
+        encoding="utf-8",
     )
+    fixed_now = datetime(2026, 7, 25, 10, 0, tzinfo=timezone.utc)
+    row = {
+        "probed_at_utc": "2026-07-25T10:00:00+00:00",
+        "advert_id": 31275686,
+        "nm_id": 624468743,
+        "bucket_date": "2026-07-25",
+        "fs_views": 2,
+        "fs_clicks": 0,
+        "fs_sum": 0.85,
+        "fs_orders": 0,
+        "nq_spend": 0.5,
+        "skipped_tact": 0,
+    }
+
+    append_csv_rows(csv_path, [row], now=fixed_now)
+
+    legacy_files = list(tmp_path.glob("probe_2026-07-25.legacy-*.csv"))
+    assert len(legacy_files) == 1
+    legacy_text = legacy_files[0].read_text(encoding="utf-8")
+    assert "bucket_hour" in legacy_text
+    assert "stale-row" in legacy_text
+
     assert csv_path.read_text(encoding="utf-8").splitlines()[0] == csv_header_line()
+    written = _read_csv_rows(csv_path)
+    assert len(written) == 1
+    assert written[0]["fs_views"] == "2"
+    assert written[0]["fs_sum"] == "0.85"
+    assert written[0]["nq_spend"] == "0.5"
+
+
+def test_retention_deletes_old_legacy_keeps_fresh(tmp_path: Path) -> None:
+    now = datetime(2026, 7, 25, 12, 0, tzinfo=timezone.utc)
+    flat = tmp_path / "flat"
+    flat.mkdir(parents=True)
+    old_legacy = flat / "probe_2026-07-01.legacy-20260701T120000Z.csv"
+    fresh_legacy = flat / "probe_2026-07-20.legacy-20260720T120000Z.csv"
+    old_legacy.write_text("old\n", encoding="utf-8")
+    fresh_legacy.write_text("fresh\n", encoding="utf-8")
+
+    apply_retention(tmp_path, now=now)
+
+    assert not old_legacy.exists()
+    assert fresh_legacy.exists()
 
 
 def test_batch_fullstats_one_request_both_campaigns(tmp_path: Path) -> None:

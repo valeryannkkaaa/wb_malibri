@@ -172,6 +172,18 @@ def parse_normquery_totals(data: Any, nm_id: int) -> dict[str, Any]:
     return totals
 
 
+def _probe_flat_file_date(name: str) -> date | None:
+    if not name.startswith("probe_") or not name.endswith(".csv"):
+        return None
+    stem = name[len("probe_") : -len(".csv")]
+    if ".legacy-" in stem:
+        stem = stem.split(".legacy-", 1)[0]
+    try:
+        return date.fromisoformat(stem)
+    except ValueError:
+        return None
+
+
 def apply_retention(data_dir: Path, *, days: int = RETENTION_DAYS, now: datetime | None = None) -> None:
     if now is None:
         now = datetime.now(timezone.utc)
@@ -191,12 +203,8 @@ def apply_retention(data_dir: Path, *, days: int = RETENTION_DAYS, now: datetime
                 if folder_date < cutoff:
                     _rm_tree(child)
             elif sub == "flat" and name.startswith("probe_") and name.endswith(".csv"):
-                if ".legacy-" in name:
-                    continue
-                stem = name[len("probe_") : -len(".csv")]
-                try:
-                    file_date = date.fromisoformat(stem)
-                except ValueError:
+                file_date = _probe_flat_file_date(name)
+                if file_date is None:
                     continue
                 if file_date < cutoff:
                     child.unlink(missing_ok=True)
