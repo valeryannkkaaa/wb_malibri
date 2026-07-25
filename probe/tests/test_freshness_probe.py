@@ -2,6 +2,8 @@
 
 from __future__ import annotations
 
+import csv
+import fcntl
 import json
 import os
 import sys
@@ -17,15 +19,16 @@ sys.path.insert(0, str(PROBE_DIR.parent))
 
 from probe.freshness_probe import (  # noqa: E402
     CAMPAIGNS,
+    CSV_COLUMNS,
     apply_retention,
-    build_day_rows,
+    append_csv_rows,
+    csv_header_line,
     msk_date_window,
     parse_fullstats_days,
     parse_normquery_totals,
     prod_cycle_running,
-    release_lock,
+    rotate_csv_if_header_mismatch,
     run_probe_cycle,
-    try_acquire_prod_lock,
 )
 
 FIXTURES = Path(__file__).parent / "fixtures"
@@ -34,6 +37,36 @@ MSK = ZoneInfo("Europe/Moscow")
 
 def _load(name: str):
     return json.loads((FIXTURES / name).read_text(encoding="utf-8"))
+
+
+def _hold_lock(lock_path: Path) -> int:
+    fd = os.open(lock_path, os.O_CREAT | os.O_RDWR, 0o666)
+    fcntl.flock(fd, fcntl.LOCK_EX | fcntl.LOCK_NB)
+    return fd
+
+
+def _release_lock_fd(fd: int) -> None:
+    fcntl.flock(fd, fcntl.LOCK_UN)
+    os.close(fd)
+
+
+def _run_cycle(tmp_path: Path, session: MagicMock, when: datetime) -> Path:
+    env_file = tmp_path / ".env"
+    env_file.write_text("WB_API_TOKEN=test-token\n", encoding="utf-8")
+    data_dir = tmp_path / "data"
+    run_probe_cycle(
+        data_dir=data_dir,
+        env_path=env_file,
+        prod_lock_path=tmp_path / "cycle.lock",
+        now=when,
+        session=session,
+    )
+    return data_dir / "flat" / f"probe_{when.date().isoformat()}.csv"
+
+
+def _read_csv_rows(csv_path: Path) -> list[dict[str, str]]:
+    with csv_path.open(encoding="utf-8", newline="") as fh:
+        return list(csv.DictReader(fh))
 
 
 def test_parse_fullstats_days_normal() -> None:
@@ -112,12 +145,64 @@ def test_retention_deletes_old_keeps_fresh(tmp_path: Path) -> None:
     assert flat_fresh.exists()
 
 
-def test_429_on_one_campaign_does_not_stop_others(tmp_path: Path) -> None:
-    env_file = tmp_path / ".env"
-    env_file.write_text("WB_API_TOKEN=test-token\n", encoding="utf-8")
-    lock_file = tmp_path / "cycle.lock"
-    data_dir = tmp_path / "data"
+def test_append_csv_rotates_on_header_mismatch(tmp_path: Path) -> None:
+    csv_path = tmp_path / "probe_2026-07-25.csv"
+    csv_path.write_text("probed_at_utc,advert_id,nm_id,bucket_date,bucket_hour\nold\n", encoding="utf-8")
+    fixed_now = datetime(2026, 7, 25, 10, 0, tzinfo=timezone.utc)
 
+    legacy = rotate_csv_if_header_mismatch(csv_path, now=fixed_now)
+    assert legacy is not None
+    assert legacy.exists()
+    assert "bucket_hour" in legacy.read_text(encoding="utf-8")
+    assert not csv_path.exists()
+
+    append_csv_rows(
+        csv_path,
+        [{"probed_at_utc": "t", "advert_id": 1, "nm_id": 2, "skipped_tact": 0}],
+        now=fixed_now,
+    )
+    assert csv_path.read_text(encoding="utf-8").splitlines()[0] == csv_header_line()
+
+
+def test_batch_fullstats_one_request_both_campaigns(tmp_path: Path) -> None:
+    fs_body = json.dumps(_load("fullstats_normal.json")).encode()
+    nq_body = json.dumps(_load("normquery_sample.json")).encode()
+    session = MagicMock()
+    session.get.return_value = MagicMock(status_code=200, content=fs_body)
+    session.post.return_value = MagicMock(status_code=200, content=nq_body)
+
+    fixed_now = datetime(2026, 7, 25, 10, 0, tzinfo=timezone.utc)
+    csv_path = _run_cycle(tmp_path, session, fixed_now)
+
+    session.get.assert_called_once()
+    ids_param = session.get.call_args.kwargs["params"]["ids"]
+    assert ids_param == "31275686,31314341"
+
+    rows = _read_csv_rows(csv_path)
+    by_advert = {int(r["advert_id"]): r for r in rows if r["bucket_date"] == "2026-07-24"}
+    assert by_advert[31275686]["fs_views"] == "1200"
+    assert by_advert[31314341]["fs_views"] == "500"
+    assert session.post.call_count == 2
+
+
+def test_csv_row_contains_nq_spend_from_raw(tmp_path: Path) -> None:
+    fs_body = json.dumps(_load("fullstats_normal.json")).encode()
+    nq_body = json.dumps(_load("normquery_sample.json")).encode()
+    session = MagicMock()
+    session.get.return_value = MagicMock(status_code=200, content=fs_body)
+    session.post.return_value = MagicMock(status_code=200, content=nq_body)
+
+    fixed_now = datetime(2026, 7, 25, 10, 0, tzinfo=timezone.utc)
+    csv_path = _run_cycle(tmp_path, session, fixed_now)
+
+    rows = _read_csv_rows(csv_path)
+    camp1 = [r for r in rows if r["advert_id"] == "31275686"]
+    assert camp1
+    assert camp1[0]["nq_spend"] == "75.5"
+    assert "nq_spend" in CSV_COLUMNS
+
+
+def test_429_on_one_campaign_does_not_stop_others(tmp_path: Path) -> None:
     fs_body = json.dumps(_load("fullstats_normal.json")).encode()
     nq_ok = json.dumps(
         {
@@ -133,70 +218,64 @@ def test_429_on_one_campaign_does_not_stop_others(tmp_path: Path) -> None:
     ).encode()
 
     session = MagicMock()
-    resp_fs = MagicMock(status_code=200, content=fs_body)
-    resp_nq_429 = MagicMock(status_code=429, content=b'{"error":"too many requests"}')
-    resp_nq_ok = MagicMock(status_code=200, content=nq_ok)
-    session.get.return_value = resp_fs
-    session.post.side_effect = [resp_nq_429, resp_nq_ok]
+    session.get.return_value = MagicMock(status_code=200, content=fs_body)
+    session.post.side_effect = [
+        MagicMock(status_code=429, content=b'{"error":"too many requests"}'),
+        MagicMock(status_code=200, content=nq_ok),
+    ]
 
     fixed_now = datetime(2026, 7, 25, 10, 0, tzinfo=timezone.utc)
-    rc = run_probe_cycle(
-        data_dir=data_dir,
-        env_path=env_file,
-        prod_lock_path=lock_file,
-        now=fixed_now,
-        session=session,
-    )
-    assert rc == 0
-    session.get.assert_called_once()
-    assert session.post.call_count == 2
+    csv_path = _run_cycle(tmp_path, session, fixed_now)
 
-    csv_path = data_dir / "flat" / "probe_2026-07-25.csv"
-    lines = csv_path.read_text(encoding="utf-8").strip().splitlines()
-    assert len(lines) == 5
-    assert ",31275686," in lines[1] and ",1," in lines[1]
-    assert ",31314341," in lines[3] and ",150.0," in lines[3]
-    assert ",6.0," in lines[3]
+    assert session.get.call_count == 1
+    assert session.post.call_count == 2
+    rows = _read_csv_rows(csv_path)
+    camp2 = [r for r in rows if r["advert_id"] == "31314341" and r["bucket_date"] == "2026-07-24"]
+    assert camp2[0]["nq_spend"] == "6.0"
+    camp1 = [r for r in rows if r["advert_id"] == "31275686"]
+    assert camp1[0]["is_429"] == "1"
+
+
+def test_fullstats_error_status_preserved_separate_from_normquery(tmp_path: Path) -> None:
+    fs_body = b"internal error"
+    nq_body = json.dumps(_load("normquery_sample.json")).encode()
+    session = MagicMock()
+    session.get.return_value = MagicMock(status_code=500, content=fs_body)
+    session.post.return_value = MagicMock(status_code=200, content=nq_body)
+
+    fixed_now = datetime(2026, 7, 25, 10, 0, tzinfo=timezone.utc)
+    csv_path = _run_cycle(tmp_path, session, fixed_now)
+
+    row = _read_csv_rows(csv_path)[0]
+    assert row["fs_status"] == "500"
+    assert row["nq_status"] == "200"
+    assert row["fs_views"] == ""
+    assert row["nq_spend"] == "75.5"
+    assert row["fs_duration_ms"] != ""
+    assert row["nq_duration_ms"] != ""
 
 
 def test_flock_busy_skips_exit_zero(tmp_path: Path) -> None:
-    env_file = tmp_path / ".env"
-    env_file.write_text("WB_API_TOKEN=test-token\n", encoding="utf-8")
     lock_file = tmp_path / "cycle.lock"
-    data_dir = tmp_path / "data"
-
-    holder = try_acquire_prod_lock(lock_file)
-    assert holder is not None
+    holder = _hold_lock(lock_file)
 
     try:
         assert prod_cycle_running(lock_file) is True
-        fixed_now = datetime(2026, 7, 25, 11, 0, tzinfo=timezone.utc)
         session = MagicMock()
-        rc = run_probe_cycle(
-            data_dir=data_dir,
-            env_path=env_file,
-            prod_lock_path=lock_file,
-            now=fixed_now,
-            session=session,
-        )
-        assert rc == 0
+        fixed_now = datetime(2026, 7, 25, 11, 0, tzinfo=timezone.utc)
+        csv_path = _run_cycle(tmp_path, session, fixed_now)
+
         session.get.assert_not_called()
         session.post.assert_not_called()
-
-        csv_path = data_dir / "flat" / "probe_2026-07-25.csv"
-        lines = csv_path.read_text(encoding="utf-8").strip().splitlines()
-        assert len(lines) == 1 + len(CAMPAIGNS)
-        assert lines[-1].endswith(",0,1")
+        rows = _read_csv_rows(csv_path)
+        assert len(rows) == len(CAMPAIGNS)
+        assert all(r["skipped_tact"] == "1" for r in rows)
     finally:
-        release_lock(holder)
+        _release_lock_fd(holder)
 
 
 def test_probe_does_not_hold_prod_lock_during_cycle(tmp_path: Path) -> None:
-    env_file = tmp_path / ".env"
-    env_file.write_text("WB_API_TOKEN=test-token\n", encoding="utf-8")
     lock_file = tmp_path / "cycle.lock"
-    data_dir = tmp_path / "data"
-
     fs_body = json.dumps(_load("fullstats_normal.json")).encode()
     nq_body = json.dumps(_load("normquery_sample.json")).encode()
     lock_free_during: list[bool] = []
@@ -205,18 +284,11 @@ def test_probe_does_not_hold_prod_lock_during_cycle(tmp_path: Path) -> None:
 
     def on_post(*_args, **_kwargs):
         lock_free_during.append(not prod_cycle_running(lock_file))
-        resp = MagicMock(status_code=200, content=nq_body)
-        return resp
+        return MagicMock(status_code=200, content=nq_body)
 
     session.get.return_value = MagicMock(status_code=200, content=fs_body)
     session.post.side_effect = on_post
 
     fixed_now = datetime(2026, 7, 25, 12, 0, tzinfo=timezone.utc)
-    run_probe_cycle(
-        data_dir=data_dir,
-        env_path=env_file,
-        prod_lock_path=lock_file,
-        now=fixed_now,
-        session=session,
-    )
+    _run_cycle(tmp_path, session, fixed_now)
     assert lock_free_during == [True, True]

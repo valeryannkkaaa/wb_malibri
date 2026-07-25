@@ -48,8 +48,10 @@ CSV_COLUMNS = [
     "nq_cpc",
     "nq_spend",
     "nq_cpc_x_clicks",
-    "http_status",
-    "duration_ms",
+    "fs_status",
+    "fs_duration_ms",
+    "nq_status",
+    "nq_duration_ms",
     "is_429",
     "skipped_tact",
 ]
@@ -189,6 +191,8 @@ def apply_retention(data_dir: Path, *, days: int = RETENTION_DAYS, now: datetime
                 if folder_date < cutoff:
                     _rm_tree(child)
             elif sub == "flat" and name.startswith("probe_") and name.endswith(".csv"):
+                if ".legacy-" in name:
+                    continue
                 stem = name[len("probe_") : -len(".csv")]
                 try:
                     file_date = date.fromisoformat(stem)
@@ -221,26 +225,6 @@ def prod_cycle_running(lock_path: Path) -> bool:
         os.close(fd)
 
 
-def try_acquire_prod_lock(lock_path: Path) -> int | None:
-    """Test helper: acquire lock if free."""
-    fd = os.open(lock_path, os.O_CREAT | os.O_RDWR, 0o666)
-    try:
-        fcntl.flock(fd, fcntl.LOCK_EX | fcntl.LOCK_NB)
-        return fd
-    except BlockingIOError:
-        os.close(fd)
-        return None
-
-
-def release_lock(fd: int | None) -> None:
-    if fd is None:
-        return
-    try:
-        fcntl.flock(fd, fcntl.LOCK_UN)
-    finally:
-        os.close(fd)
-
-
 def save_raw_gzip(path: Path, payload: bytes) -> None:
     path.parent.mkdir(parents=True, exist_ok=True)
     with gzip.open(path, "wb") as fh:
@@ -253,7 +237,36 @@ def csv_path_for_day(data_dir: Path, day: date) -> Path:
     return flat_dir / f"probe_{day.isoformat()}.csv"
 
 
-def append_csv_rows(csv_path: Path, rows: list[dict[str, Any]]) -> None:
+def csv_header_line() -> str:
+    return ",".join(CSV_COLUMNS)
+
+
+def csv_header_matches(csv_path: Path) -> bool:
+    if not csv_path.exists() or csv_path.stat().st_size == 0:
+        return True
+    first_line = csv_path.read_text(encoding="utf-8").splitlines()[0]
+    return first_line == csv_header_line()
+
+
+def rotate_csv_if_header_mismatch(csv_path: Path, now: datetime | None = None) -> Path | None:
+    if csv_header_matches(csv_path):
+        return None
+    if now is None:
+        now = datetime.now(timezone.utc)
+    stamp = now.astimezone(timezone.utc).strftime("%Y%m%dT%H%M%SZ")
+    legacy = csv_path.with_name(f"{csv_path.stem}.legacy-{stamp}{csv_path.suffix}")
+    csv_path.rename(legacy)
+    log.warning("CSV schema changed, rotated %s -> %s", csv_path.name, legacy.name)
+    return legacy
+
+
+def append_csv_rows(
+    csv_path: Path,
+    rows: list[dict[str, Any]],
+    *,
+    now: datetime | None = None,
+) -> None:
+    rotate_csv_if_header_mismatch(csv_path, now=now)
     write_header = not csv_path.exists() or csv_path.stat().st_size == 0
     with csv_path.open("a", encoding="utf-8", newline="") as fh:
         writer = csv.DictWriter(fh, fieldnames=CSV_COLUMNS, extrasaction="ignore")
@@ -268,8 +281,10 @@ def _blank_row(
     advert_id: int,
     nm_id: int,
     *,
-    http_status: int | None = None,
-    duration_ms: int | None = None,
+    fs_status: int | None = None,
+    fs_duration_ms: int | None = None,
+    nq_status: int | None = None,
+    nq_duration_ms: int | None = None,
     is_429: bool = False,
     skipped_tact: bool = False,
 ) -> dict[str, Any]:
@@ -288,8 +303,10 @@ def _blank_row(
         "nq_cpc": "",
         "nq_spend": "",
         "nq_cpc_x_clicks": "",
-        "http_status": http_status if http_status is not None else "",
-        "duration_ms": duration_ms if duration_ms is not None else "",
+        "fs_status": fs_status if fs_status is not None else "",
+        "fs_duration_ms": fs_duration_ms if fs_duration_ms is not None else "",
+        "nq_status": nq_status if nq_status is not None else "",
+        "nq_duration_ms": nq_duration_ms if nq_duration_ms is not None else "",
         "is_429": int(is_429),
         "skipped_tact": int(skipped_tact),
     }
@@ -302,19 +319,23 @@ def build_day_rows(
     day_buckets: list[dict[str, Any]],
     normquery: dict[str, Any],
     *,
-    http_status: int,
-    duration_ms: int,
+    fs_status: int | None,
+    fs_duration_ms: int | None,
+    nq_status: int | None,
+    nq_duration_ms: int | None,
     is_429: bool = False,
 ) -> list[dict[str, Any]]:
-    base_nq = {
+    base = {
         "nq_views": normquery.get("views", 0),
         "nq_clicks": normquery.get("clicks", 0),
         "nq_orders": normquery.get("orders", 0),
         "nq_cpc": normquery.get("cpc") if normquery.get("cpc") is not None else "",
         "nq_spend": normquery.get("spend", 0),
         "nq_cpc_x_clicks": normquery.get("cpc_x_clicks", 0),
-        "http_status": http_status,
-        "duration_ms": duration_ms,
+        "fs_status": fs_status if fs_status is not None else "",
+        "fs_duration_ms": fs_duration_ms if fs_duration_ms is not None else "",
+        "nq_status": nq_status if nq_status is not None else "",
+        "nq_duration_ms": nq_duration_ms if nq_duration_ms is not None else "",
         "is_429": int(is_429),
         "skipped_tact": 0,
     }
@@ -323,11 +344,13 @@ def build_day_rows(
             probed_at,
             advert_id,
             nm_id,
-            http_status=http_status,
-            duration_ms=duration_ms,
+            fs_status=fs_status,
+            fs_duration_ms=fs_duration_ms,
+            nq_status=nq_status,
+            nq_duration_ms=nq_duration_ms,
             is_429=is_429,
         )
-        row.update(base_nq)
+        row.update(base)
         return [row]
 
     rows: list[dict[str, Any]] = []
@@ -341,7 +364,7 @@ def build_day_rows(
             "fs_clicks": bucket.get("clicks", ""),
             "fs_sum": bucket.get("sum", ""),
             "fs_orders": bucket.get("orders", ""),
-            **base_nq,
+            **base,
         }
         rows.append(row)
     return rows
@@ -415,7 +438,7 @@ def run_probe_cycle(
             _blank_row(probed_at, advert_id, nm_id, skipped_tact=True)
             for advert_id, nm_id in CAMPAIGNS
         ]
-        append_csv_rows(csv_path, rows)
+        append_csv_rows(csv_path, rows, now=now)
         return 0
 
     own_session = session is None
@@ -430,6 +453,7 @@ def run_probe_cycle(
         advert_ids = [a for a, _ in CAMPAIGNS]
 
         fs_status, fs_body, fs_elapsed = api_get_fullstats(session, token, advert_ids, begin, end)
+        fs_duration_ms = int(fs_elapsed * 1000)
         save_raw_gzip(raw_root / f"{tick}_fullstats.json.gz", fs_body)
 
         fs_parsed: dict[int, list[dict[str, Any]]] = {}
@@ -442,6 +466,8 @@ def run_probe_cycle(
                 log.exception("fullstats JSON decode failed")
         elif fs_status == 429:
             log.warning("fullstats batch: HTTP 429")
+        elif fs_status >= 400:
+            log.warning("fullstats batch: HTTP %s", fs_status)
 
         for idx, (advert_id, nm_id) in enumerate(CAMPAIGNS):
             if idx > 0:
@@ -450,14 +476,13 @@ def run_probe_cycle(
             nq_status, nq_body, nq_elapsed = api_post_normquery_stats(
                 session, token, advert_id, nm_id, begin, end
             )
+            nq_duration_ms = int(nq_elapsed * 1000)
             save_raw_gzip(
                 raw_root / f"{tick}_{advert_id}_normquery_stats.json.gz",
                 nq_body,
             )
 
             is_429 = fs_status == 429 or nq_status == 429
-            http_status = nq_status if nq_status == 429 else (fs_status if fs_status == 429 else nq_status)
-            duration_ms = int(nq_elapsed * 1000)
 
             if nq_status == 429:
                 log.warning("normquery advert_id=%s: HTTP 429", advert_id)
@@ -484,13 +509,15 @@ def run_probe_cycle(
                     nm_id,
                     day_buckets,
                     normquery,
-                    http_status=http_status,
-                    duration_ms=duration_ms,
+                    fs_status=fs_status,
+                    fs_duration_ms=fs_duration_ms,
+                    nq_status=nq_status,
+                    nq_duration_ms=nq_duration_ms,
                     is_429=is_429,
                 )
             )
 
-        append_csv_rows(csv_path, all_rows)
+        append_csv_rows(csv_path, all_rows, now=now)
         log.info("probe cycle done: %s rows, raw in %s", len(all_rows), raw_root)
         return 0
     finally:
