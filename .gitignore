@@ -10,6 +10,8 @@ venv/
 data/pilot/logs/
 **/cycle_*.log
 data/pilot/*.wav
+# Данные зонда свежести (issue #20): сырьё и CSV живут только на germany
+data/probe/
 # Файлы без расширения вида Untitled — так в репо однажды утёк WB-токен
 Untitled
 Untitled*
